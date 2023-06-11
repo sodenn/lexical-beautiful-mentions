@@ -15,10 +15,11 @@
     "e2e:record": "playwright codegen --device \"iPhone 11\"  http://localhost:3000"
   },
   "dependencies": {
-    "@lexical/react": "0.11.0",
+    "@lexical/react": "0.11.1",
+    "@lexical/utils": "0.11.1",
     "@tailwindcss/forms": "0.5.3",
     "dompurify": "3.0.3",
-    "lexical": "0.11.0",
+    "lexical": "0.11.1",
     "lexical-beautiful-mentions": "*",
     "next": "13.4.2",
     "react": "18.2.0",
