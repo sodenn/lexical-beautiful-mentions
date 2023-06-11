@@ -101,7 +101,7 @@ export class TestUtils {
   }
 
   get menu() {
-    return this.page.getByRole("list", { name: "Choose a mention" });
+    return this.page.getByRole("menu", { name: "Choose a mention" });
   }
 
   sleep(ms: number) {
