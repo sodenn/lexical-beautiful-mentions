@@ -29,13 +29,13 @@
       "groupName": "devDependencies (non-major)"
     },
     {
-      "matchPackageNames": [
+      "matchPackagePatterns": [
         "^react"
       ],
       "groupName": "React dependencies"
     },
     {
-      "matchPackageNames": [
+      "matchPackagePatterns": [
         "^@?lexical"
       ],
       "groupName": "lexical dependencies"
