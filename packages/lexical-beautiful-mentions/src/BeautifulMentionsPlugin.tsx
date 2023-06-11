@@ -91,21 +91,25 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       .map((result) => new MenuOption(result))
       .slice(0, SUGGESTION_LIST_LENGTH_LIMIT);
     // Add mentions from the editor
-    editor.getEditorState().read(() => {
-      const mentions = $nodesOfType(BeautifulMentionNode);
-      for (const mention of mentions) {
-        const mentionName = mention.getValue();
-        // only add the mention if it's not already in the list
-        if (
-          mention.getTrigger() === trigger &&
-          (debouncedQueryString === null ||
-            mention.getValue().startsWith(debouncedQueryString)) &&
-          opt.every((o) => o.value !== mentionName)
-        ) {
-          opt.push(new MenuOption(mentionName, mentionName));
+    const readyToAddEditorMentions = !onSearch || !!debouncedQueryString;
+    // when a search function is provided, wait for the delayed search to prevent flickering
+    if (readyToAddEditorMentions) {
+      editor.getEditorState().read(() => {
+        const mentions = $nodesOfType(BeautifulMentionNode);
+        for (const mention of mentions) {
+          const mentionName = mention.getValue();
+          // only add the mention if it's not already in the list
+          if (
+            mention.getTrigger() === trigger &&
+            (debouncedQueryString === null ||
+              mention.getValue().startsWith(debouncedQueryString)) &&
+            opt.every((o) => o.value !== mentionName)
+          ) {
+            opt.push(new MenuOption(mentionName, mentionName));
+          }
         }
-      }
-    });
+      });
+    }
     // Add option to create a new mention
     if (
       debouncedQueryString &&
@@ -122,11 +126,15 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       }
     }
     return opt;
-  }, [results, creatable, debouncedQueryString, trigger, editor]);
+  }, [results, onSearch, debouncedQueryString, editor, trigger, creatable]);
 
   const open = isEditorFocused && (!!options.length || loading);
 
-  const onSelectOption = useCallback(
+  const handleClose = useCallback(() => {
+    setTrigger(null);
+  }, []);
+
+  const handleSelectOption = useCallback(
     (
       selectedOption: MenuOption,
       nodeToReplace: TextNode | null,
@@ -366,10 +374,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   return (
     <LexicalTypeaheadMenuPlugin<MenuOption>
       onQueryChange={setQueryString}
-      onSelectOption={onSelectOption}
+      onSelectOption={handleSelectOption}
       triggerFn={checkForMentionMatch}
       options={options}
       anchorClassName={menuAnchorClassName}
+      onClose={handleClose}
       menuRenderFn={(
         anchorElementRef,
         { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }

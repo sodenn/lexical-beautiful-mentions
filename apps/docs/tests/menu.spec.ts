@@ -72,6 +72,33 @@ test.describe("Menu", () => {
     await utils.hasText("[@aaa]");
   });
 
+  test("should insert a selected mention by pressing enter", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page);
+    await utils.editor.type("@");
+    await utils.editor.press("ArrowDown");
+    await utils.editor.press("Enter");
+    await expect(utils.menu).not.toBeVisible();
+    await utils.hasText("[@Boris]");
+  });
+
+  test("should insert a selected mention by pressing tab", async ({ page }) => {
+    const utils = await testUtils(page);
+    await utils.editor.type("@");
+    await utils.editor.press("Tab");
+    await expect(utils.menu).not.toBeVisible();
+    await utils.hasText("[@Anton]");
+  });
+
+  test("should close the menu when pressing escape", async ({ page }) => {
+    const utils = await testUtils(page);
+    await utils.editor.type("@");
+    await expect(utils.menu).toBeVisible();
+    await utils.editor.press("Escape");
+    await expect(utils.menu).not.toBeVisible();
+  });
+
   test("should not insert the entered text as mention when closing the menu with blur", async ({
     page,
   }) => {
@@ -106,5 +133,17 @@ test.describe("Menu", () => {
     await expect(utils.menu.getByText(`Add "b"`)).toBeVisible();
     await utils.menu.getByText(`Add "b"`).click();
     await utils.hasText("[aaa:b]");
+  });
+
+  test("should display a loading indicator while fetching suggestions", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      asynchronous: true,
+    });
+    await utils.editor.type("@");
+    await expect(page.getByText("Loading...")).toBeVisible();
+    await expect(utils.menu.getByRole("menuitem")).toHaveCount(5);
+    await expect(page.getByText("Loading...")).not.toBeVisible();
   });
 });
