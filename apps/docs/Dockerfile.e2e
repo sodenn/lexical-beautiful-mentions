@@ -1,0 +1,20 @@
+# 1. Build image by running:
+# docker build -f Dockerfile.e2e -t playwright-docker .
+# 2. Start the dev server on host machine
+# 3. Update playwright snapshots by running:
+# docker run -it --rm -v "$(pwd)/tests:/tests" playwright-docker:latest
+FROM mcr.microsoft.com/playwright:v1.33.0-jammy
+
+COPY playwright.config.ts ./playwright.config.ts
+# Remove webServer config from playwright config
+RUN sed -i '/webServer: {/,/},/d' ./playwright.config.ts
+
+RUN echo "{\n" \
+         "  \"name\": \"e2e\"\n" \
+         "}" > package.json
+RUN npx playwright install
+RUN npm install -D @playwright/test
+
+ENV HOST=host.docker.internal
+
+CMD ["npx", "playwright", "test", "--reporter=line", "-g", "should dynamically position the menu", "--update-snapshots"]

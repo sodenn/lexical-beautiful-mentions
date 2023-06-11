@@ -1,0 +1,10 @@
+# testing
+/test-results/
+/playwright-report/
+/playwright/.cache/
+*-darwin.png
+
+# next.js
+.next/
+out/
+build

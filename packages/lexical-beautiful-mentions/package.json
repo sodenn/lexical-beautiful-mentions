@@ -1,0 +1,48 @@
+{
+  "name": "lexical-beautiful-mentions",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "A mentions plugin for the lexical text editor.",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sodenn/lexical-beautiful-mentions.git",
+    "directory": "packages/plugin"
+  },
+  "homepage": "https://github.com/sodenn/lexical-beautiful-mentions",
+  "author": {
+    "name": "sodenn",
+    "email": "mail@sodenn.dev"
+  },
+  "scripts": {
+    "build": "run-s clean build:all copy",
+    "release": "run-s build publish:lib",
+    "clean": "rimraf lib",
+    "copy": "node copy-files.js",
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit",
+    "build:all": "run-p build:esm build:cjs",
+    "build:esm": "tsc --m esnext --outDir lib -t es6",
+    "build:cjs": "tsc --m commonjs --outDir lib/cjs -t es2015",
+    "publish:lib": "node ./publish-lib.js"
+  },
+  "devDependencies": {
+    "@testing-library/react": "14.0.0",
+    "eslint-config-custom": "*",
+    "fast-glob": "3.2.12",
+    "happy-dom": "9.20.3",
+    "npm-run-all": "4.1.5",
+    "rimraf": "5.0.1",
+    "tsconfig": "*",
+    "vitest": "0.31.1"
+  },
+  "peerDependencies": {
+    "@lexical/react": ">=0.11.0",
+    "lexical": ">=0.11.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

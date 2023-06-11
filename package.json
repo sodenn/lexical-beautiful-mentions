@@ -1,0 +1,35 @@
+{
+  "name": "lexical-beautiful-mentions",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "fmt": "prettier --check \"**/*.{ts,tsx}\"",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "hygiene": "turbo run typecheck lint fmt",
+    "publish-packages": "turbo run build lint test fmt && changeset version && changeset publish",
+    "test": "turbo run test",
+    "e2e": "turbo run e2e",
+    "release": "turbo run release"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.26.1",
+    "@types/dompurify": "3.0.2",
+    "eslint-config-custom": "*",
+    "prettier": "2.8.8",
+    "prettier-plugin-organize-imports": "3.2.2",
+    "prettier-plugin-tailwindcss": "0.3.0",
+    "turbo": "^1.10.3",
+    "typescript": "5.0.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "packageManager": "npm@8.19.2"
+}
