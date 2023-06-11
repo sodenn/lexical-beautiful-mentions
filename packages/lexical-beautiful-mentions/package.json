@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/sodenn/lexical-beautiful-mentions.git",
-    "directory": "packages/plugin"
+    "directory": "packages/lexical-beautiful-mentions"
   },
   "homepage": "https://github.com/sodenn/lexical-beautiful-mentions",
   "author": {
