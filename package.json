@@ -19,17 +19,17 @@
     "release": "turbo run release"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.26.1",
+    "@changesets/cli": "2.26.1",
     "@types/dompurify": "3.0.2",
     "eslint-config-custom": "*",
     "prettier": "2.8.8",
     "prettier-plugin-organize-imports": "3.2.2",
     "prettier-plugin-tailwindcss": "0.3.0",
-    "turbo": "^1.10.3",
+    "turbo": "1.10.3",
     "typescript": "5.0.4"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": "20.3.0"
   },
   "packageManager": "npm@8.19.2"
 }
