@@ -23,7 +23,7 @@ test.describe("Menu", () => {
       initialValue: "Hey @lisa",
     });
     await utils.editor.type(" @ant");
-    await expect(utils.menu.getByRole("listitem")).toHaveCount(2);
+    await expect(utils.menu.getByRole("menuitem")).toHaveCount(2);
     await expect(utils.menu.getByText("Anton")).toBeVisible();
     await expect(utils.menu.getByText(`Add "ant"`)).toBeVisible();
     await utils.hasText("Hey [@lisa] @ant");
@@ -34,7 +34,7 @@ test.describe("Menu", () => {
   }) => {
     const utils = await testUtils(page, { creatable: true });
     await utils.editor.type("@Anton");
-    await expect(utils.menu.getByRole("listitem")).toHaveCount(1);
+    await expect(utils.menu.getByRole("menuitem")).toHaveCount(1);
     await expect(utils.menu.getByText("Anton")).toBeVisible();
     await expect(utils.menu.getByText(`Add "ant"`)).not.toBeVisible();
   });
@@ -44,7 +44,7 @@ test.describe("Menu", () => {
   }) => {
     const utils = await testUtils(page, { creatable: false });
     await utils.editor.type("@abc");
-    await expect(utils.menu.getByRole("list")).toHaveCount(0);
+    await expect(utils.menu).toHaveCount(0);
   });
 
   test("should dynamically position the menu", async ({ page }) => {

@@ -379,7 +379,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
               <MenuComponent
                 loading={loading}
                 open={open}
-                role="list"
+                role="menu"
                 aria-label="Choose a mention"
                 aria-hidden={!open}
               >
@@ -389,7 +389,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     tabIndex={-1}
                     selected={selectedIndex === i}
                     ref={option.setRefElement}
-                    role="listitem"
+                    role="menuitem"
                     aria-selected={selectedIndex === i}
                     aria-label={`Choose ${option.label}`}
                     onClick={() => {
