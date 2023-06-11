@@ -18,27 +18,26 @@
     },
     {
       "matchDepTypes": ["peerDependencies"],
-      "excludePackagePatterns": ["^react", "^@?lexical"],
+      "excludePackagePatterns": ["^react", "^lexical$", "^@lexical\\/"],
       "matchUpdateTypes": ["patch"],
       "groupName": "peerDependencies (patch)"
     },
     {
       "matchDepTypes": ["devDependencies"],
-      "excludePackagePatterns": ["^react", "^@?lexical"],
+      "excludePackagePatterns": ["^react", "^lexical$", "^@lexical\\/"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "devDependencies (non-major)"
     },
     {
-      "matchDepTypes": ["devDependencies", "peerDependencies"],
-      "matchPackageNames": [
+      "matchPackagePatterns": [
         "^react"
       ],
       "groupName": "React dependencies"
     },
     {
-      "matchDepTypes": ["devDependencies", "peerDependencies"],
-      "matchPackageNames": [
-        "^@?lexical"
+      "matchPackagePatterns": [
+        "^lexical$",
+        "^@lexical\\/"
       ],
       "groupName": "lexical dependencies"
     }
