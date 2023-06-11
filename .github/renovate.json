@@ -40,6 +40,14 @@
         "^@lexical\\/"
       ],
       "groupName": "lexical dependencies"
+    },
+    {
+      "matchPackagePatterns": [
+        "^playwright$",
+        "^@playwright\\/test$",
+        "^mcr.microsoft.com\\/playwright$"
+      ],
+      "groupName": "playwright dependencies"
     }
   ]
 }
