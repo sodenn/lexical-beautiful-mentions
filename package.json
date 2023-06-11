@@ -13,10 +13,9 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "hygiene": "turbo run typecheck lint fmt",
-    "publish-packages": "turbo run build lint test fmt && changeset version && changeset publish",
     "test": "turbo run test",
     "e2e": "turbo run e2e",
-    "release": "turbo run release"
+    "release": "turbo run release && changeset tag"
   },
   "devDependencies": {
     "@changesets/cli": "2.26.1",
