@@ -107,4 +107,16 @@ test.describe("Menu", () => {
     await utils.menu.getByText(`Add "b"`).click();
     await utils.hasText("[aaa:b]");
   });
+
+  test("should display a loading indicator while fetching suggestions", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      asynchronous: true,
+    });
+    await utils.editor.type("@");
+    await expect(page.getByText("Loading...")).toBeVisible();
+    await expect(utils.menu.getByRole("menuitem")).toHaveCount(5);
+    await expect(page.getByText("Loading...")).not.toBeVisible();
+  });
 });
