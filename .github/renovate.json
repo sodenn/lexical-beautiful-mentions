@@ -29,14 +29,12 @@
       "groupName": "devDependencies (non-major)"
     },
     {
-      "matchDepTypes": ["devDependencies", "peerDependencies"],
       "matchPackageNames": [
         "^react"
       ],
       "groupName": "React dependencies"
     },
     {
-      "matchDepTypes": ["devDependencies", "peerDependencies"],
       "matchPackageNames": [
         "^@?lexical"
       ],
