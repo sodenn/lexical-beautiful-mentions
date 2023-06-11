@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.0.4
+
+### Patch Changes
+
+- e13cd0a: fix(useBeautifulMentions): hook function should return `true` when the mention menu is open
+
 ## 0.0.3
 
 ### Patch Changes
