@@ -81,7 +81,7 @@ export function useBeautifulMentions() {
    */
   const isMentionsMenuOpen = useCallback(() => {
     const element = document.querySelector(
-      '[role="list"][aria-label="Choose a mention"][aria-hidden="false"]'
+      '[role="menu"][aria-label="Choose a mention"][aria-hidden="false"]'
     );
     return !!element;
   }, []);
