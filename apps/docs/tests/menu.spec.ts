@@ -72,6 +72,33 @@ test.describe("Menu", () => {
     await utils.hasText("[@aaa]");
   });
 
+  test("should insert a selected mention by pressing enter", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page);
+    await utils.editor.type("@");
+    await utils.editor.press("ArrowDown");
+    await utils.editor.press("Enter");
+    await expect(utils.menu).not.toBeVisible();
+    await utils.hasText("[@Boris]");
+  });
+
+  test("should insert a selected mention by pressing tab", async ({ page }) => {
+    const utils = await testUtils(page);
+    await utils.editor.type("@");
+    await utils.editor.press("Tab");
+    await expect(utils.menu).not.toBeVisible();
+    await utils.hasText("[@Anton]");
+  });
+
+  test("should close the menu when pressing escape", async ({ page }) => {
+    const utils = await testUtils(page);
+    await utils.editor.type("@");
+    await expect(utils.menu).toBeVisible();
+    await utils.editor.press("Escape");
+    await expect(utils.menu).not.toBeVisible();
+  });
+
   test("should not insert the entered text as mention when closing the menu with blur", async ({
     page,
   }) => {
