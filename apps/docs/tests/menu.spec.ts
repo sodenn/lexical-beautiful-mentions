@@ -66,10 +66,10 @@ test.describe("Menu", () => {
       insertOnBlur: true,
       creatable: true,
     });
-    await utils.editor.type("@aaa");
+    await utils.editor.type("@abc");
     await utils.editor.blur();
     await expect(utils.menu).not.toBeVisible();
-    await utils.hasText("[@aaa]");
+    await utils.hasText("[@abc]");
   });
 
   test("should insert a selected mention by pressing enter", async ({
@@ -129,10 +129,10 @@ test.describe("Menu", () => {
       creatable: true,
       autofocus: "start",
     });
-    await utils.editor.type("aaa:b");
+    await utils.editor.type("abc:b");
     await expect(utils.menu.getByText(`Add "b"`)).toBeVisible();
     await utils.menu.getByText(`Add "b"`).click();
-    await utils.hasText("[aaa:b]");
+    await utils.hasText("[abc:b]");
   });
 
   test("should display a loading indicator while fetching suggestions", async ({
@@ -145,5 +145,22 @@ test.describe("Menu", () => {
     await expect(page.getByText("Loading...")).toBeVisible();
     await expect(utils.menu.getByRole("menuitem")).toHaveCount(5);
     await expect(page.getByText("Loading...")).not.toBeVisible();
+  });
+
+  test("should how existing mentions from the editor as suggestions", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      creatable: true,
+    });
+    await utils.editor.type("abc:a");
+    await expect(utils.menu.getByRole("menuitem")).toHaveCount(1);
+    await utils.menu.getByText(`Add "a"`).click();
+    await utils.hasText("[abc:a]");
+    await utils.editor.type("abc:");
+    await expect(utils.menu.getByRole("menuitem")).toHaveCount(1);
+    await expect(utils.menu.getByText("a")).toBeVisible();
+    await utils.editor.press("Enter");
+    await utils.hasText("[abc:a] [abc:a]");
   });
 });
