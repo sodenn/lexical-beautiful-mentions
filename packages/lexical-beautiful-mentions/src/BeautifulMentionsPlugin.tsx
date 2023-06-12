@@ -91,7 +91,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       .map((result) => new MenuOption(result))
       .slice(0, SUGGESTION_LIST_LENGTH_LIMIT);
     // Add mentions from the editor
-    const readyToAddEditorMentions = !onSearch || !!debouncedQueryString;
+    const readyToAddEditorMentions = !onSearch || debouncedQueryString !== null;
     // when a search function is provided, wait for the delayed search to prevent flickering
     if (readyToAddEditorMentions) {
       editor.getEditorState().read(() => {
@@ -172,10 +172,13 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
       const queryMatch = checkForMentions(text, triggers, allowSpaces);
       if (queryMatch) {
-        const trigger = queryMatch.replaceableString.replace(
-          queryMatch.matchingString,
-          ""
-        );
+        const { replaceableString, matchingString } = queryMatch;
+        const index = replaceableString.lastIndexOf(matchingString);
+        const trigger =
+          index === -1
+            ? replaceableString
+            : replaceableString.substring(0, index) +
+              replaceableString.substring(index + matchingString.length);
         setTrigger(trigger || null);
         if (queryMatch.replaceableString) {
           return queryMatch;
