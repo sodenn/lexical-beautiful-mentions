@@ -19,6 +19,7 @@ interface Configuration
   initialValue: string;
   autoFocus: "rootStart" | "rootEnd" | "none";
   asynchronous: boolean;
+  commandFocus: boolean;
   setAsynchronous: (asynchronous: boolean) => void;
   setAllowSpaces: (allowSpaces: boolean) => void;
   setCreatable: (creatable: boolean) => void;
@@ -33,6 +34,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const [allowSpaces, _setAllowSpaces] = useState(hasQueryParams("space"));
   const [creatable, _setCreatable] = useState(hasQueryParams("new"));
   const [insertOnBlur, _setInsertOnBlur] = useState(hasQueryParams("blur"));
+  const commandFocus = getQueryParam("cf") !== "false";
   const focusParam = getQueryParam("focus");
   const valueParam = getQueryParam("value");
   const hasValue = hasQueryParams("value");
@@ -90,6 +92,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         setAllowSpaces,
         setCreatable,
         setInsertOnBlur,
+        commandFocus,
       }}
     >
       {children}

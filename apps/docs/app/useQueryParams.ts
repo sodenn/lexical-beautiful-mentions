@@ -4,6 +4,7 @@ import { useCallback } from "react";
 interface QueryParams {
   value: string;
   focus: string;
+  cf: string;
   fit: string;
   async: string;
   space: string;

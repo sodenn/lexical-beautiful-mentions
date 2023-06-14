@@ -9,6 +9,7 @@ interface TestUtilsOptions {
   allowSpaces?: boolean;
   creatable?: boolean;
   insertOnBlur?: boolean;
+  commandFocus?: boolean;
 }
 
 export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
@@ -19,6 +20,7 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     allowSpaces = false,
     creatable = false,
     insertOnBlur = false,
+    commandFocus = true,
   } = options;
   const utils = new TestUtils(
     page,
@@ -27,7 +29,8 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     asynchronous,
     allowSpaces,
     creatable,
-    insertOnBlur
+    insertOnBlur,
+    commandFocus
   );
   await utils.init();
   return utils;
@@ -43,7 +46,8 @@ export class TestUtils {
     private asynchronous: boolean,
     private allowSpaces: boolean,
     private creatable: boolean,
-    private insertOnBlur: boolean
+    private insertOnBlur: boolean,
+    private commandFocus: boolean
   ) {
     this.setInitialValue(initialValue);
   }
@@ -128,6 +132,7 @@ export class TestUtils {
     if (this.insertOnBlur) {
       url += `&blur=${this.insertOnBlur}`;
     }
+    url += `&cf=${this.commandFocus}`;
     if (this.initialValue === "") {
       url += `&value`;
     } else {

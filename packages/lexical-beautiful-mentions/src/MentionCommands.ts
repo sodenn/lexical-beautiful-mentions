@@ -1,23 +1,65 @@
 import { createCommand, LexicalCommand } from "lexical";
 
 export interface InsertMention {
+  /**
+   * The trigger that was used to insert the mention.
+   */
   trigger: string;
+  /**
+   * The value to insert after the trigger.
+   */
   value: string;
+  /**
+   * Whether to focus the editor after inserting the mention.
+   * @default true
+   */
+  focus?: boolean;
 }
 
 export interface RemoveMentions {
+  /**
+   * The trigger to search for when removing mentions.
+   */
   trigger: string;
+  /**
+   * An optional value to search for when removing mentions.
+   */
   value?: string;
+  /**
+   * Whether to focus the editor after inserting the mention.
+   * @default true
+   */
+  focus?: boolean;
 }
 
 export interface RenameMentions {
+  /**
+   * The trigger to search for when renaming mentions.
+   */
   trigger: string;
+  /**
+   * The new value to replace the old value with.
+   */
   newValue: string;
+  /**
+   * An optional value to search for when renaming mentions.
+   */
   value?: string;
+  /**
+   * Whether to focus the editor after inserting the mention.
+   * @default true
+   */
+  focus?: boolean;
 }
 
 export interface HasMentions {
+  /**
+   * The trigger to search for when checking for mentions.
+   */
   trigger: string;
+  /**
+   * An optional value to search for when checking for mentions.
+   */
   value?: string;
 }
 
