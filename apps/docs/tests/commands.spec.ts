@@ -54,22 +54,31 @@ test.describe("Open Suggestions", () => {
 });
 
 test.describe("Rename mentions", () => {
-  test("should rename an mention", async ({ page }) => {
+  test("should rename an mention", async ({ page, isMobile }) => {
     const utils = await testUtils(page, {
       initialValue: "Hey @John, the task is #urgent and due:tomorrow",
     });
     await page.getByText("Rename Mention").click();
     await utils.hasText("Hey [@John], the task is [#urgent] and [due:today]");
+    if (!isMobile) {
+      await expect(utils.editor).toBeFocused();
+    }
   });
 });
 
 test.describe("Remove mentions", () => {
-  test("should remove a mention from the editor", async ({ page }) => {
+  test("should remove a mention from the editor", async ({
+    page,
+    isMobile,
+  }) => {
     const utils = await testUtils(page, {
       initialValue: "Hey @John, the task is #urgent and due:tomorrow",
     });
     await page.getByText("Remove Mention").click();
     await utils.countMentions(2);
+    if (!isMobile) {
+      await expect(utils.editor).toBeFocused();
+    }
   });
 });
 
@@ -82,6 +91,19 @@ test.describe("Insert mention", () => {
     await utils.hasText(
       "Hey [@John], the task is [#urgent] and [due:tomorrow] [#work]"
     );
+    await expect(utils.editor).toBeFocused();
+  });
+
+  test("should insert a new mention without focus the editor", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      commandFocus: false,
+      initialValue: "",
+    });
+    await page.getByText("Insert Mention").click();
+    await utils.hasText("[#work]");
+    await expect(utils.editor).not.toBeFocused();
   });
 
   test("should insert a new mention even if the editor is not focused", async ({

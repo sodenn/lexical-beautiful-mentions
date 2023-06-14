@@ -83,7 +83,11 @@ test.describe("Menu", () => {
     await utils.hasText("[@Boris]");
   });
 
-  test("should insert a selected mention by pressing tab", async ({ page }) => {
+  test("should insert a selected mention by pressing tab", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!!isMobile, "desktop only");
     const utils = await testUtils(page);
     await utils.editor.type("@");
     await utils.editor.press("Tab");
@@ -91,7 +95,11 @@ test.describe("Menu", () => {
     await utils.hasText("[@Anton]");
   });
 
-  test("should close the menu when pressing escape", async ({ page }) => {
+  test("should close the menu when pressing escape", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!!isMobile, "desktop only");
     const utils = await testUtils(page);
     await utils.editor.type("@");
     await expect(utils.menu).toBeVisible();

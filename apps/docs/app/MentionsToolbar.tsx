@@ -22,6 +22,7 @@ export default function MentionsToolbar() {
     allowSpaces,
     creatable,
     insertOnBlur,
+    commandFocus,
     setAsynchronous,
     setAllowSpaces,
     setCreatable,
@@ -37,8 +38,9 @@ export default function MentionsToolbar() {
     removeMentions({
       trigger: randomMention.trigger,
       value: randomMention.value,
+      focus: commandFocus,
     });
-  }, [getMentions, removeMentions]);
+  }, [commandFocus, getMentions, removeMentions]);
 
   const handleAsynchronousChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
@@ -75,12 +77,26 @@ export default function MentionsToolbar() {
           Open Suggestions
         </Button>
         <Button
-          onClick={() => renameMentions({ trigger: "due:", newValue: "today" })}
+          onClick={() =>
+            renameMentions({
+              trigger: "due:",
+              newValue: "today",
+              focus: commandFocus,
+            })
+          }
         >
           Rename Mention
         </Button>
         <Button onClick={handleRemoveMentions}>Remove Mention</Button>
-        <Button onClick={() => insertMention({ trigger: "#", value: "work" })}>
+        <Button
+          onClick={() =>
+            insertMention({
+              trigger: "#",
+              value: "work",
+              focus: commandFocus,
+            })
+          }
+        >
           Insert Mention
         </Button>
       </div>

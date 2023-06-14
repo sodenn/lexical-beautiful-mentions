@@ -7,6 +7,7 @@ import { mergeRegister } from "@lexical/utils";
 import {
   $createTextNode,
   $nodesOfType,
+  $setSelection,
   BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
   KEY_DOWN_COMMAND,
@@ -305,31 +306,28 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ),
       editor.registerCommand(
         INSERT_MENTION_COMMAND,
-        (payload) => {
-          if (!isEditorFocused) {
-            editor.focus(() => {
-              editor.update(() => {
-                insertMention(triggers, payload.trigger, payload.value);
-              });
-            });
-            return false;
-          } else {
-            return insertMention(triggers, payload.trigger, payload.value);
+        ({ trigger, value, focus = true }) => {
+          const result = insertMention(triggers, trigger, value);
+          if (!focus) {
+            $setSelection(null);
           }
+          return result;
         },
         COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
         REMOVE_MENTIONS_COMMAND,
-        (payload) => {
+        ({ trigger, value, focus }) => {
+          let removed = false;
           const mentions = $nodesOfType(BeautifulMentionNode);
           for (const mention of mentions) {
-            const sameTrigger = mention.getTrigger() === payload.trigger;
-            const sameValue = mention.getValue() === payload.value;
-            if (sameTrigger && (sameValue || !payload.value)) {
+            const sameTrigger = mention.getTrigger() === trigger;
+            const sameValue = mention.getValue() === value;
+            if (sameTrigger && (sameValue || !value)) {
               const previous = mention.getPreviousSibling();
               const next = mention.getNextSibling();
               mention.remove();
+              removed = true;
               // Prevent double spaces
               if (
                 previous?.getTextContent().endsWith(" ") &&
@@ -339,22 +337,30 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
               }
             }
           }
-          return true;
+          if (removed && !focus) {
+            $setSelection(null);
+          }
+          return removed;
         },
         COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
         RENAME_MENTIONS_COMMAND,
-        (payload) => {
+        ({ trigger, value, newValue, focus }) => {
+          let renamed = false;
           const mentions = $nodesOfType(BeautifulMentionNode);
           for (const mention of mentions) {
-            const sameTrigger = mention.getTrigger() === payload.trigger;
-            const sameValue = mention.getValue() === payload.value;
-            if (sameTrigger && (sameValue || !payload.value)) {
-              mention.setValue(payload.newValue);
+            const sameTrigger = mention.getTrigger() === trigger;
+            const sameValue = mention.getValue() === value;
+            if (sameTrigger && (sameValue || !value)) {
+              renamed = true;
+              mention.setValue(newValue);
             }
           }
-          return true;
+          if (renamed && !focus) {
+            $setSelection(null);
+          }
+          return renamed;
         },
         COMMAND_PRIORITY_LOW
       ),
