@@ -195,7 +195,7 @@ export default function BeautifulMentionComponent(
   }, [editor, onArrowLeftPress, onArrowRightPress, onClick, onBlur, onDelete]);
 
   return (
-    <span ref={ref} className={classNameFinal}>
+    <span ref={ref} className={classNameFinal} data-beautiful-mention={mention}>
       {mention}
     </span>
   );
