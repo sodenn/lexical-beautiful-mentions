@@ -360,7 +360,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           if (renamed && !focus) {
             $setSelection(null);
           }
-          return true;
+          return renamed;
         },
         COMMAND_PRIORITY_LOW
       ),

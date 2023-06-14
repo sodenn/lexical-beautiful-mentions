@@ -26,7 +26,7 @@ export interface RemoveMentions {
    */
   value?: string;
   /**
-   * Whether to focus the editor after inserting the mention.
+   * Whether to focus the editor after removing the mention.
    * @default true
    */
   focus?: boolean;
@@ -46,7 +46,7 @@ export interface RenameMentions {
    */
   value?: string;
   /**
-   * Whether to focus the editor after inserting the mention.
+   * Whether to focus the editor after renaming the mention.
    * @default true
    */
   focus?: boolean;
@@ -75,10 +75,6 @@ export const REMOVE_MENTIONS_COMMAND: LexicalCommand<RemoveMentions> =
 
 export const RENAME_MENTIONS_COMMAND: LexicalCommand<RenameMentions> =
   createCommand("RENAME_MENTIONS_COMMAND");
-
-export const HAS_MENTIONS_COMMAND: LexicalCommand<HasMentions> = createCommand(
-  "HAS_MENTIONS_COMMAND"
-);
 
 export const OPEN_MENTIONS_MENU_COMMAND: LexicalCommand<OpenMentionsMenu> =
   createCommand("OPEN_MENTIONS_MENU_COMMAND");
