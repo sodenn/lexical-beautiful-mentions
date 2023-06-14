@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.0
+
+### Minor Changes
+
+- 903be59: feat(): make it configurable if the editor should be focused after inserting, renaming or deleting mentions
+
 ## 0.0.5
 
 ### Patch Changes
