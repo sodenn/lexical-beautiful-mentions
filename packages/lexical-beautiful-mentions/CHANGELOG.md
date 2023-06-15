@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.1
+
+### Patch Changes
+
+- a9b1aef: fix(): handle missing focus when inserting, renaming or deleting mentions
+
 ## 0.1.0
 
 ### Minor Changes
