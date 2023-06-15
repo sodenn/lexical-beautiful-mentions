@@ -229,10 +229,12 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return false;
   }, [triggers]);
 
-  const restoreSelection = useCallback(() => {
-    const selection = $getSelection() || $createRangeSelection();
-    if (!selection && oldSelection) {
-      $setSelection(oldSelection);
+  const setSelection = useCallback(() => {
+    const selection = $getSelection();
+    if (!selection) {
+      $setSelection(oldSelection || $createRangeSelection());
+    }
+    if (oldSelection) {
       setOldSelection(null);
     }
   }, [oldSelection]);
@@ -331,7 +333,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.registerCommand(
         INSERT_MENTION_COMMAND,
         ({ trigger, value, focus = true }) => {
-          restoreSelection();
+          setSelection();
           const result = insertMention(triggers, trigger, value);
           if (!focus) {
             archiveSelection();
@@ -344,7 +346,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         REMOVE_MENTIONS_COMMAND,
         ({ trigger, value, focus }) => {
           let removed = false;
-          restoreSelection();
+          setSelection();
           const mentions = $nodesOfType(BeautifulMentionNode);
           for (const mention of mentions) {
             const sameTrigger = mention.getTrigger() === trigger;
@@ -374,7 +376,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         RENAME_MENTIONS_COMMAND,
         ({ trigger, value, newValue, focus }) => {
           let renamed = false;
-          restoreSelection();
+          setSelection();
           const mentions = $nodesOfType(BeautifulMentionNode);
           for (const mention of mentions) {
             const sameTrigger = mention.getTrigger() === trigger;
@@ -405,7 +407,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     creatable,
     isEditorFocused,
     insertTextAsMention,
-    restoreSelection,
+    setSelection,
     archiveSelection,
   ]);
 
