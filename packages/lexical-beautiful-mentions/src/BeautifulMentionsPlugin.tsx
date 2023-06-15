@@ -5,13 +5,18 @@ import {
 } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
+  $createRangeSelection,
   $createTextNode,
+  $getSelection,
   $nodesOfType,
   $setSelection,
   BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
+  GridSelection,
   KEY_DOWN_COMMAND,
   KEY_SPACE_COMMAND,
+  NodeSelection,
+  RangeSelection,
   TextNode,
 } from "lexical";
 import React, { useCallback, useMemo, useState } from "react";
@@ -85,6 +90,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,
   });
+  const [oldSelection, setOldSelection] = useState<
+    RangeSelection | NodeSelection | GridSelection | null
+  >(null);
 
   const options = useMemo(() => {
     // Add options from the lookup service
@@ -221,6 +229,22 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return false;
   }, [triggers]);
 
+  const restoreSelection = useCallback(() => {
+    const selection = $getSelection() || $createRangeSelection();
+    if (!selection && oldSelection) {
+      $setSelection(oldSelection);
+      setOldSelection(null);
+    }
+  }, [oldSelection]);
+
+  const archiveSelection = useCallback(() => {
+    const selection = $getSelection();
+    if (selection) {
+      setOldSelection(selection);
+      $setSelection(null);
+    }
+  }, []);
+
   React.useEffect(() => {
     return mergeRegister(
       editor.registerCommand(
@@ -307,9 +331,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.registerCommand(
         INSERT_MENTION_COMMAND,
         ({ trigger, value, focus = true }) => {
+          restoreSelection();
           const result = insertMention(triggers, trigger, value);
           if (!focus) {
-            $setSelection(null);
+            archiveSelection();
           }
           return result;
         },
@@ -319,6 +344,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         REMOVE_MENTIONS_COMMAND,
         ({ trigger, value, focus }) => {
           let removed = false;
+          restoreSelection();
           const mentions = $nodesOfType(BeautifulMentionNode);
           for (const mention of mentions) {
             const sameTrigger = mention.getTrigger() === trigger;
@@ -338,7 +364,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             }
           }
           if (removed && !focus) {
-            $setSelection(null);
+            archiveSelection();
           }
           return removed;
         },
@@ -348,6 +374,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         RENAME_MENTIONS_COMMAND,
         ({ trigger, value, newValue, focus }) => {
           let renamed = false;
+          restoreSelection();
           const mentions = $nodesOfType(BeautifulMentionNode);
           for (const mention of mentions) {
             const sameTrigger = mention.getTrigger() === trigger;
@@ -358,7 +385,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             }
           }
           if (renamed && !focus) {
-            $setSelection(null);
+            archiveSelection();
           }
           return renamed;
         },
@@ -378,6 +405,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     creatable,
     isEditorFocused,
     insertTextAsMention,
+    restoreSelection,
+    archiveSelection,
   ]);
 
   return (

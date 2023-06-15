@@ -93,7 +93,7 @@ export function getSelectionInfo(triggers: string[]) {
 
   const [node] = nodes;
   const isTextNode = $isTextNode(node) && node.isSimpleText();
-  const offset = anchor.offset || 0;
+  const offset = anchor.type === "text" ? anchor.offset : 0;
   const textContent = node.getTextContent();
   const cursorAtStartOfNode = offset === 0;
   const cursorAtEndOfNode = textContent.length === offset;
