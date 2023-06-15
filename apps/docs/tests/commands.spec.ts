@@ -117,4 +117,17 @@ test.describe("Insert mention", () => {
       "Hey [@John], the task is [#urgent] and [due:tomorrow] [#work]"
     );
   });
+
+  test("should insert multiple mention one after the other", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      initialValue: "",
+      commandFocus: false,
+    });
+    await page.getByText("Insert Mention").click();
+    await utils.sleep(100);
+    await page.getByText("Insert Mention").click();
+    await utils.hasText("[#work] [#work]");
+  });
 });
