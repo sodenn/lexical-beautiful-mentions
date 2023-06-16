@@ -37,7 +37,7 @@
     "npm-run-all": "4.1.5",
     "rimraf": "5.0.1",
     "tsconfig": "*",
-    "vitest": "0.32.0"
+    "vitest": "0.32.2"
   },
   "peerDependencies": {
     "@lexical/react": ">=0.11.0",
