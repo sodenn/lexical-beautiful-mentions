@@ -23,6 +23,7 @@ import {
 } from "lexical";
 import React, { useCallback, useMemo, useState } from "react";
 import { $isBeautifulMentionNode } from "./MentionNode";
+import { getNextSibling, getPreviousSibling } from "./mention-utils";
 
 interface BeautifulMentionComponentProps {
   mention: string;
@@ -74,7 +75,7 @@ export default function BeautifulMentionComponent(
         return false;
       }
       let handled = false;
-      const nodeToSelect = node.getPreviousSibling();
+      const nodeToSelect = getPreviousSibling(node);
       if ($isElementNode(nodeToSelect)) {
         nodeToSelect.selectEnd();
         handled = true;
@@ -106,7 +107,7 @@ export default function BeautifulMentionComponent(
         return false;
       }
       let handled = false;
-      const nodeToSelect = node.getNextSibling();
+      const nodeToSelect = getNextSibling(node);
       if ($isElementNode(nodeToSelect)) {
         nodeToSelect.selectStart();
         handled = true;
