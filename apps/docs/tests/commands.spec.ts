@@ -80,6 +80,28 @@ test.describe("Remove mentions", () => {
       await expect(utils.editor).toBeFocused();
     }
   });
+
+  test("should also remove trailing spaces when removing a mention ", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      initialValue: "Hey @John",
+    });
+    await page.getByText("Remove Mention").click();
+    await utils.countMentions(0);
+    await utils.hasText("Hey");
+  });
+
+  test("should prevent double spaces when removing a mention", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      initialValue: "The #task is important",
+    });
+    await page.getByText("Remove Mention").click();
+    await utils.countMentions(0);
+    await utils.hasText("The is important");
+  });
 });
 
 test.describe("Insert mention", () => {

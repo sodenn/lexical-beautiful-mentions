@@ -8,6 +8,7 @@ import {
   $createRangeSelection,
   $createTextNode,
   $getSelection,
+  $isTextNode,
   $nodesOfType,
   $setSelection,
   BLUR_COMMAND,
@@ -36,6 +37,8 @@ import {
 } from "./MentionNode";
 import {
   checkForMentions,
+  getNextSibling,
+  getPreviousSibling,
   getSelectionInfo,
   insertMention,
   isWordChar,
@@ -352,16 +355,24 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             const sameTrigger = mention.getTrigger() === trigger;
             const sameValue = mention.getValue() === value;
             if (sameTrigger && (sameValue || !value)) {
-              const previous = mention.getPreviousSibling();
-              const next = mention.getNextSibling();
+              const prev = getPreviousSibling(mention);
+              const next = getNextSibling(mention);
               mention.remove();
               removed = true;
               // Prevent double spaces
               if (
-                previous?.getTextContent().endsWith(" ") &&
+                prev?.getTextContent().endsWith(" ") &&
                 next?.getTextContent().startsWith(" ")
               ) {
-                previous.setTextContent(previous.getTextContent().slice(0, -1));
+                prev.setTextContent(prev.getTextContent().slice(0, -1));
+              }
+              // Remove trailing space
+              if (
+                next === null &&
+                $isTextNode(prev) &&
+                prev.getTextContent().endsWith(" ")
+              ) {
+                prev.setTextContent(prev.getTextContent().trimEnd());
               }
             }
           }

@@ -101,8 +101,8 @@ export function getSelectionInfo(triggers: string[]) {
   const charAfterCursor = textContent.charAt(offset);
   const wordCharBeforeCursor = isWordChar(charBeforeCursor, triggers);
   const wordCharAfterCursor = isWordChar(charAfterCursor, triggers);
-  const prevNode = node.getPreviousSibling();
-  const nextNode = node.getNextSibling();
+  const prevNode = getPreviousSibling(node);
+  const nextNode = getNextSibling(node);
 
   return {
     node,
@@ -180,4 +180,23 @@ export function insertMention(
   }
 
   return true;
+}
+
+export function getNextSibling(node: LexicalNode) {
+  let nextSibling = node.getNextSibling();
+  while (nextSibling !== null && nextSibling.getType() === "zeroWidth") {
+    nextSibling = nextSibling.getNextSibling();
+  }
+  return nextSibling;
+}
+
+export function getPreviousSibling(node: LexicalNode) {
+  let previousSibling = node.getPreviousSibling();
+  while (
+    previousSibling !== null &&
+    previousSibling.getType() === "zeroWidth"
+  ) {
+    previousSibling = previousSibling.getPreviousSibling();
+  }
+  return previousSibling;
 }

@@ -96,8 +96,12 @@ export class TestUtils {
   async countMentions(count: number) {
     const plaintext = await this.getPlaintext();
     const regex = /\[[^[\]]+]/g;
-    const matchCount = plaintext.match(regex).length;
-    await expect(matchCount).toBe(count);
+    const match = plaintext.match(regex);
+    if (match) {
+      await expect(match.length).toBe(count);
+    } else {
+      await expect(match).toBeNull();
+    }
   }
 
   get editor() {
