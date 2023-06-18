@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.2
+
+### Patch Changes
+
+- faae1b3: fix(): remove trailing spaces when removing a mention
+- b4b2a01: fix(): make sure that the focus is removed when clicking next to the mention
+
 ## 0.1.1
 
 ### Patch Changes
