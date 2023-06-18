@@ -20,9 +20,11 @@ import {
   NodeKey,
   NodeSelection,
   RangeSelection,
+  SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import React, { useCallback, useMemo, useState } from "react";
 import { $isBeautifulMentionNode } from "./MentionNode";
+import { IS_IOS } from "./environment";
 import { getNextSibling, getPreviousSibling } from "./mention-utils";
 
 interface BeautifulMentionComponentProps {
@@ -154,6 +156,15 @@ export default function BeautifulMentionComponent(
     return false;
   }, [isFocused]);
 
+  // Make sure that the focus is removed when clicking next to the mention
+  const onSelectionChange = useCallback(() => {
+    if (IS_IOS && isSelected) {
+      setSelected(false);
+      return true;
+    }
+    return false;
+  }, [isSelected, setSelected]);
+
   React.useEffect(() => {
     let isMounted = true;
     const unregister = mergeRegister(
@@ -187,13 +198,26 @@ export default function BeautifulMentionComponent(
         onArrowRightPress,
         COMMAND_PRIORITY_LOW
       ),
-      editor.registerCommand(BLUR_COMMAND, onBlur, COMMAND_PRIORITY_LOW)
+      editor.registerCommand(BLUR_COMMAND, onBlur, COMMAND_PRIORITY_LOW),
+      editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        onSelectionChange,
+        COMMAND_PRIORITY_LOW
+      )
     );
     return () => {
       isMounted = false;
       unregister();
     };
-  }, [editor, onArrowLeftPress, onArrowRightPress, onClick, onBlur, onDelete]);
+  }, [
+    editor,
+    onArrowLeftPress,
+    onArrowRightPress,
+    onClick,
+    onBlur,
+    onDelete,
+    onSelectionChange,
+  ]);
 
   return (
     <span ref={ref} className={classNameFinal} data-beautiful-mention={mention}>
