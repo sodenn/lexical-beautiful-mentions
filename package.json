@@ -30,5 +30,5 @@
   "engines": {
     "node": "20.3.0"
   },
-  "packageManager": "npm@9.7.1"
+  "packageManager": "npm@9.7.2"
 }
