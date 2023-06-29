@@ -12,7 +12,7 @@ export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
 }
 
 export interface BeautifulMentionsMenuItemProps
-  extends ComponentPropsWithRef<"li"> {
+  extends ComponentPropsWithRef<any> {
   /**
    * If `true`, the menu item is selected.
    */
