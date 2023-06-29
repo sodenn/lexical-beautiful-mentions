@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.3
+
+### Patch Changes
+
+- bb9d4c7: feat(): add label to BeautifulMentionsMenuItemProps
+
 ## 0.1.2
 
 ### Patch Changes
