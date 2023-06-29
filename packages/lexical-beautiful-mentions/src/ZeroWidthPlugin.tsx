@@ -5,12 +5,17 @@ import {
   $getSelection,
   $isDecoratorNode,
   $isRangeSelection,
+  $nodesOfType,
   COMMAND_PRIORITY_HIGH,
   KEY_DOWN_COMMAND,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import React from "react";
-import { $createZeroWidthNode, $isZeroWidthNode } from "./ZeroWidthNode";
+import {
+  $createZeroWidthNode,
+  $isZeroWidthNode,
+  ZeroWidthNode,
+} from "./ZeroWidthNode";
 
 /**
  * This plugin serves as a patch to fix an incorrect cursor position n Safari.
@@ -29,6 +34,7 @@ export function ZeroWidthPlugin() {
           const root = $getRoot();
           const last = root.getLastDescendant();
           if ($isDecoratorNode(last)) {
+            $nodesOfType(ZeroWidthNode).forEach((node) => node.remove());
             last.insertAfter($createZeroWidthNode());
           }
         });
