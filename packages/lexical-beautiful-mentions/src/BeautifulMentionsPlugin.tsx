@@ -452,6 +452,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     role="menuitem"
                     aria-selected={selectedIndex === i}
                     aria-label={`Choose ${option.label}`}
+                    label={option.label}
                     onClick={() => {
                       setHighlightedIndex(i);
                       selectOptionAndCleanUp(option);

@@ -2,8 +2,8 @@ import { BeautifulMentionsMenuProps } from "lexical-beautiful-mentions";
 import { forwardRef } from "react";
 import Fade from "./Fade";
 
-const Menu = forwardRef<HTMLElement, BeautifulMentionsMenuProps>(
-  ({ open, loading, ...props }, ref: any) => {
+const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
+  ({ open, loading, ...props }, ref) => {
     if (loading) {
       return (
         <Fade>
