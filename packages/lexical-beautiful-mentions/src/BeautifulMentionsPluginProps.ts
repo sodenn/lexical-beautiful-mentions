@@ -1,7 +1,6 @@
-import { DetailedHTMLProps, ElementType } from "react";
+import { ComponentPropsWithRef, ElementType } from "react";
 
-export interface BeautifulMentionsMenuProps
-  extends DetailedHTMLProps<any, any> {
+export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   /**
    * If `true`, the menu is open.
    */
@@ -13,11 +12,15 @@ export interface BeautifulMentionsMenuProps
 }
 
 export interface BeautifulMentionsMenuItemProps
-  extends DetailedHTMLProps<any, any> {
+  extends ComponentPropsWithRef<"li"> {
   /**
    * If `true`, the menu item is selected.
    */
   selected: boolean;
+  /**
+   * The label of the menu item.
+   */
+  label: string;
 }
 
 interface BeautifulMentionsProps {
