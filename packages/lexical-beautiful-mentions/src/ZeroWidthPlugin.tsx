@@ -13,7 +13,7 @@ import React from "react";
 import { $createZeroWidthNode, $isZeroWidthNode } from "./ZeroWidthNode";
 
 /**
- * This plugin serves as a patch to fix an incorrect cursor position n Safari.
+ * This plugin serves as a patch to fix an incorrect cursor position in Safari.
  * It also ensures that the cursor is correctly aligned with the line height in
  * all browsers.
  * {@link https://github.com/facebook/lexical/issues/4487}.
