@@ -10,8 +10,8 @@
 
 A mentions plugin for the lexical editor. lexical is an extendable text editor for the web build by Meta. While the lexical playground offers a basic mentions plugin for demo purposes, this plugin is more advanced and offers the following features:
 
-- **Customizable triggers**: You can set up different characters or words that interact as triggers. For example, you could set "@" as the trigger for mentioning users, "#" for mentioning topics, or "due:" for mentioning due dates.
-- **Editing mentions outside of the editor**: You can programmatically insert, delete, or rename mentions from outside of the editor textbox using a React hook.
+- **Customizable triggers**: Use characters, words or regular expressions as triggers for mentions.
+- **Editing mentions outside of the editor**: Programmatically insert, delete, or rename mentions via the `useBeautifulMentions` hook.
 - **Customizable mention style**: You can change the look of the mentions via the editor theme to match the style of your application.
 - **Automatic spacing**: The plugin automatically adds spaces around the mentions, which makes it easier for the user to continue typing.
 - **Adding new mentions**: You can allow users to create new mentions that are not in the suggestion list.
@@ -90,7 +90,7 @@ return (
 
 <img src="resources/screenshot2.png" width="500"/><br>
 ```tsx
-const Menu = forwardRef<
+const CustomMenu = forwardRef<
   HTMLElement, 
   BeautifulMentionsMenuProps
 >(({ open, loading, ...props }, ref) => (
@@ -101,7 +101,7 @@ const Menu = forwardRef<
   />
 ));
 
-const MenuItem = forwardRef<
+const CustomMenuItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsMenuItemProps
 >(({ selected, ...props }, ref) => (
