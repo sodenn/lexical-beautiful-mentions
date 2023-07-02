@@ -12,6 +12,14 @@
     "url": "https://github.com/sodenn/lexical-beautiful-mentions.git",
     "directory": "packages/lexical-beautiful-mentions"
   },
+  "keywords": [
+    "mentions",
+    "react",
+    "wysiwyg",
+    "editor",
+    "lexical",
+    "plugin"
+  ],
   "homepage": "https://github.com/sodenn/lexical-beautiful-mentions",
   "author": {
     "name": "sodenn",
