@@ -21,7 +21,7 @@
     "@changesets/cli": "2.26.2",
     "@types/dompurify": "3.0.2",
     "eslint-config-custom": "*",
-    "prettier": "2.8.8",
+    "prettier": "3.0.0",
     "prettier-plugin-organize-imports": "3.2.2",
     "prettier-plugin-tailwindcss": "0.3.0",
     "turbo": "1.10.7",
