@@ -1,6 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $nodesOfType } from "lexical";
 import { useCallback } from "react";
+import { BeautifulMentionNode } from "./MentionNode";
 import {
   HasMentions,
   INSERT_MENTION_COMMAND,
@@ -11,8 +12,7 @@ import {
   RENAME_MENTIONS_COMMAND,
   RemoveMentions,
   RenameMentions,
-} from "./MentionCommands";
-import { BeautifulMentionNode } from "./MentionNode";
+} from "./mention-commands";
 
 /**
  * Hook that provides access to the BeautifulMentionsPlugin. It allows you to insert,

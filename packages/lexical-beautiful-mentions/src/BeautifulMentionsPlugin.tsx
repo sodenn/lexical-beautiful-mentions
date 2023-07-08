@@ -6,9 +6,7 @@ import {
 import { mergeRegister } from "@lexical/utils";
 import {
   $createRangeSelection,
-  $createTextNode,
   $getSelection,
-  $isTextNode,
   $nodesOfType,
   $setSelection,
   BLUR_COMMAND,
@@ -25,24 +23,20 @@ import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import { LexicalTypeaheadMenuPlugin } from "./LexicalTypeaheadMenuPlugin";
 import {
+  $createBeautifulMentionNode,
+  BeautifulMentionNode,
+} from "./MentionNode";
+import { handleKeydown } from "./handle-keydown";
+import {
   INSERT_MENTION_COMMAND,
   OPEN_MENTIONS_MENU_COMMAND,
   REMOVE_MENTIONS_COMMAND,
   RENAME_MENTIONS_COMMAND,
-} from "./MentionCommands";
-import {
-  $createBeautifulMentionNode,
-  $isBeautifulMentionNode,
-  BeautifulMentionNode,
-} from "./MentionNode";
-import {
-  checkForMentions,
-  getNextSibling,
-  getPreviousSibling,
-  getSelectionInfo,
   insertMention,
-  isWordChar,
-} from "./mention-utils";
+  removeMention,
+  renameMention,
+} from "./mention-commands";
+import { checkForMentions, getSelectionInfo } from "./mention-utils";
 import { useDebounce } from "./useDebounce";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
@@ -254,62 +248,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return mergeRegister(
       editor.registerCommand(
         KEY_DOWN_COMMAND,
-        (event) => {
-          const { key, metaKey, ctrlKey } = event;
-          const simpleKey = key.length === 1;
-          const isTrigger = triggers.some((trigger) => key === trigger);
-          const wordChar = isWordChar(key, triggers);
-          const selectionInfo = getSelectionInfo(triggers);
-          if (
-            !simpleKey ||
-            (!wordChar && !isTrigger) ||
-            !selectionInfo ||
-            metaKey ||
-            ctrlKey
-          ) {
-            return false;
-          }
-          const {
-            node,
-            offset,
-            isTextNode,
-            textContent,
-            prevNode,
-            nextNode,
-            wordCharAfterCursor,
-            cursorAtStartOfNode,
-            cursorAtEndOfNode,
-          } = selectionInfo;
-          if (
-            isTextNode &&
-            cursorAtStartOfNode &&
-            $isBeautifulMentionNode(prevNode)
-          ) {
-            node.insertBefore($createTextNode(" "));
-            return true;
-          }
-          if (
-            isTextNode &&
-            cursorAtEndOfNode &&
-            $isBeautifulMentionNode(nextNode)
-          ) {
-            node.insertAfter($createTextNode(" "));
-            return true;
-          }
-          if (isTextNode && isTrigger && wordCharAfterCursor) {
-            const content =
-              textContent.substring(0, offset) +
-              " " +
-              textContent.substring(offset);
-            node.setTextContent(content);
-            return true;
-          }
-          if ($isBeautifulMentionNode(node) && nextNode === null) {
-            node.insertAfter($createTextNode(" "));
-            return true;
-          }
-          return false;
-        },
+        (event) => handleKeydown(event, triggers),
         COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
@@ -337,45 +276,19 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         INSERT_MENTION_COMMAND,
         ({ trigger, value, focus = true }) => {
           setSelection();
-          const result = insertMention(triggers, trigger, value);
+          const inserted = insertMention(triggers, trigger, value);
           if (!focus) {
             archiveSelection();
           }
-          return result;
+          return inserted;
         },
         COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
         REMOVE_MENTIONS_COMMAND,
         ({ trigger, value, focus }) => {
-          let removed = false;
           setSelection();
-          const mentions = $nodesOfType(BeautifulMentionNode);
-          for (const mention of mentions) {
-            const sameTrigger = mention.getTrigger() === trigger;
-            const sameValue = mention.getValue() === value;
-            if (sameTrigger && (sameValue || !value)) {
-              const prev = getPreviousSibling(mention);
-              const next = getNextSibling(mention);
-              mention.remove();
-              removed = true;
-              // Prevent double spaces
-              if (
-                prev?.getTextContent().endsWith(" ") &&
-                next?.getTextContent().startsWith(" ")
-              ) {
-                prev.setTextContent(prev.getTextContent().slice(0, -1));
-              }
-              // Remove trailing space
-              if (
-                next === null &&
-                $isTextNode(prev) &&
-                prev.getTextContent().endsWith(" ")
-              ) {
-                prev.setTextContent(prev.getTextContent().trimEnd());
-              }
-            }
-          }
+          const removed = removeMention(trigger, value);
           if (removed && !focus) {
             archiveSelection();
           }
@@ -385,18 +298,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ),
       editor.registerCommand(
         RENAME_MENTIONS_COMMAND,
-        ({ trigger, value, newValue, focus }) => {
-          let renamed = false;
+        ({ trigger, newValue, value, focus }) => {
           setSelection();
-          const mentions = $nodesOfType(BeautifulMentionNode);
-          for (const mention of mentions) {
-            const sameTrigger = mention.getTrigger() === trigger;
-            const sameValue = mention.getValue() === value;
-            if (sameTrigger && (sameValue || !value)) {
-              renamed = true;
-              mention.setValue(newValue);
-            }
-          }
+          const renamed = renameMention(trigger, newValue, value);
           if (renamed && !focus) {
             archiveSelection();
           }
