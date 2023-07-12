@@ -28,14 +28,14 @@
   },
   "devDependencies": {
     "@babel/core": "7.22.8",
-    "@playwright/test": "1.35.1",
+    "@playwright/test": "1.36.0",
     "@types/node": "18.16.19",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
     "autoprefixer": "10.4.14",
     "eslint-config-custom": "*",
     "eslint-config-next": "13.4.8",
-    "playwright": "1.35.1",
+    "playwright": "1.36.0",
     "postcss": "8.4.25",
     "tsconfig": "*"
   }
