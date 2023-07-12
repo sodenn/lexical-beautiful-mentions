@@ -1,14 +1,10 @@
 import { MenuTextMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import {
-  $createTextNode,
   $getSelection,
-  $isParagraphNode,
   $isRangeSelection,
   $isTextNode,
   LexicalNode,
-  TextNode,
 } from "lexical";
-import { $createBeautifulMentionNode } from "./MentionNode";
 
 const PUNCTUATION = "\\.,\\*\\?\\$\\|#{}\\(\\)\\^\\[\\]\\\\/!%'\"~=<>_:;\\s";
 
@@ -117,69 +113,6 @@ export function getSelectionInfo(triggers: string[]) {
     wordCharBeforeCursor,
     wordCharAfterCursor,
   };
-}
-
-export function insertMention(
-  triggers: string[],
-  trigger: string,
-  value?: string
-) {
-  const selectionInfo = getSelectionInfo(triggers);
-  if (!selectionInfo) {
-    return false;
-  }
-
-  const {
-    node,
-    offset,
-    selection,
-    wordCharBeforeCursor,
-    wordCharAfterCursor,
-    cursorAtStartOfNode,
-    cursorAtEndOfNode,
-    prevNode,
-    nextNode,
-  } = selectionInfo;
-
-  // Insert a mention node or a text node with the trigger to open the mention menu.
-  const mentionNode = value
-    ? $createBeautifulMentionNode(trigger, value)
-    : $createTextNode(trigger);
-
-  // Insert a mention with a leading space if the node at the cursor is not a text node.
-  if (!($isParagraphNode(node) && offset === 0) && !$isTextNode(node)) {
-    selection.insertNodes([$createTextNode(" "), mentionNode]);
-    return true;
-  }
-
-  let spaceNode: TextNode | null = null;
-  const nodes: LexicalNode[] = [];
-  if (
-    wordCharBeforeCursor ||
-    (cursorAtStartOfNode && prevNode !== null && !$isTextNode(prevNode))
-  ) {
-    nodes.push($createTextNode(" "));
-  }
-  nodes.push(mentionNode);
-  if (
-    wordCharAfterCursor ||
-    (cursorAtEndOfNode && nextNode !== null && !$isTextNode(nextNode))
-  ) {
-    spaceNode = $createTextNode(" ");
-    nodes.push(spaceNode);
-  }
-
-  selection.insertNodes(nodes);
-
-  if (nodes.length > 1) {
-    if ($isTextNode(mentionNode)) {
-      mentionNode.select();
-    } else if (spaceNode) {
-      spaceNode.selectPrevious();
-    }
-  }
-
-  return true;
 }
 
 export function getNextSibling(node: LexicalNode) {
