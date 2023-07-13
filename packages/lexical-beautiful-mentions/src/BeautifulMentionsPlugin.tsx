@@ -26,6 +26,7 @@ import {
   $createBeautifulMentionNode,
   BeautifulMentionNode,
 } from "./MentionNode";
+import TriggerMenuPlugin from "./TriggerMenuPlugin";
 import { handleKeydown } from "./handle-keydown";
 import {
   INSERT_MENTION_COMMAND,
@@ -327,55 +328,64 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   ]);
 
   return (
-    <LexicalTypeaheadMenuPlugin<MenuOption>
-      onQueryChange={setQueryString}
-      onSelectOption={handleSelectOption}
-      triggerFn={checkForMentionMatch}
-      options={options}
-      anchorClassName={menuAnchorClassName}
-      onClose={handleClose}
-      menuRenderFn={(
-        anchorElementRef,
-        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
-      ) =>
-        anchorElementRef.current
-          ? ReactDOM.createPortal(
-              <MenuComponent
-                loading={loading}
-                open={open}
-                role="menu"
-                aria-label="Choose a mention"
-                aria-hidden={!open}
-              >
-                {options.map((option, i) => (
-                  <MenuItemComponent
-                    key={option.key}
-                    tabIndex={-1}
-                    selected={selectedIndex === i}
-                    ref={option.setRefElement}
-                    role="menuitem"
-                    aria-selected={selectedIndex === i}
-                    aria-label={`Choose ${option.label}`}
-                    label={option.label}
-                    onClick={() => {
-                      setHighlightedIndex(i);
-                      selectOptionAndCleanUp(option);
-                    }}
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                    }}
-                    onMouseEnter={() => {
-                      setHighlightedIndex(i);
-                    }}
-                  >
-                    {option.label}
-                  </MenuItemComponent>
-                ))}
-              </MenuComponent>,
-              anchorElementRef.current
-            )
-          : null
-      }
-    />
+    <>
+      <LexicalTypeaheadMenuPlugin<MenuOption>
+        onQueryChange={setQueryString}
+        onSelectOption={handleSelectOption}
+        triggerFn={checkForMentionMatch}
+        options={options}
+        anchorClassName={menuAnchorClassName}
+        onClose={handleClose}
+        menuRenderFn={(
+          anchorElementRef,
+          { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
+        ) =>
+          anchorElementRef.current
+            ? ReactDOM.createPortal(
+                <MenuComponent
+                  loading={loading}
+                  open={open}
+                  role="menu"
+                  aria-label="Choose a mention"
+                  aria-hidden={!open}
+                >
+                  {options.map((option, i) => (
+                    <MenuItemComponent
+                      key={option.key}
+                      tabIndex={-1}
+                      selected={selectedIndex === i}
+                      ref={option.setRefElement}
+                      role="menuitem"
+                      aria-selected={selectedIndex === i}
+                      aria-label={`Choose ${option.label}`}
+                      label={option.label}
+                      onClick={() => {
+                        setHighlightedIndex(i);
+                        selectOptionAndCleanUp(option);
+                      }}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                      }}
+                      onMouseEnter={() => {
+                        setHighlightedIndex(i);
+                      }}
+                    >
+                      {option.label}
+                    </MenuItemComponent>
+                  ))}
+                </MenuComponent>,
+                anchorElementRef.current
+              )
+            : null
+        }
+      />
+      <TriggerMenuPlugin
+        triggers={triggers}
+        mentionsMenuOpen={open}
+        menuAnchorClassName={menuAnchorClassName}
+        menuComponent={props.menuComponent}
+        menuItemComponent={props.menuItemComponent}
+      />
+    </>
   );
 }
