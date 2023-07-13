@@ -21,12 +21,12 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
-import { LexicalTypeaheadMenuPlugin } from "./LexicalTypeaheadMenuPlugin";
 import {
   $createBeautifulMentionNode,
   BeautifulMentionNode,
 } from "./MentionNode";
 import TriggerMenuPlugin from "./TriggerMenuPlugin";
+import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { handleKeydown } from "./handle-keydown";
 import {
   INSERT_MENTION_COMMAND,
@@ -329,7 +329,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
   return (
     <>
-      <LexicalTypeaheadMenuPlugin<MenuOption>
+      <TypeaheadMenuPlugin<MenuOption>
         onQueryChange={setQueryString}
         onSelectOption={handleSelectOption}
         triggerFn={checkForMentionMatch}

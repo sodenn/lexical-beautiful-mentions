@@ -116,11 +116,11 @@ function ComboboxPlugin<TOption extends MenuOption>(
   } = props;
   const [editor] = useLexicalComposerContext();
   const [resolution, setResolution] = useState<MenuResolution | null>(null);
-  const anchorElementRef = useMenuAnchorRef(
+  const anchorElementRef = useMenuAnchorRef({
     resolution,
     setResolution,
-    anchorClassName
-  );
+    className: anchorClassName,
+  });
 
   const closeCombobox = useCallback(() => {
     setResolution(null);

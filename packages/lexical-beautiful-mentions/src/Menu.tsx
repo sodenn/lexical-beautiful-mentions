@@ -41,8 +41,12 @@ export type MenuResolution = {
   getRect: () => DOMRect;
 };
 
-export const PUNCTUATION =
-  "\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%'\"~=<>_:;";
+type UseMenuAnchorRefOptions = {
+  resolution: MenuResolution | null;
+  setResolution: (r: MenuResolution | null) => void;
+  className?: string;
+  menuVisible?: boolean;
+};
 
 export class MenuOption {
   key: string;
@@ -257,6 +261,7 @@ export function Menu<TOption extends MenuOption>({
   menuRenderFn,
   onSelectOption,
   shouldSplitNodeWithQuery = false,
+  onMenuVisibilityChange,
 }: {
   close: () => void;
   editor: LexicalEditor;
@@ -271,9 +276,10 @@ export function Menu<TOption extends MenuOption>({
     closeMenu: () => void,
     matchingString: string
   ) => void;
+  onMenuVisibilityChange?: (visible: boolean) => void;
 }): JSX.Element | null {
   const [selectedIndex, setHighlightedIndex] = useState<null | number>(null);
-
+  const [menuVisible, setMenuVisible] = useState(false);
   const matchingString = resolution.match && resolution.match.matchingString;
 
   useEffect(() => {
@@ -461,31 +467,42 @@ export function Menu<TOption extends MenuOption>({
     [selectOptionAndCleanUp, selectedIndex, options]
   );
 
-  return menuRenderFn(
+  const menu = menuRenderFn(
     anchorElementRef,
     listItemProps,
     resolution.match ? resolution.match.matchingString : ""
   );
+
+  useLayoutEffect(() => {
+    if (onMenuVisibilityChange && menu !== null && !menuVisible) {
+      onMenuVisibilityChange(true);
+      setMenuVisible(true);
+    } else if (onMenuVisibilityChange && menu === null && menuVisible) {
+      onMenuVisibilityChange(false);
+      setMenuVisible(false);
+    }
+  }, [menu, menuVisible, onMenuVisibilityChange]);
+
+  return menu;
 }
 
 export function useMenuAnchorRef(
-  resolution: MenuResolution | null,
-  setResolution: (r: MenuResolution | null) => void,
-  className?: string
+  opt: UseMenuAnchorRefOptions
 ): MutableRefObject<HTMLElement> {
+  const { resolution, setResolution, className, menuVisible } = opt;
   const [editor] = useLexicalComposerContext();
   const anchorElementRef = useRef<HTMLElement>(document.createElement("div"));
   const positionMenu = useCallback(() => {
     const rootElement = editor.getRootElement();
     const containerDiv = anchorElementRef.current;
-
     const menuEle = containerDiv.firstChild as Element;
+
     if (rootElement !== null && resolution !== null) {
-      const { left, top, width, height } = resolution.getRect();
+      const { left, top, height } = resolution.getRect();
       containerDiv.style.top = `${top + window.pageYOffset}px`;
       containerDiv.style.left = `${left + window.pageXOffset}px`;
       containerDiv.style.height = `${height}px`;
-      // containerDiv.style.width = `${width}px`;
+
       if (menuEle !== null) {
         const menuRect = menuEle.getBoundingClientRect();
         const menuHeight = menuRect.height;
@@ -511,7 +528,7 @@ export function useMenuAnchorRef(
       }
 
       if (!containerDiv.isConnected) {
-        if (className != null) {
+        if (className) {
           containerDiv.className = className;
         }
         containerDiv.setAttribute("aria-label", "Typeahead menu");
@@ -528,7 +545,7 @@ export function useMenuAnchorRef(
 
   useEffect(() => {
     const rootElement = editor.getRootElement();
-    if (resolution !== null) {
+    if (resolution !== null && menuVisible) {
       positionMenu();
       return () => {
         if (rootElement !== null) {
@@ -541,7 +558,7 @@ export function useMenuAnchorRef(
         }
       };
     }
-  }, [editor, positionMenu, resolution]);
+  }, [editor, positionMenu, resolution, menuVisible]);
 
   const onVisibilityChange = useCallback(
     (isInView: boolean) => {
