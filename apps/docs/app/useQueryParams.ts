@@ -10,6 +10,7 @@ interface QueryParams {
   space: string;
   new: string;
   blur: string;
+  triggers: string;
 }
 
 export default function useQueryParams() {

@@ -54,6 +54,7 @@ export default function Editor() {
     allowSpaces,
     creatable,
     insertOnBlur,
+    showTriggersShortcut,
   } = useConfiguration();
 
   const handleChange = useCallback((editorState: EditorState) => {
@@ -101,6 +102,11 @@ export default function Editor() {
             allowSpaces={allowSpaces}
             creatable={creatable}
             insertOnBlur={insertOnBlur}
+            showTriggersShortcut={
+              showTriggersShortcut
+                ? (e) => e.ctrlKey && e.code === "Space"
+                : undefined
+            }
           />
         </div>
         <MentionsToolbar />

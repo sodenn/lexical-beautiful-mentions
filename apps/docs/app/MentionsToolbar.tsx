@@ -19,11 +19,13 @@ export default function MentionsToolbar() {
   } = useBeautifulMentions();
   const {
     asynchronous,
+    showTriggersShortcut,
     allowSpaces,
     creatable,
     insertOnBlur,
     commandFocus,
     setAsynchronous,
+    setShowTriggersShortcut,
     setAllowSpaces,
     setCreatable,
     setInsertOnBlur,
@@ -54,6 +56,13 @@ export default function MentionsToolbar() {
       setAllowSpaces(event.target.checked);
     },
     [setAllowSpaces]
+  );
+
+  const handleShowTriggersChange: CheckboxProps["onChange"] = useCallback(
+    (event) => {
+      setShowTriggersShortcut(event.target.checked);
+    },
+    [setShowTriggersShortcut]
   );
 
   const handleCreatableChange: CheckboxProps["onChange"] = useCallback(
@@ -121,6 +130,12 @@ export default function MentionsToolbar() {
           helpText="The mention will be inserted when the editor loses the focus."
           checked={insertOnBlur}
           onChange={handleInsertOnBlurChange}
+        />
+        <Checkbox
+          label="showTriggersShortcut"
+          helpText="Show the available triggers when ctrl+space is pressed."
+          checked={showTriggersShortcut}
+          onChange={handleShowTriggersChange}
         />
         <hr className="my-1 h-px border-0 bg-gray-300 dark:bg-gray-600 sm:col-span-2" />
         <Checkbox

@@ -69,6 +69,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
     menuAnchorClassName,
+    showTriggersShortcut,
   } = props;
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
@@ -379,13 +380,16 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             : null
         }
       />
-      <TriggerMenuPlugin
-        triggers={triggers}
-        mentionsMenuOpen={open}
-        menuAnchorClassName={menuAnchorClassName}
-        menuComponent={props.menuComponent}
-        menuItemComponent={props.menuItemComponent}
-      />
+      {showTriggersShortcut && (
+        <TriggerMenuPlugin
+          triggers={triggers}
+          mentionsMenuOpen={open}
+          menuAnchorClassName={menuAnchorClassName}
+          menuComponent={props.menuComponent}
+          menuItemComponent={props.menuItemComponent}
+          showTriggersShortcut={showTriggersShortcut}
+        />
+      )}
     </>
   );
 }

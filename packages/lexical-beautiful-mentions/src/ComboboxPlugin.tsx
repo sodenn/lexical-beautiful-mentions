@@ -153,7 +153,6 @@ function ComboboxPlugin<TOption extends MenuOption>(
           ];
           if (open && !ignoredKeys.includes(event.code)) {
             closeCombobox();
-            return true;
           }
           return false;
         },
@@ -163,7 +162,7 @@ function ComboboxPlugin<TOption extends MenuOption>(
         BLUR_COMMAND,
         () => {
           closeCombobox();
-          return true;
+          return false;
         },
         COMMAND_PRIORITY_LOW
       )

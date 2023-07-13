@@ -57,6 +57,10 @@ interface BeautifulMentionsProps {
    * @default true
    */
   insertOnBlur?: boolean;
+  /**
+   * If `true`, all available mention triggers will be shown when the shortcut is pressed.
+   */
+  showTriggersShortcut?: (event: KeyboardEvent) => boolean;
 }
 
 export interface BeautifulMentionsSearchProps extends BeautifulMentionsProps {
