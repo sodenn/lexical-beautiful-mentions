@@ -20,12 +20,14 @@ interface Configuration
   autoFocus: "rootStart" | "rootEnd" | "none";
   asynchronous: boolean;
   commandFocus: boolean;
-  showTriggersShortcut: boolean;
+  showTriggers: boolean;
+  showMentionsOnDelete: boolean;
   setAsynchronous: (asynchronous: boolean) => void;
   setAllowSpaces: (allowSpaces: boolean) => void;
   setCreatable: (creatable: boolean) => void;
   setInsertOnBlur: (insertOnBlur: boolean) => void;
-  setShowTriggersShortcut: (showTriggersShortcut: boolean) => void;
+  setShowTriggers: (showTriggers: boolean) => void;
+  setShowMentionsOnDelete: (showTriggers: boolean) => void;
 }
 
 const ConfigurationCtx = createContext<Configuration>(undefined);
@@ -42,8 +44,11 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const [insertOnBlur, _setInsertOnBlur] = useState(
     getQueryParam("blur") === "true"
   );
-  const [showTriggersShortcut, _setShowTriggersShortcut] = useState(
+  const [showTriggers, _setShowTriggersShortcut] = useState(
     getQueryParam("triggers") === "true"
+  );
+  const [showMentionsOnDelete, _setShowMentionsOnDelete] = useState(
+    getQueryParam("mentions") === "true"
   );
   const commandFocus = getQueryParam("cf") !== "false";
   const focusParam = getQueryParam("focus");
@@ -66,10 +71,18 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     [updateQueryParam]
   );
 
-  const setShowTriggersShortcut = useCallback(
+  const setShowTriggers = useCallback(
     (showTriggersShortcut: boolean) => {
       _setShowTriggersShortcut(showTriggersShortcut);
       updateQueryParam("triggers", showTriggersShortcut);
+    },
+    [updateQueryParam]
+  );
+
+  const setShowMentionsOnDelete = useCallback(
+    (showMentionsOnDelete: boolean) => {
+      _setShowMentionsOnDelete(showMentionsOnDelete);
+      updateQueryParam("mentions", showMentionsOnDelete);
     },
     [updateQueryParam]
   );
@@ -104,7 +117,8 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         initialValue,
         autoFocus,
         asynchronous,
-        showTriggersShortcut,
+        showTriggers,
+        showMentionsOnDelete,
         allowSpaces,
         creatable,
         insertOnBlur,
@@ -112,7 +126,8 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         setAllowSpaces,
         setCreatable,
         setInsertOnBlur,
-        setShowTriggersShortcut,
+        setShowTriggers,
+        setShowMentionsOnDelete,
         commandFocus,
       }}
     >

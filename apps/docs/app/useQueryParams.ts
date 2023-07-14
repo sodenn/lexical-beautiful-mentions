@@ -11,6 +11,7 @@ interface QueryParams {
   new: string;
   blur: string;
   triggers: string;
+  mentions: string;
 }
 
 export default function useQueryParams() {

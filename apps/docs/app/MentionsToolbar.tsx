@@ -19,16 +19,18 @@ export default function MentionsToolbar() {
   } = useBeautifulMentions();
   const {
     asynchronous,
-    showTriggersShortcut,
+    showTriggers,
+    showMentionsOnDelete,
     allowSpaces,
     creatable,
     insertOnBlur,
     commandFocus,
     setAsynchronous,
-    setShowTriggersShortcut,
+    setShowTriggers,
     setAllowSpaces,
     setCreatable,
     setInsertOnBlur,
+    setShowMentionsOnDelete,
   } = useConfiguration();
 
   const handleRemoveMentions = useCallback(() => {
@@ -60,9 +62,16 @@ export default function MentionsToolbar() {
 
   const handleShowTriggersChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
-      setShowTriggersShortcut(event.target.checked);
+      setShowTriggers(event.target.checked);
     },
-    [setShowTriggersShortcut]
+    [setShowTriggers]
+  );
+
+  const handleShowMentionsOnDelete: CheckboxProps["onChange"] = useCallback(
+    (event) => {
+      setShowMentionsOnDelete(event.target.checked);
+    },
+    [setShowMentionsOnDelete]
   );
 
   const handleCreatableChange: CheckboxProps["onChange"] = useCallback(
@@ -132,10 +141,10 @@ export default function MentionsToolbar() {
           onChange={handleInsertOnBlurChange}
         />
         <Checkbox
-          label="showTriggersShortcut"
-          helpText="Show the available triggers when ctrl+space is pressed."
-          checked={showTriggersShortcut}
-          onChange={handleShowTriggersChange}
+          label="showMentionsOnDelete"
+          helpText="Shows the mention menu when the user deletes a mention."
+          checked={showMentionsOnDelete}
+          onChange={handleShowMentionsOnDelete}
         />
         <hr className="my-1 h-px border-0 bg-gray-300 dark:bg-gray-600 sm:col-span-2" />
         <Checkbox
@@ -143,6 +152,12 @@ export default function MentionsToolbar() {
           helpText="Simulate asynchronous loading of mention suggestions."
           checked={asynchronous}
           onChange={handleAsynchronousChange}
+        />
+        <Checkbox
+          label="showTriggers"
+          helpText="Shows the available triggers when ctrl+space is pressed."
+          checked={showTriggers}
+          onChange={handleShowTriggersChange}
         />
       </div>
     </>

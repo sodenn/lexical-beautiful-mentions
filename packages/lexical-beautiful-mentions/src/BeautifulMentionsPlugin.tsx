@@ -6,12 +6,14 @@ import {
 import { mergeRegister } from "@lexical/utils";
 import {
   $createRangeSelection,
+  $createTextNode,
   $getSelection,
   $nodesOfType,
   $setSelection,
   BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
   GridSelection,
+  KEY_BACKSPACE_COMMAND,
   KEY_DOWN_COMMAND,
   KEY_SPACE_COMMAND,
   NodeSelection,
@@ -23,6 +25,7 @@ import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import {
   $createBeautifulMentionNode,
+  $isBeautifulMentionNode,
   BeautifulMentionNode,
 } from "./MentionNode";
 import TriggerMenuPlugin from "./TriggerMenuPlugin";
@@ -69,7 +72,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
     menuAnchorClassName,
-    showTriggersShortcut,
+    showTriggers,
+    showMentionsOnDelete,
   } = props;
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
@@ -246,11 +250,41 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     }
   }, []);
 
+  const handleDeleteMention = useCallback(
+    (event: KeyboardEvent) => {
+      if (!showMentionsOnDelete) {
+        return false;
+      }
+      const info = getSelectionInfo(triggers);
+      if (info) {
+        const { node, prevNode, offset } = info;
+        const mentionNode = $isBeautifulMentionNode(node)
+          ? node
+          : $isBeautifulMentionNode(prevNode) && offset === 0
+          ? prevNode
+          : null;
+        if (mentionNode) {
+          const trigger = mentionNode.getTrigger();
+          mentionNode.replace($createTextNode(trigger));
+          event.preventDefault();
+          return true;
+        }
+      }
+      return false;
+    },
+    [triggers, showMentionsOnDelete]
+  );
+
   React.useEffect(() => {
     return mergeRegister(
       editor.registerCommand(
         KEY_DOWN_COMMAND,
         (event) => handleKeydown(event, triggers),
+        COMMAND_PRIORITY_LOW
+      ),
+      editor.registerCommand(
+        KEY_BACKSPACE_COMMAND,
+        handleDeleteMention,
         COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
@@ -326,6 +360,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertTextAsMention,
     setSelection,
     archiveSelection,
+    handleDeleteMention,
   ]);
 
   return (
@@ -380,14 +415,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             : null
         }
       />
-      {showTriggersShortcut && (
+      {showTriggers && (
         <TriggerMenuPlugin
           triggers={triggers}
           mentionsMenuOpen={open}
           menuAnchorClassName={menuAnchorClassName}
           menuComponent={props.menuComponent}
           menuItemComponent={props.menuItemComponent}
-          showTriggersShortcut={showTriggersShortcut}
+          showTriggers={showTriggers}
         />
       )}
     </>
