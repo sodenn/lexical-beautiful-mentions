@@ -36,7 +36,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
   const [editor] = useLexicalComposerContext();
   const options = useMemo(
     () => triggers.map((trigger) => new MenuOption(trigger)),
-    [triggers]
+    [triggers],
   );
   const [open, setOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
     (
       selectedOption: MenuOption,
       nodeToReplace: TextNode | null,
-      closeMenu: () => void
+      closeMenu: () => void,
     ) => {
       closeMenu();
       setOpen(false);
@@ -59,7 +59,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
       }
       textNode.selectNext();
     },
-    []
+    [],
   );
 
   const handleClose = useCallback(() => {
@@ -78,8 +78,8 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
           }
           return false;
         },
-        COMMAND_PRIORITY_LOW
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [editor, mentionsMenuOpen, showTriggersShortcut]);
 
@@ -92,7 +92,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
       onClose={handleClose}
       menuRenderFn={(
         anchorElementRef,
-        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
+        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
       ) =>
         anchorElementRef.current
           ? ReactDOM.createPortal(
@@ -128,7 +128,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
                   </MenuItemComponent>
                 ))}
               </MenuComponent>,
-              anchorElementRef.current
+              anchorElementRef.current,
             )
           : null
       }

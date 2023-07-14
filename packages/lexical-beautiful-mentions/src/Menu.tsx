@@ -71,7 +71,7 @@ export type MenuRenderFn<TOption extends MenuOption> = (
     setHighlightedIndex: (index: number) => void;
     options: Array<TOption>;
   },
-  matchingString: string | null
+  matchingString: string | null,
 ) => ReactPortal | JSX.Element | null;
 
 const scrollIntoViewIfNeeded = (target: HTMLElement) => {
@@ -102,7 +102,7 @@ const scrollIntoViewIfNeeded = (target: HTMLElement) => {
 function getFullMatchOffset(
   documentText: string,
   entryText: string,
-  offset: number
+  offset: number,
 ): number {
   let triggerOffset = offset;
   for (let i = triggerOffset; i <= entryText.length; i++) {
@@ -136,7 +136,7 @@ function $splitNodeContainingQuery(match: MenuTextMatch): TextNode | null {
   const queryOffset = getFullMatchOffset(
     textContent,
     match.matchingString,
-    characterOffset
+    characterOffset,
   );
   const startOffset = selectionOffset - queryOffset;
   if (startOffset < 0) {
@@ -155,7 +155,7 @@ function $splitNodeContainingQuery(match: MenuTextMatch): TextNode | null {
 // Got from https://stackoverflow.com/a/42543908/2013580
 export function getScrollParent(
   element: HTMLElement,
-  includeHidden: boolean
+  includeHidden: boolean,
 ): HTMLElement | HTMLBodyElement {
   let style = getComputedStyle(element);
   const excludeStaticParent = style.position === "absolute";
@@ -185,7 +185,7 @@ export function getScrollParent(
 
 function isTriggerVisibleInNearestScrollContainer(
   targetElement: HTMLElement,
-  containerElement: HTMLElement
+  containerElement: HTMLElement,
 ): boolean {
   const tRect = targetElement.getBoundingClientRect();
   const cRect = containerElement.getBoundingClientRect();
@@ -197,7 +197,7 @@ export function useDynamicPositioning(
   resolution: MenuResolution | null,
   targetElement: HTMLElement | null,
   onReposition: () => void,
-  onVisibilityChange?: (isInView: boolean) => void
+  onVisibilityChange?: (isInView: boolean) => void,
 ) {
   const [editor] = useLexicalComposerContext();
   useEffect(() => {
@@ -210,7 +210,7 @@ export function useDynamicPositioning(
       let ticking = false;
       let previousIsInView = isTriggerVisibleInNearestScrollContainer(
         targetElement,
-        rootScrollParent
+        rootScrollParent,
       );
       const handleScroll = function () {
         if (!ticking) {
@@ -222,7 +222,7 @@ export function useDynamicPositioning(
         }
         const isInView = isTriggerVisibleInNearestScrollContainer(
           targetElement,
-          rootScrollParent
+          rootScrollParent,
         );
         if (isInView !== previousIsInView) {
           previousIsInView = isInView;
@@ -274,7 +274,7 @@ export function Menu<TOption extends MenuOption>({
     option: TOption,
     textNodeContainingQuery: TextNode | null,
     closeMenu: () => void,
-    matchingString: string
+    matchingString: string,
   ) => void;
   onMenuVisibilityChange?: (visible: boolean) => void;
 }): JSX.Element | null {
@@ -298,11 +298,11 @@ export function Menu<TOption extends MenuOption>({
           selectedEntry,
           textNodeContainingQuery,
           close,
-          resolution.match ? resolution.match.matchingString : ""
+          resolution.match ? resolution.match.matchingString : "",
         );
       });
     },
-    [editor, shouldSplitNodeWithQuery, resolution.match, onSelectOption, close]
+    [editor, shouldSplitNodeWithQuery, resolution.match, onSelectOption, close],
   );
 
   const updateSelectedIndex = useCallback(
@@ -311,12 +311,12 @@ export function Menu<TOption extends MenuOption>({
       if (rootElem !== null) {
         rootElem.setAttribute(
           "aria-activedescendant",
-          "typeahead-item-" + index
+          "typeahead-item-" + index,
         );
         setHighlightedIndex(index);
       }
     },
-    [editor]
+    [editor],
   );
 
   useEffect(() => {
@@ -348,8 +348,8 @@ export function Menu<TOption extends MenuOption>({
 
           return false;
         },
-        COMMAND_PRIORITY_LOW
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [editor, updateSelectedIndex]);
 
@@ -370,7 +370,7 @@ export function Menu<TOption extends MenuOption>({
                 {
                   index: newSelectedIndex,
                   option,
-                }
+                },
               );
             }
             event.preventDefault();
@@ -378,7 +378,7 @@ export function Menu<TOption extends MenuOption>({
           }
           return true;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand<KeyboardEvent>(
         KEY_ARROW_UP_COMMAND,
@@ -397,7 +397,7 @@ export function Menu<TOption extends MenuOption>({
           }
           return true;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand<KeyboardEvent>(
         KEY_ESCAPE_COMMAND,
@@ -408,7 +408,7 @@ export function Menu<TOption extends MenuOption>({
           close();
           return true;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand<KeyboardEvent>(
         KEY_TAB_COMMAND,
@@ -426,7 +426,7 @@ export function Menu<TOption extends MenuOption>({
           selectOptionAndCleanUp(options[selectedIndex]);
           return true;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         KEY_ENTER_COMMAND,
@@ -445,8 +445,8 @@ export function Menu<TOption extends MenuOption>({
           selectOptionAndCleanUp(options[selectedIndex]);
           return true;
         },
-        COMMAND_PRIORITY_LOW
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [
     selectOptionAndCleanUp,
@@ -464,13 +464,13 @@ export function Menu<TOption extends MenuOption>({
       selectedIndex,
       setHighlightedIndex,
     }),
-    [selectOptionAndCleanUp, selectedIndex, options]
+    [selectOptionAndCleanUp, selectedIndex, options],
   );
 
   const menu = menuRenderFn(
     anchorElementRef,
     listItemProps,
-    resolution.match ? resolution.match.matchingString : ""
+    resolution.match ? resolution.match.matchingString : "",
   );
 
   useLayoutEffect(() => {
@@ -487,7 +487,7 @@ export function Menu<TOption extends MenuOption>({
 }
 
 export function useMenuAnchorRef(
-  opt: UseMenuAnchorRefOptions
+  opt: UseMenuAnchorRefOptions,
 ): MutableRefObject<HTMLElement> {
   const { resolution, setResolution, className, menuVisible } = opt;
   const [editor] = useLexicalComposerContext();
@@ -568,14 +568,14 @@ export function useMenuAnchorRef(
         }
       }
     },
-    [resolution, setResolution]
+    [resolution, setResolution],
   );
 
   useDynamicPositioning(
     resolution,
     anchorElementRef.current,
     positionMenu,
-    onVisibilityChange
+    onVisibilityChange,
   );
 
   return anchorElementRef;
@@ -583,5 +583,5 @@ export function useMenuAnchorRef(
 
 export type TriggerFn = (
   text: string,
-  editor: LexicalEditor
+  editor: LexicalEditor,
 ) => MenuTextMatch | null;

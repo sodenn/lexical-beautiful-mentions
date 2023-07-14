@@ -62,7 +62,7 @@ export default function MentionsToolbar() {
     (event) => {
       setShowTriggersShortcut(event.target.checked);
     },
-    [setShowTriggersShortcut]
+    [setShowTriggersShortcut],
   );
 
   const handleCreatableChange: CheckboxProps["onChange"] = useCallback(

@@ -74,7 +74,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
     () => props.triggers || Object.keys(items || {}),
-    [props.triggers, items]
+    [props.triggers, items],
   );
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
@@ -84,7 +84,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     debouncedQueryString,
     trigger,
     items,
-    onSearch
+    onSearch,
   );
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,
@@ -146,7 +146,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     (
       selectedOption: MenuOption,
       nodeToReplace: TextNode | null,
-      closeMenu: () => void
+      closeMenu: () => void,
     ) => {
       editor.update(() => {
         if (!trigger) {
@@ -154,7 +154,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         }
         const mentionNode = $createBeautifulMentionNode(
           trigger,
-          selectedOption.value
+          selectedOption.value,
         );
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
@@ -162,7 +162,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         closeMenu();
       });
     },
-    [editor, trigger]
+    [editor, trigger],
   );
 
   const checkForMentionMatch = useCallback(
@@ -196,7 +196,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       }
       return null;
     },
-    [checkForSlashTriggerMatch, editor, triggers, allowSpaces]
+    [checkForSlashTriggerMatch, editor, triggers, allowSpaces],
   );
 
   const insertTextAsMention = useCallback(() => {
@@ -209,15 +209,15 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     const queryMatch = checkForMentions(textContent, triggers, false);
     if (queryMatch && queryMatch.replaceableString.length > 1) {
       const trigger = triggers.find((trigger) =>
-        queryMatch.replaceableString.startsWith(trigger)
+        queryMatch.replaceableString.startsWith(trigger),
       );
       const end = textContent.search(
-        new RegExp(`${queryMatch.replaceableString}\\s?$`)
+        new RegExp(`${queryMatch.replaceableString}\\s?$`),
       );
       if (trigger && end !== -1) {
         const mentionNode = $createBeautifulMentionNode(
           trigger,
-          queryMatch.matchingString
+          queryMatch.matchingString,
         );
         node.setTextContent(textContent.substring(0, end));
         node.insertAfter(mentionNode);
@@ -251,7 +251,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.registerCommand(
         KEY_DOWN_COMMAND,
         (event) => handleKeydown(event, triggers),
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         BLUR_COMMAND,
@@ -261,7 +261,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           }
           return false;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         KEY_SPACE_COMMAND,
@@ -272,7 +272,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             return false;
           }
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         INSERT_MENTION_COMMAND,
@@ -284,7 +284,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           }
           return inserted;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         REMOVE_MENTIONS_COMMAND,
@@ -296,7 +296,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           }
           return removed;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         RENAME_MENTIONS_COMMAND,
@@ -308,13 +308,13 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           }
           return renamed;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         OPEN_MENTIONS_MENU_COMMAND,
         ({ trigger }) => insertMention(triggers, trigger),
-        COMMAND_PRIORITY_LOW
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [
     editor,
@@ -339,7 +339,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         onClose={handleClose}
         menuRenderFn={(
           anchorElementRef,
-          { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
+          { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
         ) =>
           anchorElementRef.current
             ? ReactDOM.createPortal(
@@ -375,7 +375,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     </MenuItemComponent>
                   ))}
                 </MenuComponent>,
-                anchorElementRef.current
+                anchorElementRef.current,
               )
             : null
         }
