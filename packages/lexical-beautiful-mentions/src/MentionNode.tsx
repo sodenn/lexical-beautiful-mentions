@@ -22,7 +22,7 @@ export type SerializedBeautifulMentionNode = Spread<
 function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
   const value = domNode.getAttribute("data-lexical-beautiful-mention-value");
   const trigger = domNode.getAttribute(
-    "data-lexical-beautiful-mention-trigger"
+    "data-lexical-beautiful-mention-trigger",
   );
   if (value !== null && trigger != null) {
     const node = $createBeautifulMentionNode(trigger, value);
@@ -49,7 +49,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   static importJSON(serializedNode: SerializedBeautifulMentionNode) {
     return $createBeautifulMentionNode(
       serializedNode.trigger,
-      serializedNode.value
+      serializedNode.value,
     );
   }
 
@@ -58,7 +58,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     element.setAttribute("data-lexical-beautiful-mention", "true");
     element.setAttribute(
       "data-lexical-beautiful-mention-trigger",
-      this.__trigger
+      this.__trigger,
     );
     element.setAttribute("data-lexical-beautiful-mention-value", this.__value);
     element.textContent = this.getTextContent();
@@ -124,7 +124,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   decorate(_editor: LexicalEditor, config: EditorConfig) {
     const theme: Record<string, string> = config.theme.beautifulMentions || {};
     const entry = Object.entries(theme).find(([trigger]) =>
-      new RegExp(trigger).test(this.__trigger)
+      new RegExp(trigger).test(this.__trigger),
     );
     const className = entry && entry[1];
     const classNameFocused = entry && theme[entry[0] + "Focused"];
@@ -141,14 +141,14 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
 
 export function $createBeautifulMentionNode(
   trigger: string,
-  value: string
+  value: string,
 ): BeautifulMentionNode {
   const mentionNode = new BeautifulMentionNode(trigger, value);
   return $applyNodeReplacement(mentionNode);
 }
 
 export function $isBeautifulMentionNode(
-  node: LexicalNode | null | undefined
+  node: LexicalNode | null | undefined,
 ): node is BeautifulMentionNode {
   return node instanceof BeautifulMentionNode;
 }

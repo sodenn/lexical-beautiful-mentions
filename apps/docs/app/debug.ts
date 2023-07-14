@@ -16,7 +16,7 @@ export function getDebugTextContent(node: LexicalNode) {
       nodes.push(
         $isBeautifulMentionNode(currentNode)
           ? "[" + currentNode.getTextContent() + "]"
-          : currentNode.getTextContent()
+          : currentNode.getTextContent(),
       );
     }
   }

@@ -31,7 +31,7 @@ const mentionItems: Record<string, string[]> = {
 const queryMentions = async (
   trigger: string,
   queryString: string,
-  asynchronous: boolean
+  asynchronous: boolean,
 ) => {
   const items = mentionItems[trigger];
   if (!items) {
@@ -41,7 +41,7 @@ const queryMentions = async (
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   return items.filter((item) =>
-    item.toLowerCase().includes(queryString.toLowerCase())
+    item.toLowerCase().includes(queryString.toLowerCase()),
   );
 };
 
@@ -68,7 +68,7 @@ export default function Editor() {
   const handleSearch = useCallback(
     (trigger: string, queryString: string) =>
       queryMentions(trigger, queryString, asynchronous),
-    [asynchronous]
+    [asynchronous],
   );
 
   return (

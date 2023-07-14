@@ -10,7 +10,7 @@ const MenuItem = forwardRef<HTMLLIElement, BeautifulMentionsMenuItemProps>(
       }`}
       {...props}
     />
-  )
+  ),
 );
 MenuItem.displayName = "MenuItem";
 

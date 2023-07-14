@@ -48,14 +48,14 @@ export default function MentionsToolbar() {
     (event) => {
       setAsynchronous(event.target.checked);
     },
-    [setAsynchronous]
+    [setAsynchronous],
   );
 
   const handleAllowSpacesChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
       setAllowSpaces(event.target.checked);
     },
-    [setAllowSpaces]
+    [setAllowSpaces],
   );
 
   const handleShowTriggersChange: CheckboxProps["onChange"] = useCallback(
@@ -69,14 +69,14 @@ export default function MentionsToolbar() {
     (event) => {
       setCreatable(event.target.checked);
     },
-    [setCreatable]
+    [setCreatable],
   );
 
   const handleInsertOnBlurChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
       setInsertOnBlur(event.target.checked);
     },
-    [setInsertOnBlur]
+    [setInsertOnBlur],
   );
 
   return (
