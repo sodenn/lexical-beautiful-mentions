@@ -35,20 +35,20 @@ const ConfigurationCtx = createContext<Configuration>(undefined);
 const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const { updateQueryParam, hasQueryParams, getQueryParam } = useQueryParams();
   const [asynchronous, _setAsynchronous] = useState(
-    getQueryParam("async") === "true"
+    getQueryParam("async") === "true",
   );
   const [allowSpaces, _setAllowSpaces] = useState(
-    getQueryParam("space") === "true"
+    getQueryParam("space") === "true",
   );
   const [creatable, _setCreatable] = useState(getQueryParam("new") === "true");
   const [insertOnBlur, _setInsertOnBlur] = useState(
-    getQueryParam("blur") === "true"
+    getQueryParam("blur") === "true",
   );
   const [showTriggers, _setShowTriggersShortcut] = useState(
-    getQueryParam("triggers") === "true"
+    getQueryParam("triggers") === "true",
   );
   const [showMentionsOnDelete, _setShowMentionsOnDelete] = useState(
-    getQueryParam("mentions") === "true"
+    getQueryParam("mentions") === "true",
   );
   const commandFocus = getQueryParam("cf") !== "false";
   const focusParam = getQueryParam("focus");
@@ -68,7 +68,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setAsynchronous(asynchronous);
       updateQueryParam("async", asynchronous);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   const setShowTriggers = useCallback(
@@ -76,7 +76,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setShowTriggersShortcut(showTriggersShortcut);
       updateQueryParam("triggers", showTriggersShortcut);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   const setShowMentionsOnDelete = useCallback(
@@ -84,7 +84,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setShowMentionsOnDelete(showMentionsOnDelete);
       updateQueryParam("mentions", showMentionsOnDelete);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   const setAllowSpaces = useCallback(
@@ -92,7 +92,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setAllowSpaces(allowSpaces);
       updateQueryParam("space", allowSpaces);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   const setCreatable = useCallback(
@@ -100,7 +100,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setCreatable(creatable);
       updateQueryParam("new", creatable);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   const setInsertOnBlur = useCallback(
@@ -108,7 +108,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setInsertOnBlur(insertOnBlur);
       updateQueryParam("blur", insertOnBlur);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   return (
@@ -140,7 +140,7 @@ export function useConfiguration() {
   const context = useContext(ConfigurationCtx);
   if (context === undefined) {
     throw new Error(
-      "useConfiguration must be used within a ConfigurationProvider"
+      "useConfiguration must be used within a ConfigurationProvider",
     );
   }
   return context;

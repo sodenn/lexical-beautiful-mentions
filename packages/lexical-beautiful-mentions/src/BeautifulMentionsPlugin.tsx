@@ -272,7 +272,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       }
       return false;
     },
-    [triggers, showMentionsOnDelete]
+    [triggers, showMentionsOnDelete],
   );
 
   React.useEffect(() => {
@@ -285,7 +285,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.registerCommand(
         KEY_BACKSPACE_COMMAND,
         handleDeleteMention,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         BLUR_COMMAND,

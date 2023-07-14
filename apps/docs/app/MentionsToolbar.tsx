@@ -50,42 +50,42 @@ export default function MentionsToolbar() {
     (event) => {
       setAsynchronous(event.target.checked);
     },
-    [setAsynchronous]
+    [setAsynchronous],
   );
 
   const handleAllowSpacesChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
       setAllowSpaces(event.target.checked);
     },
-    [setAllowSpaces]
+    [setAllowSpaces],
   );
 
   const handleShowTriggersChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
       setShowTriggers(event.target.checked);
     },
-    [setShowTriggers]
+    [setShowTriggers],
   );
 
   const handleShowMentionsOnDelete: CheckboxProps["onChange"] = useCallback(
     (event) => {
       setShowMentionsOnDelete(event.target.checked);
     },
-    [setShowMentionsOnDelete]
+    [setShowMentionsOnDelete],
   );
 
   const handleCreatableChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
       setCreatable(event.target.checked);
     },
-    [setCreatable]
+    [setCreatable],
   );
 
   const handleInsertOnBlurChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
       setInsertOnBlur(event.target.checked);
     },
-    [setInsertOnBlur]
+    [setInsertOnBlur],
   );
 
   return (
