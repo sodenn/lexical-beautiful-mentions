@@ -10,6 +10,7 @@ interface TestUtilsOptions {
   creatable?: boolean;
   insertOnBlur?: boolean;
   commandFocus?: boolean;
+  showTriggersShortcut?: boolean;
 }
 
 export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
@@ -21,6 +22,7 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     creatable = false,
     insertOnBlur = false,
     commandFocus = true,
+    showTriggersShortcut = false,
   } = options;
   const utils = new TestUtils(
     page,
@@ -31,6 +33,7 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     creatable,
     insertOnBlur,
     commandFocus,
+    showTriggersShortcut,
   );
   await utils.init();
   return utils;
@@ -48,6 +51,7 @@ export class TestUtils {
     private creatable: boolean,
     private insertOnBlur: boolean,
     private commandFocus: boolean,
+    private showTriggersShortcut: boolean,
   ) {
     this.setInitialValue(initialValue);
   }
@@ -124,24 +128,13 @@ export class TestUtils {
     // eslint-disable-next-line turbo/no-undeclared-env-vars
     const host = process.env.HOST || "localhost";
     let url = `http://${host}:3000?focus=${this.autofocus}`;
-    if (this.asynchronous) {
-      url += `&async=${this.asynchronous}`;
-    }
-    if (this.allowSpaces) {
-      url += `&spaces=${this.allowSpaces}`;
-    }
-    if (this.creatable) {
-      url += `&new=${this.creatable}`;
-    }
-    if (this.insertOnBlur) {
-      url += `&blur=${this.insertOnBlur}`;
-    }
+    url += `&async=${this.asynchronous}`;
+    url += `&trigger=${this.showTriggersShortcut}`;
+    url += `&spaces=${this.allowSpaces}`;
+    url += `&new=${this.creatable}`;
+    url += `&blur=${this.insertOnBlur}`;
     url += `&cf=${this.commandFocus}`;
-    if (this.initialValue === "") {
-      url += `&value`;
-    } else {
-      url += `&value=${this.initialValue}`;
-    }
+    url += `&value=${this.initialValue}`;
     await this.page.goto(url);
     await this.page.waitForTimeout(100);
   }

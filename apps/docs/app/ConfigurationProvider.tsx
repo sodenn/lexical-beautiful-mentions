@@ -20,20 +20,31 @@ interface Configuration
   autoFocus: "rootStart" | "rootEnd" | "none";
   asynchronous: boolean;
   commandFocus: boolean;
+  showTriggersShortcut: boolean;
   setAsynchronous: (asynchronous: boolean) => void;
   setAllowSpaces: (allowSpaces: boolean) => void;
   setCreatable: (creatable: boolean) => void;
   setInsertOnBlur: (insertOnBlur: boolean) => void;
+  setShowTriggersShortcut: (showTriggersShortcut: boolean) => void;
 }
 
 const ConfigurationCtx = createContext<Configuration>(undefined);
 
 const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const { updateQueryParam, hasQueryParams, getQueryParam } = useQueryParams();
-  const [asynchronous, _setAsynchronous] = useState(hasQueryParams("async"));
-  const [allowSpaces, _setAllowSpaces] = useState(hasQueryParams("space"));
-  const [creatable, _setCreatable] = useState(hasQueryParams("new"));
-  const [insertOnBlur, _setInsertOnBlur] = useState(hasQueryParams("blur"));
+  const [asynchronous, _setAsynchronous] = useState(
+    getQueryParam("async") === "true",
+  );
+  const [allowSpaces, _setAllowSpaces] = useState(
+    getQueryParam("space") === "true",
+  );
+  const [creatable, _setCreatable] = useState(getQueryParam("new") === "true");
+  const [insertOnBlur, _setInsertOnBlur] = useState(
+    getQueryParam("blur") === "true",
+  );
+  const [showTriggersShortcut, _setShowTriggersShortcut] = useState(
+    getQueryParam("triggers") === "true",
+  );
   const commandFocus = getQueryParam("cf") !== "false";
   const focusParam = getQueryParam("focus");
   const valueParam = getQueryParam("value");
@@ -51,6 +62,14 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     (asynchronous: boolean) => {
       _setAsynchronous(asynchronous);
       updateQueryParam("async", asynchronous);
+    },
+    [updateQueryParam],
+  );
+
+  const setShowTriggersShortcut = useCallback(
+    (showTriggersShortcut: boolean) => {
+      _setShowTriggersShortcut(showTriggersShortcut);
+      updateQueryParam("triggers", showTriggersShortcut);
     },
     [updateQueryParam],
   );
@@ -85,6 +104,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         initialValue,
         autoFocus,
         asynchronous,
+        showTriggersShortcut,
         allowSpaces,
         creatable,
         insertOnBlur,
@@ -92,6 +112,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         setAllowSpaces,
         setCreatable,
         setInsertOnBlur,
+        setShowTriggersShortcut,
         commandFocus,
       }}
     >

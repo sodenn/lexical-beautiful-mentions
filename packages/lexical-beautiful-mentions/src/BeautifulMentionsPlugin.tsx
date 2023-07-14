@@ -21,11 +21,12 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
-import { LexicalTypeaheadMenuPlugin } from "./LexicalTypeaheadMenuPlugin";
 import {
   $createBeautifulMentionNode,
   BeautifulMentionNode,
 } from "./MentionNode";
+import TriggerMenuPlugin from "./TriggerMenuPlugin";
+import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { handleKeydown } from "./handle-keydown";
 import {
   INSERT_MENTION_COMMAND,
@@ -68,6 +69,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
     menuAnchorClassName,
+    showTriggersShortcut,
   } = props;
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
@@ -327,55 +329,67 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   ]);
 
   return (
-    <LexicalTypeaheadMenuPlugin<MenuOption>
-      onQueryChange={setQueryString}
-      onSelectOption={handleSelectOption}
-      triggerFn={checkForMentionMatch}
-      options={options}
-      anchorClassName={menuAnchorClassName}
-      onClose={handleClose}
-      menuRenderFn={(
-        anchorElementRef,
-        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
-      ) =>
-        anchorElementRef.current
-          ? ReactDOM.createPortal(
-              <MenuComponent
-                loading={loading}
-                open={open}
-                role="menu"
-                aria-label="Choose a mention"
-                aria-hidden={!open}
-              >
-                {options.map((option, i) => (
-                  <MenuItemComponent
-                    key={option.key}
-                    tabIndex={-1}
-                    selected={selectedIndex === i}
-                    ref={option.setRefElement}
-                    role="menuitem"
-                    aria-selected={selectedIndex === i}
-                    aria-label={`Choose ${option.label}`}
-                    label={option.label}
-                    onClick={() => {
-                      setHighlightedIndex(i);
-                      selectOptionAndCleanUp(option);
-                    }}
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                    }}
-                    onMouseEnter={() => {
-                      setHighlightedIndex(i);
-                    }}
-                  >
-                    {option.label}
-                  </MenuItemComponent>
-                ))}
-              </MenuComponent>,
-              anchorElementRef.current,
-            )
-          : null
-      }
-    />
+    <>
+      <TypeaheadMenuPlugin<MenuOption>
+        onQueryChange={setQueryString}
+        onSelectOption={handleSelectOption}
+        triggerFn={checkForMentionMatch}
+        options={options}
+        anchorClassName={menuAnchorClassName}
+        onClose={handleClose}
+        menuRenderFn={(
+          anchorElementRef,
+          { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
+        ) =>
+          anchorElementRef.current
+            ? ReactDOM.createPortal(
+                <MenuComponent
+                  loading={loading}
+                  open={open}
+                  role="menu"
+                  aria-label="Choose a mention"
+                  aria-hidden={!open}
+                >
+                  {options.map((option, i) => (
+                    <MenuItemComponent
+                      key={option.key}
+                      tabIndex={-1}
+                      selected={selectedIndex === i}
+                      ref={option.setRefElement}
+                      role="menuitem"
+                      aria-selected={selectedIndex === i}
+                      aria-label={`Choose ${option.label}`}
+                      label={option.label}
+                      onClick={() => {
+                        setHighlightedIndex(i);
+                        selectOptionAndCleanUp(option);
+                      }}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                      }}
+                      onMouseEnter={() => {
+                        setHighlightedIndex(i);
+                      }}
+                    >
+                      {option.label}
+                    </MenuItemComponent>
+                  ))}
+                </MenuComponent>,
+                anchorElementRef.current,
+              )
+            : null
+        }
+      />
+      {showTriggersShortcut && (
+        <TriggerMenuPlugin
+          triggers={triggers}
+          mentionsMenuOpen={open}
+          menuAnchorClassName={menuAnchorClassName}
+          menuComponent={props.menuComponent}
+          menuItemComponent={props.menuItemComponent}
+          showTriggersShortcut={showTriggersShortcut}
+        />
+      )}
+    </>
   );
 }
