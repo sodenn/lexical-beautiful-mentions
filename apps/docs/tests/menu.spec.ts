@@ -186,4 +186,13 @@ test.describe("Menu", () => {
     await utils.editor.press("Enter");
     await utils.hasText("[@Anton]");
   });
+
+  test("should not open the triggers menu when option is disabled", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page);
+    await utils.editor.press("Control+Space");
+    await utils.sleep(300);
+    await expect(utils.triggersMenu).not.toBeVisible();
+  });
 });
