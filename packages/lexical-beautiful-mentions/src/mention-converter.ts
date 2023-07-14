@@ -23,7 +23,7 @@ function findMentions(text: string, triggers: string[]) {
       "){1," +
       LENGTH_LIMIT +
       "})",
-    "g"
+    "g",
   );
   const matches: { value: string; index: number }[] = [];
   let match;
@@ -39,7 +39,7 @@ function findMentions(text: string, triggers: string[]) {
 
 export function convertToMentionEntries(
   text: string,
-  triggers: string[]
+  triggers: string[],
 ): Entry[] {
   const matches = findMentions(text, triggers);
 
@@ -54,7 +54,7 @@ export function convertToMentionEntries(
     }
     // Add mention
     const triggerRegExp = triggers.find((trigger) =>
-      new RegExp(trigger).test(value)
+      new RegExp(trigger).test(value),
     );
 
     const match = triggerRegExp && value.match(new RegExp(triggerRegExp));

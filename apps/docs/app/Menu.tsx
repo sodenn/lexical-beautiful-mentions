@@ -29,7 +29,7 @@ const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
         />
       </Fade>
     );
-  }
+  },
 );
 Menu.displayName = "Menu";
 

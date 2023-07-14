@@ -6,7 +6,7 @@ import { useLayoutEffect, useState } from "react";
 export const useIsFocused = () => {
   const [editor] = useLexicalComposerContext();
   const [hasFocus, setHasFocus] = useState(
-    () => editor.getRootElement() === document.activeElement
+    () => editor.getRootElement() === document.activeElement,
   );
 
   useLayoutEffect(() => {
@@ -17,7 +17,7 @@ export const useIsFocused = () => {
           setHasFocus(true);
           return false;
         },
-        COMMAND_PRIORITY_NORMAL
+        COMMAND_PRIORITY_NORMAL,
       ),
       editor.registerCommand(
         BLUR_COMMAND,
@@ -25,8 +25,8 @@ export const useIsFocused = () => {
           setHasFocus(false);
           return false;
         },
-        COMMAND_PRIORITY_NORMAL
-      )
+        COMMAND_PRIORITY_NORMAL,
+      ),
     );
   }, [editor]);
 

@@ -30,7 +30,7 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     allowSpaces,
     creatable,
     insertOnBlur,
-    commandFocus
+    commandFocus,
   );
   await utils.init();
   return utils;
@@ -47,7 +47,7 @@ export class TestUtils {
     private allowSpaces: boolean,
     private creatable: boolean,
     private insertOnBlur: boolean,
-    private commandFocus: boolean
+    private commandFocus: boolean,
   ) {
     this.setInitialValue(initialValue);
   }
