@@ -81,7 +81,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
         COMMAND_PRIORITY_LOW
       )
     );
-  }, [editor, mentionsMenuOpen]);
+  }, [editor, mentionsMenuOpen, showTriggersShortcut]);
 
   return (
     <ComboboxPlugin<MenuOption>
