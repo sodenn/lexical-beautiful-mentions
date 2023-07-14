@@ -44,7 +44,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const [insertOnBlur, _setInsertOnBlur] = useState(
     getQueryParam("blur") === "true",
   );
-  const [showTriggers, _setShowTriggersShortcut] = useState(
+  const [showTriggers, _setShowTriggers] = useState(
     getQueryParam("triggers") === "true",
   );
   const [showMentionsOnDelete, _setShowMentionsOnDelete] = useState(
@@ -72,9 +72,9 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   );
 
   const setShowTriggers = useCallback(
-    (showTriggersShortcut: boolean) => {
-      _setShowTriggersShortcut(showTriggersShortcut);
-      updateQueryParam("triggers", showTriggersShortcut);
+    (showTriggers: boolean) => {
+      _setShowTriggers(showTriggers);
+      updateQueryParam("triggers", showTriggers);
     },
     [updateQueryParam],
   );

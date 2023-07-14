@@ -150,6 +150,8 @@ function ComboboxPlugin<TOption extends MenuOption>(
             "Enter",
             "Escape",
             "Tab",
+            "ShiftLeft",
+            "ShiftRight",
           ];
           if (open && !ignoredKeys.includes(event.code)) {
             closeCombobox();

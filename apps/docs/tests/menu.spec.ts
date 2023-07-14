@@ -10,8 +10,8 @@ test.describe("Menu", () => {
     await utils.moveCursorForward(3);
     await utils.editor.type(" @");
     await utils.hasText("Hey @, are you there?");
-    await expect(utils.menu).toBeVisible();
-    await utils.menu.getByText("Catherine").click();
+    await expect(utils.mentionsMenu).toBeVisible();
+    await utils.mentionsMenu.getByText("Catherine").click();
     await utils.hasText("Hey [@Catherine], are you there?");
   });
 
@@ -23,9 +23,9 @@ test.describe("Menu", () => {
       initialValue: "Hey @lisa",
     });
     await utils.editor.type(" @ant");
-    await expect(utils.menu.getByRole("menuitem")).toHaveCount(2);
-    await expect(utils.menu.getByText("Anton")).toBeVisible();
-    await expect(utils.menu.getByText(`Add "ant"`)).toBeVisible();
+    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(2);
+    await expect(utils.mentionsMenu.getByText("Anton")).toBeVisible();
+    await expect(utils.mentionsMenu.getByText(`Add "ant"`)).toBeVisible();
     await utils.hasText("Hey [@lisa] @ant");
   });
 
@@ -34,9 +34,9 @@ test.describe("Menu", () => {
   }) => {
     const utils = await testUtils(page, { creatable: true });
     await utils.editor.type("@Anton");
-    await expect(utils.menu.getByRole("menuitem")).toHaveCount(1);
-    await expect(utils.menu.getByText("Anton")).toBeVisible();
-    await expect(utils.menu.getByText(`Add "ant"`)).not.toBeVisible();
+    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(1);
+    await expect(utils.mentionsMenu.getByText("Anton")).toBeVisible();
+    await expect(utils.mentionsMenu.getByText(`Add "ant"`)).not.toBeVisible();
   });
 
   test("should not show the option to add a new mention if disabled", async ({
@@ -44,7 +44,7 @@ test.describe("Menu", () => {
   }) => {
     const utils = await testUtils(page, { creatable: false });
     await utils.editor.type("@abc");
-    await expect(utils.menu).toHaveCount(0);
+    await expect(utils.mentionsMenu).toHaveCount(0);
   });
 
   test("should dynamically position the menu", async ({ page }) => {
@@ -68,7 +68,7 @@ test.describe("Menu", () => {
     });
     await utils.editor.type("@abc");
     await utils.editor.blur();
-    await expect(utils.menu).not.toBeVisible();
+    await expect(utils.mentionsMenu).not.toBeVisible();
     await utils.hasText("[@abc]");
   });
 
@@ -79,7 +79,7 @@ test.describe("Menu", () => {
     await utils.editor.type("@");
     await utils.editor.press("ArrowDown");
     await utils.editor.press("Enter");
-    await expect(utils.menu).not.toBeVisible();
+    await expect(utils.mentionsMenu).not.toBeVisible();
     await utils.hasText("[@Boris]");
   });
 
@@ -91,7 +91,7 @@ test.describe("Menu", () => {
     const utils = await testUtils(page);
     await utils.editor.type("@");
     await utils.editor.press("Tab");
-    await expect(utils.menu).not.toBeVisible();
+    await expect(utils.mentionsMenu).not.toBeVisible();
     await utils.hasText("[@Anton]");
   });
 
@@ -102,9 +102,9 @@ test.describe("Menu", () => {
     test.skip(!!isMobile, "desktop only");
     const utils = await testUtils(page);
     await utils.editor.type("@");
-    await expect(utils.menu).toBeVisible();
+    await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.press("Escape");
-    await expect(utils.menu).not.toBeVisible();
+    await expect(utils.mentionsMenu).not.toBeVisible();
   });
 
   test("should not insert the entered text as mention when closing the menu with blur", async ({
@@ -113,7 +113,7 @@ test.describe("Menu", () => {
     const utils = await testUtils(page, { insertOnBlur: false });
     await utils.editor.type("@abc");
     await utils.editor.blur();
-    await expect(utils.menu).not.toBeVisible();
+    await expect(utils.mentionsMenu).not.toBeVisible();
     await utils.hasText("@abc");
     await utils.focusEnd();
     await utils.editor.type(" abc");
@@ -126,7 +126,7 @@ test.describe("Menu", () => {
     const utils = await testUtils(page);
     await utils.editor.type("@");
     await utils.editor.blur();
-    await expect(utils.menu).not.toBeVisible();
+    await expect(utils.mentionsMenu).not.toBeVisible();
     await utils.hasText("@");
   });
 
@@ -138,8 +138,8 @@ test.describe("Menu", () => {
       autofocus: "start",
     });
     await utils.editor.type("abc:b");
-    await expect(utils.menu.getByText(`Add "b"`)).toBeVisible();
-    await utils.menu.getByText(`Add "b"`).click();
+    await expect(utils.mentionsMenu.getByText(`Add "b"`)).toBeVisible();
+    await utils.mentionsMenu.getByText(`Add "b"`).click();
     await utils.hasText("[abc:b]");
   });
 
@@ -151,7 +151,7 @@ test.describe("Menu", () => {
     });
     await utils.editor.type("@");
     await expect(page.getByText("Loading...")).toBeVisible();
-    await expect(utils.menu.getByRole("menuitem")).toHaveCount(5);
+    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(5);
     await expect(page.getByText("Loading...")).not.toBeVisible();
   });
 
@@ -162,13 +162,28 @@ test.describe("Menu", () => {
       creatable: true,
     });
     await utils.editor.type("abc:a");
-    await expect(utils.menu.getByRole("menuitem")).toHaveCount(1);
-    await utils.menu.getByText(`Add "a"`).click();
+    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(1);
+    await utils.mentionsMenu.getByText(`Add "a"`).click();
     await utils.hasText("[abc:a]");
     await utils.editor.type("abc:");
-    await expect(utils.menu.getByRole("menuitem")).toHaveCount(1);
-    await expect(utils.menu.getByText("a")).toBeVisible();
+    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(1);
+    await expect(utils.mentionsMenu.getByText("a")).toBeVisible();
     await utils.editor.press("Enter");
     await utils.hasText("[abc:a] [abc:a]");
+  });
+
+  test("should open the triggers menu when pressing ctrl+space", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      showTriggers: true,
+    });
+    await utils.editor.press("Control+Space");
+    await expect(utils.triggersMenu).toBeVisible();
+    await utils.editor.press("Tab");
+    await expect(utils.mentionsMenu).toBeVisible();
+    await utils.editor.type("Ant");
+    await utils.editor.press("Enter");
+    await utils.hasText("[@Anton]");
   });
 });
