@@ -54,7 +54,8 @@ export default function Editor() {
     allowSpaces,
     creatable,
     insertOnBlur,
-    showTriggersShortcut,
+    showTriggers,
+    showMentionsOnDelete,
   } = useConfiguration();
 
   const handleChange = useCallback((editorState: EditorState) => {
@@ -102,10 +103,9 @@ export default function Editor() {
             allowSpaces={allowSpaces}
             creatable={creatable}
             insertOnBlur={insertOnBlur}
-            showTriggersShortcut={
-              showTriggersShortcut
-                ? (e) => e.ctrlKey && e.code === "Space"
-                : undefined
+            showMentionsOnDelete={showMentionsOnDelete}
+            showTriggers={
+              showTriggers ? (e) => e.ctrlKey && e.code === "Space" : undefined
             }
           />
         </div>

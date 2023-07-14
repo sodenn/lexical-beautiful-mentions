@@ -121,8 +121,8 @@ test.describe("Space handling", () => {
       autofocus: "start",
     });
     await utils.editor.type("@xxx");
-    await expect(utils.menu.getByRole("menuitem")).toHaveCount(1);
-    await expect(utils.menu.getByText(`Add "xxx"`)).toBeVisible();
+    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(1);
+    await expect(utils.mentionsMenu.getByText(`Add "xxx"`)).toBeVisible();
     await utils.editor.press("Space");
     await utils.hasText("[@xxx] ");
   });

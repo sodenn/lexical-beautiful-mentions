@@ -58,9 +58,16 @@ interface BeautifulMentionsProps {
    */
   insertOnBlur?: boolean;
   /**
-   * If `true`, all available mention triggers will be shown when the shortcut is pressed.
+   * If the return value is `true`, all available mention triggers will be
+   * shown in a menu at the current cursor position.
+   *
+   * @param event Use the keyboard event to specify a shortcut as a trigger
    */
-  showTriggersShortcut?: (event: KeyboardEvent) => boolean;
+  showTriggers?: (event: KeyboardEvent) => boolean;
+  /**
+   * If `true`, the mention menu will be shown when the user deletes a mention.
+   */
+  showMentionsOnDelete?: boolean;
 }
 
 export interface BeautifulMentionsSearchProps extends BeautifulMentionsProps {

@@ -10,7 +10,8 @@ interface TestUtilsOptions {
   creatable?: boolean;
   insertOnBlur?: boolean;
   commandFocus?: boolean;
-  showTriggersShortcut?: boolean;
+  showTriggers?: boolean;
+  showMentionsOnDelete?: boolean;
 }
 
 export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
@@ -22,7 +23,8 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     creatable = false,
     insertOnBlur = false,
     commandFocus = true,
-    showTriggersShortcut = false,
+    showTriggers = false,
+    showMentionsOnDelete = false,
   } = options;
   const utils = new TestUtils(
     page,
@@ -33,7 +35,8 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     creatable,
     insertOnBlur,
     commandFocus,
-    showTriggersShortcut,
+    showTriggers,
+    showMentionsOnDelete,
   );
   await utils.init();
   return utils;
@@ -51,7 +54,8 @@ export class TestUtils {
     private creatable: boolean,
     private insertOnBlur: boolean,
     private commandFocus: boolean,
-    private showTriggersShortcut: boolean,
+    private showTriggers: boolean,
+    private showMentionsOnDelete: boolean,
   ) {
     this.setInitialValue(initialValue);
   }
@@ -112,8 +116,12 @@ export class TestUtils {
     return this.page.getByRole("textbox");
   }
 
-  get menu() {
+  get mentionsMenu() {
     return this.page.getByRole("menu", { name: "Choose a mention" });
+  }
+
+  get triggersMenu() {
+    return this.page.getByRole("menu", { name: "Choose a trigger" });
   }
 
   sleep(ms: number) {
@@ -129,7 +137,8 @@ export class TestUtils {
     const host = process.env.HOST || "localhost";
     let url = `http://${host}:3000?focus=${this.autofocus}`;
     url += `&async=${this.asynchronous}`;
-    url += `&trigger=${this.showTriggersShortcut}`;
+    url += `&triggers=${this.showTriggers}`;
+    url += `&mentions=${this.showMentionsOnDelete}`;
     url += `&spaces=${this.allowSpaces}`;
     url += `&new=${this.creatable}`;
     url += `&blur=${this.insertOnBlur}`;

@@ -19,7 +19,7 @@ interface TriggerMenuPluginProps
       BeautifulMentionsPluginProps,
       "menuAnchorClassName" | "menuComponent" | "menuItemComponent"
     >,
-    Required<Pick<BeautifulMentionsPluginProps, "showTriggersShortcut">> {
+    Required<Pick<BeautifulMentionsPluginProps, "showTriggers">> {
   triggers: string[];
   mentionsMenuOpen: boolean;
 }
@@ -31,7 +31,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
     menuAnchorClassName,
-    showTriggersShortcut,
+    showTriggers,
   } = props;
   const [editor] = useLexicalComposerContext();
   const options = useMemo(
@@ -71,7 +71,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
       editor.registerCommand(
         KEY_MODIFIER_COMMAND,
         (payload) => {
-          const show = showTriggersShortcut(payload);
+          const show = showTriggers(payload);
           if (show && !mentionsMenuOpen) {
             payload.preventDefault();
             setOpen(true);
@@ -81,7 +81,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
         COMMAND_PRIORITY_LOW,
       ),
     );
-  }, [editor, mentionsMenuOpen, showTriggersShortcut]);
+  }, [editor, mentionsMenuOpen, showTriggers]);
 
   return (
     <ComboboxPlugin<MenuOption>

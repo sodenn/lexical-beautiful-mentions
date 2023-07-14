@@ -6,9 +6,9 @@ test.describe("Open Suggestions", () => {
     const utils = await testUtils(page, {
       initialValue: "Hey @John, the task is #urgent and due:tomorrow",
     });
-    await expect(utils.menu).not.toBeVisible();
+    await expect(utils.mentionsMenu).not.toBeVisible();
     await page.getByText("Open Suggestions").click();
-    await expect(utils.menu).toBeVisible();
+    await expect(utils.mentionsMenu).toBeVisible();
     await utils.hasText(
       "Hey [@John], the task is [#urgent] and [due:tomorrow] @",
     );
@@ -20,7 +20,7 @@ test.describe("Open Suggestions", () => {
       initialValue: "Hey @John, the task is #urgent and due:tomorrow",
     });
     await page.getByText("Open Suggestions").click();
-    await expect(utils.menu).toBeVisible();
+    await expect(utils.mentionsMenu).toBeVisible();
     await utils.hasText(
       "@ Hey [@John], the task is [#urgent] and [due:tomorrow]",
     );
@@ -33,7 +33,7 @@ test.describe("Open Suggestions", () => {
     });
     await utils.moveCursorForward(3);
     await page.getByText("Open Suggestions").click();
-    await expect(utils.menu).toBeVisible();
+    await expect(utils.mentionsMenu).toBeVisible();
     await utils.hasText(
       "Hey @ [@John], the task is [#urgent] and [due:tomorrow]",
     );
@@ -46,7 +46,7 @@ test.describe("Open Suggestions", () => {
     });
     await utils.moveCursorForward(4);
     await page.getByText("Open Suggestions").click();
-    await expect(utils.menu).toBeVisible();
+    await expect(utils.mentionsMenu).toBeVisible();
     await utils.hasText(
       "Hey @ [@John], the task is [#urgent] and [due:tomorrow]",
     );
