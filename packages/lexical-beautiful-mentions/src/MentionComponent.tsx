@@ -35,7 +35,7 @@ interface BeautifulMentionComponentProps {
 }
 
 export default function BeautifulMentionComponent(
-  props: BeautifulMentionComponentProps
+  props: BeautifulMentionComponentProps,
 ) {
   const { mention, className = "", classNameFocused = "", nodeKey } = props;
   const [editor] = useLexicalComposerContext();
@@ -67,7 +67,7 @@ export default function BeautifulMentionComponent(
       }
       return false;
     },
-    [isSelected, nodeKey, setSelected]
+    [isSelected, nodeKey, setSelected],
   );
 
   const onArrowLeftPress = useCallback(
@@ -99,7 +99,7 @@ export default function BeautifulMentionComponent(
       }
       return handled;
     },
-    [nodeKey]
+    [nodeKey],
   );
 
   const onArrowRightPress = useCallback(
@@ -131,7 +131,7 @@ export default function BeautifulMentionComponent(
       }
       return handled;
     },
-    [nodeKey]
+    [nodeKey],
   );
 
   const onClick = useCallback(
@@ -145,7 +145,7 @@ export default function BeautifulMentionComponent(
       }
       return false;
     },
-    [isSelected, clearSelection, setSelected]
+    [isSelected, clearSelection, setSelected],
   );
 
   const onBlur = useCallback(() => {
@@ -176,34 +176,34 @@ export default function BeautifulMentionComponent(
       editor.registerCommand<MouseEvent>(
         CLICK_COMMAND,
         onClick,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         KEY_DELETE_COMMAND,
         onDelete,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         KEY_BACKSPACE_COMMAND,
         onDelete,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         KEY_ARROW_LEFT_COMMAND,
         onArrowLeftPress,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         KEY_ARROW_RIGHT_COMMAND,
         onArrowRightPress,
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(BLUR_COMMAND, onBlur, COMMAND_PRIORITY_LOW),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         onSelectionChange,
-        COMMAND_PRIORITY_LOW
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
     return () => {
       isMounted = false;

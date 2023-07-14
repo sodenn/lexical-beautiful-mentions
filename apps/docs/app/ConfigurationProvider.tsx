@@ -52,7 +52,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setAsynchronous(asynchronous);
       updateQueryParam("async", asynchronous);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   const setAllowSpaces = useCallback(
@@ -60,7 +60,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setAllowSpaces(allowSpaces);
       updateQueryParam("space", allowSpaces);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   const setCreatable = useCallback(
@@ -68,7 +68,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setCreatable(creatable);
       updateQueryParam("new", creatable);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   const setInsertOnBlur = useCallback(
@@ -76,7 +76,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       _setInsertOnBlur(insertOnBlur);
       updateQueryParam("blur", insertOnBlur);
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   return (
@@ -104,7 +104,7 @@ export function useConfiguration() {
   const context = useContext(ConfigurationCtx);
   if (context === undefined) {
     throw new Error(
-      "useConfiguration must be used within a ConfigurationProvider"
+      "useConfiguration must be used within a ConfigurationProvider",
     );
   }
   return context;

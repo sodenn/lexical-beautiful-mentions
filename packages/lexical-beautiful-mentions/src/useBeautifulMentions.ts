@@ -27,7 +27,7 @@ export function useBeautifulMentions() {
   const insertMention = useCallback(
     (options: InsertMention) =>
       editor.dispatchCommand(INSERT_MENTION_COMMAND, options),
-    [editor]
+    [editor],
   );
 
   /**
@@ -36,7 +36,7 @@ export function useBeautifulMentions() {
   const removeMentions = useCallback(
     (options: RemoveMentions) =>
       editor.dispatchCommand(REMOVE_MENTIONS_COMMAND, options),
-    [editor]
+    [editor],
   );
 
   /**
@@ -45,7 +45,7 @@ export function useBeautifulMentions() {
   const renameMentions = useCallback(
     (options: RenameMentions) =>
       editor.dispatchCommand(RENAME_MENTIONS_COMMAND, options),
-    [editor]
+    [editor],
   );
 
   /**
@@ -58,13 +58,13 @@ export function useBeautifulMentions() {
         if (value) {
           return mentions.some(
             (mention) =>
-              mention.getTrigger() === trigger && mention.getValue() === value
+              mention.getTrigger() === trigger && mention.getValue() === value,
           );
         }
         return mentions.some((mention) => mention.getTrigger() === trigger);
       });
     },
-    [editor]
+    [editor],
   );
 
   /**
@@ -73,7 +73,7 @@ export function useBeautifulMentions() {
   const openMentionsMenu = useCallback(
     (options: OpenMentionsMenu) =>
       editor.dispatchCommand(OPEN_MENTIONS_MENU_COMMAND, options),
-    [editor]
+    [editor],
   );
 
   /**
@@ -81,7 +81,7 @@ export function useBeautifulMentions() {
    */
   const isMentionsMenuOpen = useCallback(() => {
     const element = document.querySelector(
-      '[role="menu"][aria-label="Choose a mention"][aria-hidden="false"]'
+      '[role="menu"][aria-label="Choose a mention"][aria-hidden="false"]',
     );
     return !!element;
   }, []);
@@ -94,7 +94,7 @@ export function useBeautifulMentions() {
       $nodesOfType(BeautifulMentionNode).map((node) => {
         const { trigger, value } = node.exportJSON();
         return { trigger, value };
-      })
+      }),
     );
   }, [editor]);
 

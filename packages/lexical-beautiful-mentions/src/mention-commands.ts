@@ -100,7 +100,7 @@ export const OPEN_MENTIONS_MENU_COMMAND: LexicalCommand<OpenMentionsMenu> =
 export function insertMention(
   triggers: string[],
   trigger: string,
-  value?: string
+  value?: string,
 ) {
   const selectionInfo = getSelectionInfo(triggers);
   if (!selectionInfo) {
@@ -194,7 +194,7 @@ export function removeMention(trigger: string, value?: string) {
 export function renameMention(
   trigger: string,
   newValue: string,
-  value?: string
+  value?: string,
 ) {
   let renamed = false;
   const mentions = $nodesOfType(BeautifulMentionNode);

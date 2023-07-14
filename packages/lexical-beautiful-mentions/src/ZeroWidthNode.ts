@@ -40,7 +40,7 @@ export class ZeroWidthNode extends TextNode {
   updateDOM(
     prevNode: ZeroWidthNode,
     dom: HTMLElement,
-    config: EditorConfig
+    config: EditorConfig,
   ): boolean {
     return false;
   }
@@ -69,7 +69,7 @@ export function $createZeroWidthNode(): ZeroWidthNode {
 }
 
 export function $isZeroWidthNode(
-  node: LexicalNode | null | undefined
+  node: LexicalNode | null | undefined,
 ): node is ZeroWidthNode {
   return node instanceof ZeroWidthNode;
 }

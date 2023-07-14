@@ -10,7 +10,7 @@ test.describe("Open Suggestions", () => {
     await page.getByText("Open Suggestions").click();
     await expect(utils.menu).toBeVisible();
     await utils.hasText(
-      "Hey [@John], the task is [#urgent] and [due:tomorrow] @"
+      "Hey [@John], the task is [#urgent] and [due:tomorrow] @",
     );
   });
 
@@ -22,7 +22,7 @@ test.describe("Open Suggestions", () => {
     await page.getByText("Open Suggestions").click();
     await expect(utils.menu).toBeVisible();
     await utils.hasText(
-      "@ Hey [@John], the task is [#urgent] and [due:tomorrow]"
+      "@ Hey [@John], the task is [#urgent] and [due:tomorrow]",
     );
   });
 
@@ -35,7 +35,7 @@ test.describe("Open Suggestions", () => {
     await page.getByText("Open Suggestions").click();
     await expect(utils.menu).toBeVisible();
     await utils.hasText(
-      "Hey @ [@John], the task is [#urgent] and [due:tomorrow]"
+      "Hey @ [@John], the task is [#urgent] and [due:tomorrow]",
     );
   });
 
@@ -48,7 +48,7 @@ test.describe("Open Suggestions", () => {
     await page.getByText("Open Suggestions").click();
     await expect(utils.menu).toBeVisible();
     await utils.hasText(
-      "Hey @ [@John], the task is [#urgent] and [due:tomorrow]"
+      "Hey @ [@John], the task is [#urgent] and [due:tomorrow]",
     );
   });
 });
@@ -111,7 +111,7 @@ test.describe("Insert mention", () => {
     });
     await page.getByText("Insert Mention").click();
     await utils.hasText(
-      "Hey [@John], the task is [#urgent] and [due:tomorrow] [#work]"
+      "Hey [@John], the task is [#urgent] and [due:tomorrow] [#work]",
     );
     await expect(utils.editor).toBeFocused();
   });
@@ -136,7 +136,7 @@ test.describe("Insert mention", () => {
     });
     await page.getByText("Insert Mention").click();
     await utils.hasText(
-      "Hey [@John], the task is [#urgent] and [due:tomorrow] [#work]"
+      "Hey [@John], the task is [#urgent] and [due:tomorrow] [#work]",
     );
   });
 

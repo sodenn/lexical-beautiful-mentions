@@ -46,7 +46,7 @@ export function ZeroWidthPlugin() {
           }
           return false;
         },
-        COMMAND_PRIORITY_HIGH
+        COMMAND_PRIORITY_HIGH,
       ),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
@@ -62,8 +62,8 @@ export function ZeroWidthPlugin() {
           }
           return false;
         },
-        COMMAND_PRIORITY_HIGH
-      )
+        COMMAND_PRIORITY_HIGH,
+      ),
     );
   }, [editor]);
 
