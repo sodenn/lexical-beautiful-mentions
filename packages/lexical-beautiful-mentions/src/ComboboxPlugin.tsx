@@ -23,7 +23,7 @@ import {
 
 function isSelectionOnEntityBoundary(
   editor: LexicalEditor,
-  offset: number
+  offset: number,
 ): boolean {
   if (offset !== 0) {
     return false;
@@ -96,14 +96,14 @@ interface ComboboxProps<TOption extends MenuOption> {
   onSelectOption: (
     option: TOption,
     textNodeContainingQuery: TextNode | null,
-    closeMenu: () => void
+    closeMenu: () => void,
   ) => void;
   menuRenderFn: MenuRenderFn<TOption>;
   anchorClassName?: string;
 }
 
 function ComboboxPlugin<TOption extends MenuOption>(
-  props: ComboboxProps<TOption>
+  props: ComboboxProps<TOption>,
 ) {
   const {
     open,
@@ -136,7 +136,7 @@ function ComboboxPlugin<TOption extends MenuOption>(
         onOpen(res);
       }
     },
-    [onOpen]
+    [onOpen],
   );
 
   useEffect(() => {
@@ -156,7 +156,7 @@ function ComboboxPlugin<TOption extends MenuOption>(
           }
           return false;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         BLUR_COMMAND,
@@ -164,8 +164,8 @@ function ComboboxPlugin<TOption extends MenuOption>(
           closeCombobox();
           return false;
         },
-        COMMAND_PRIORITY_LOW
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [closeCombobox, editor, open]);
 
@@ -199,7 +199,7 @@ function ComboboxPlugin<TOption extends MenuOption>(
             openCombobox({
               getRect,
               match,
-            })
+            }),
           );
           return;
         }

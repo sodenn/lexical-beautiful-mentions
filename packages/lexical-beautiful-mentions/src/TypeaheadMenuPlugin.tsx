@@ -86,7 +86,7 @@ function getQueryTextForSearch(editor: LexicalEditor): string | null {
 
 function isSelectionOnEntityBoundary(
   editor: LexicalEditor,
-  offset: number
+  offset: number,
 ): boolean {
   if (offset !== 0) {
     return false;
@@ -117,7 +117,7 @@ export type TypeaheadMenuPluginProps<TOption extends TypeaheadOption> = {
     option: TOption,
     textNodeContainingQuery: TextNode | null,
     closeMenu: () => void,
-    matchingString: string
+    matchingString: string,
   ) => void;
   options: Array<TOption>;
   menuRenderFn: MenuRenderFn<TOption>;
@@ -161,7 +161,7 @@ export function TypeaheadMenuPlugin<TOption extends TypeaheadOption>({
         onOpen(res);
       }
     },
-    [onOpen, resolution]
+    [onOpen, resolution],
   );
 
   useEffect(() => {
@@ -197,7 +197,7 @@ export function TypeaheadMenuPlugin<TOption extends TypeaheadOption>({
               openTypeahead({
                 getRect: () => range.getBoundingClientRect(),
                 match,
-              })
+              }),
             );
             return;
           }

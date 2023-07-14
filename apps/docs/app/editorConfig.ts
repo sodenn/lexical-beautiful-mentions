@@ -23,7 +23,7 @@ function setEditorState(initialValue: string, triggers: string[]) {
 
 const editorConfig = (
   triggers: string[],
-  initialValue: string
+  initialValue: string,
 ): InitialConfigType => ({
   namespace: "",
   theme: ShowcaseTheme,

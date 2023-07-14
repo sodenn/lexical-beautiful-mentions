@@ -46,7 +46,7 @@ test.describe("Space handling", () => {
     await utils.moveCursorBackward(7);
     await utils.editor.press("@");
     await utils.hasText(
-      "Hey [@John], the task is [#urgent] @ and [due:tomorrow]"
+      "Hey [@John], the task is [#urgent] @ and [due:tomorrow]",
     );
   });
 
@@ -58,7 +58,7 @@ test.describe("Space handling", () => {
     await utils.moveCursorBackward(6);
     await utils.editor.press("@");
     await utils.hasText(
-      "Hey [@John], the task is [#urgent] @ and [due:tomorrow]"
+      "Hey [@John], the task is [#urgent] @ and [due:tomorrow]",
     );
   });
 

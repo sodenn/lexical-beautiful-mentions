@@ -33,7 +33,7 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     creatable,
     insertOnBlur,
     commandFocus,
-    showTriggersShortcut
+    showTriggersShortcut,
   );
   await utils.init();
   return utils;
@@ -51,7 +51,7 @@ export class TestUtils {
     private creatable: boolean,
     private insertOnBlur: boolean,
     private commandFocus: boolean,
-    private showTriggersShortcut: boolean
+    private showTriggersShortcut: boolean,
   ) {
     this.setInitialValue(initialValue);
   }

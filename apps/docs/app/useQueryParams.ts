@@ -22,27 +22,27 @@ export default function useQueryParams() {
   const setQueryParam = useCallback(
     (name: keyof QueryParams, value = "true") => {
       const newSearchParams = new URLSearchParams(
-        Object.fromEntries(searchParams)
+        Object.fromEntries(searchParams),
       );
       newSearchParams.set(name, value);
       const search = newSearchParams.toString();
       const query = search ? `?${search}` : "";
       router.push(`${pathname}${query}`);
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   const removeQueryParam = useCallback(
     (name: keyof QueryParams) => {
       const newSearchParams = new URLSearchParams(
-        Object.fromEntries(searchParams)
+        Object.fromEntries(searchParams),
       );
       newSearchParams.delete(name);
       const search = newSearchParams.toString();
       const query = search ? `?${search}` : "";
       router.push(`${pathname}${query}`);
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   const updateQueryParam = useCallback(
@@ -53,17 +53,17 @@ export default function useQueryParams() {
         removeQueryParam(name);
       }
     },
-    [removeQueryParam, setQueryParam]
+    [removeQueryParam, setQueryParam],
   );
 
   const hasQueryParams = useCallback(
     (name: keyof QueryParams) => searchParams.has(name),
-    [searchParams]
+    [searchParams],
   );
 
   const getQueryParam = useCallback(
     (name: keyof QueryParams) => searchParams.get(name),
-    [searchParams]
+    [searchParams],
   );
 
   return {

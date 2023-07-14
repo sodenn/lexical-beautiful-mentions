@@ -39,14 +39,14 @@ function createMentionsRegex(triggers: string[], allowSpaces: boolean) {
       "){0," +
       LENGTH_LIMIT +
       "})" +
-      ")$"
+      ")$",
   );
 }
 
 export function checkForMentions(
   text: string,
   triggers: string[],
-  allowSpaces: boolean
+  allowSpaces: boolean,
 ): MenuTextMatch | null {
   const match = createMentionsRegex(triggers, allowSpaces).exec(text);
   if (match !== null) {

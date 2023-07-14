@@ -4,7 +4,10 @@ export function useMentionLookupService(
   queryString: string | null,
   trigger: string | null,
   items?: Record<string, string[]>,
-  onSearch?: (trigger: string, queryString?: string | null) => Promise<string[]>
+  onSearch?: (
+    trigger: string,
+    queryString?: string | null,
+  ) => Promise<string[]>,
 ) {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Array<string>>([]);
@@ -20,7 +23,7 @@ export function useMentionLookupService(
         return !queryString
           ? [...mentions[1]]
           : mentions[1].filter((item) =>
-              item.toLowerCase().includes(queryString.toLowerCase())
+              item.toLowerCase().includes(queryString.toLowerCase()),
             );
       }
       if (onSearch) {
@@ -29,7 +32,7 @@ export function useMentionLookupService(
       }
       throw new Error("No lookup service provided");
     },
-    [items, onSearch]
+    [items, onSearch],
   );
 
   useEffect(() => {
