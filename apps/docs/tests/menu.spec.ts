@@ -76,8 +76,8 @@ test.describe("Menu", () => {
     page,
   }) => {
     const utils = await testUtils(page);
-    await utils.editor.type("@");
-    await utils.editor.press("ArrowDown");
+    await utils.editor.type("@b");
+    await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.press("Enter");
     await expect(utils.mentionsMenu).not.toBeVisible();
     await utils.hasText("[@Boris]");
@@ -183,6 +183,7 @@ test.describe("Menu", () => {
     await utils.editor.press("Tab");
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.type("Ant");
+    await utils.sleep(200);
     await utils.editor.press("Enter");
     await utils.hasText("[@Anton]");
   });

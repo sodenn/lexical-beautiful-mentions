@@ -66,14 +66,24 @@ return (
 
 <img src="resources/screenshot1.png" width="200"/><br>
 ```tsx
+import { BeautifulMentionsTheme } from "lexical-beautiful-mentions";
+// ...
+const beautifulMentionsTheme: BeautifulMentionsTheme = {
+  // 👇 use the trigger name as the key
+  "@": "px-1 mx-px ...",
+  // 👇 add the "Focused" suffix to style the focused mention
+  "@Focused": "outline-none shadow-md ...",
+  // 👇 use a configuration object if you need to apply different styles to trigger and value
+  "rec:": {
+    trigger: "text-blue-400 ...",
+    value: "text-orange-400 ...",
+  },
+}
 const editorConfig = {
   // ...
   theme: {
     // ...
-    beautifulMentions: {
-      "@": `px-1 mx-px ...`, // use the trigger name as the key
-      "@Focused": "outline-none shadow-md ...", // add the "Focused" suffix to style the focused mention
-    },
+    beautifulMentions: beautifulMentionsTheme,
   },
 };
 
