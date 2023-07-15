@@ -45,7 +45,7 @@ import { useDebounce } from "./useDebounce";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
 
-// At most, 5 suggestions are shown in the popup.
+// At most, 6 suggestions are shown in the popup.
 const SUGGESTION_LIST_LENGTH_LIMIT = 5;
 
 class MenuOption extends _MenuOption {
@@ -71,6 +71,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertOnBlur = true,
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
+    menuItemLimit,
     menuAnchorClassName,
     showTriggers,
     showMentionsOnDelete,
@@ -99,9 +100,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
   const options = useMemo(() => {
     // Add options from the lookup service
-    const opt = results
-      .map((result) => new MenuOption(result))
-      .slice(0, SUGGESTION_LIST_LENGTH_LIMIT);
+    let opt = results.map((result) => new MenuOption(result));
+    if (menuItemLimit !== false) {
+      opt = opt.slice(0, menuItemLimit || SUGGESTION_LIST_LENGTH_LIMIT);
+    }
     // Add mentions from the editor
     const readyToAddEditorMentions = !onSearch || debouncedQueryString !== null;
     // when a search function is provided, wait for the delayed search to prevent flickering
@@ -138,7 +140,15 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       }
     }
     return opt;
-  }, [results, onSearch, debouncedQueryString, editor, trigger, creatable]);
+  }, [
+    results,
+    onSearch,
+    debouncedQueryString,
+    editor,
+    trigger,
+    creatable,
+    menuItemLimit,
+  ]);
 
   const open = isEditorFocused && (!!options.length || loading);
 

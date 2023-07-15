@@ -4,13 +4,11 @@ import {
   $getSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_LOW,
-  createCommand,
   KEY_ARROW_DOWN_COMMAND,
   KEY_ARROW_UP_COMMAND,
   KEY_ENTER_COMMAND,
   KEY_ESCAPE_COMMAND,
   KEY_TAB_COMMAND,
-  LexicalCommand,
   LexicalEditor,
   TextNode,
 } from "lexical";
@@ -247,11 +245,6 @@ export function useDynamicPositioning(
   }, [targetElement, editor, onVisibilityChange, onReposition, resolution]);
 }
 
-export const SCROLL_TYPEAHEAD_OPTION_INTO_VIEW_COMMAND: LexicalCommand<{
-  index: number;
-  option: MenuOption;
-}> = createCommand("SCROLL_TYPEAHEAD_OPTION_INTO_VIEW_COMMAND");
-
 export function Menu<TOption extends MenuOption>({
   close,
   editor,
@@ -338,23 +331,6 @@ export function Menu<TOption extends MenuOption>({
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        SCROLL_TYPEAHEAD_OPTION_INTO_VIEW_COMMAND,
-        ({ option }) => {
-          if (option.ref && option.ref.current != null) {
-            scrollIntoViewIfNeeded(option.ref.current);
-            return true;
-          }
-
-          return false;
-        },
-        COMMAND_PRIORITY_LOW,
-      ),
-    );
-  }, [editor, updateSelectedIndex]);
-
-  useEffect(() => {
-    return mergeRegister(
       editor.registerCommand<KeyboardEvent>(
         KEY_ARROW_DOWN_COMMAND,
         (payload) => {
@@ -365,13 +341,7 @@ export function Menu<TOption extends MenuOption>({
             updateSelectedIndex(newSelectedIndex);
             const option = options[newSelectedIndex];
             if (option.ref != null && option.ref.current) {
-              editor.dispatchCommand(
-                SCROLL_TYPEAHEAD_OPTION_INTO_VIEW_COMMAND,
-                {
-                  index: newSelectedIndex,
-                  option,
-                },
-              );
+              scrollIntoViewIfNeeded(option.ref.current);
             }
             event.preventDefault();
             event.stopImmediatePropagation();
