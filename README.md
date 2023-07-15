@@ -69,8 +69,10 @@ return (
 import { BeautifulMentionsTheme } from "lexical-beautiful-mentions";
 // ...
 const beautifulMentionsTheme: BeautifulMentionsTheme = {
-  "@": "px-1 mx-px ...", // use the trigger name as the key
-  "@Focused": "outline-none shadow-md ...", // add the "Focused" suffix to style the focused mention
+  // 👇 use the trigger name as the key
+  "@": "px-1 mx-px ...",
+  // 👇 add the "Focused" suffix to style the focused mention
+  "@Focused": "outline-none shadow-md ...",
   // 👇 use a configuration object if you need to apply different styles to trigger and value
   "rec:": {
     trigger: "text-blue-400 ...",
