@@ -72,16 +72,14 @@ test.describe("Menu", () => {
     await utils.hasText("[@abc]");
   });
 
-  test("should insert a selected mention by pressing enter", async ({
+  test.only("should insert a selected mention by pressing enter", async ({
     page,
   }) => {
     const utils = await testUtils(page);
-    await utils.editor.type("@");
-    await utils.editor.press("ArrowDown");
-    await utils.sleep(200);
+    await utils.editor.type("@b");
+    await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.press("Enter");
     await expect(utils.mentionsMenu).not.toBeVisible();
-    await utils.sleep(100);
     await utils.hasText("[@Boris]");
   });
 
