@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.6
+
+### Patch Changes
+
+- fe4e9bd: feat(): show available triggers while typing
+- 49de188: style(): allow styling of mention container when trigger and value have separate styling
+
 ## 0.1.5
 
 ### Patch Changes
