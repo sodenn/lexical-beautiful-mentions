@@ -1,5 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { MenuOption } from "@lexical/react/LexicalContextMenuPlugin";
+import { MenuTextMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
   $createTextNode,
@@ -13,6 +14,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import ComboboxPlugin from "./ComboboxPlugin";
+import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { getSelectionInfo } from "./mention-utils";
 
 interface TriggerMenuPluginProps
@@ -25,6 +27,23 @@ interface TriggerMenuPluginProps
   mentionsMenuOpen: boolean;
 }
 
+export function checkForTriggers(
+  text: string,
+  triggers: string[],
+): MenuTextMatch | null {
+  const last = text.split(/\s/).pop() || text;
+  const offset = text.lastIndexOf(last);
+  const match = triggers.some((t) => t.startsWith(last) && t !== last);
+  if (match) {
+    return {
+      leadOffset: offset,
+      matchingString: last,
+      replaceableString: last,
+    };
+  }
+  return null;
+}
+
 export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
   const {
     triggers,
@@ -35,11 +54,16 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
     showTriggers,
   } = props;
   const [editor] = useLexicalComposerContext();
+  const [queryString, setQueryString] = useState<string | null>(null);
   const options = useMemo(
-    () => triggers.map((trigger) => new MenuOption(trigger)),
-    [triggers],
+    () =>
+      triggers
+        .filter((t) => queryString === null || t.startsWith(queryString))
+        .map((trigger) => new MenuOption(trigger)),
+    [triggers, queryString],
   );
-  const [open, setOpen] = useState(false);
+  const [comboboxOpen, setComboboxOpen] = useState(false);
+  const [typeaheadMenuOpen, setTypeaheadMenuOpen] = useState(false);
 
   const handleSelectOption = useCallback(
     (
@@ -48,10 +72,11 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
       closeMenu: () => void,
     ) => {
       closeMenu();
-      setOpen(false);
+      setComboboxOpen(false);
+      setTypeaheadMenuOpen(false);
       const textNode = $createTextNode(selectedOption.key);
       if (nodeToReplace) {
-        nodeToReplace.insertAfter(textNode);
+        nodeToReplace.replace(textNode);
       } else {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
@@ -63,8 +88,34 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
     [],
   );
 
+  const checkForTriggerMatch = useCallback(
+    (text: string) => {
+      const info = getSelectionInfo(triggers);
+      if (info?.isTextNode && info.wordCharAfterCursor) {
+        return null;
+      }
+      if (mentionsMenuOpen || comboboxOpen) {
+        return null;
+      }
+      const queryMatch = checkForTriggers(text, triggers);
+      if (queryMatch) {
+        setTypeaheadMenuOpen(true);
+        return queryMatch;
+      } else {
+        setTypeaheadMenuOpen(false);
+      }
+      return null;
+    },
+    [comboboxOpen, mentionsMenuOpen, triggers],
+  );
+
   const handleClose = useCallback(() => {
-    setOpen(false);
+    setComboboxOpen(false);
+    setTypeaheadMenuOpen(false);
+  }, []);
+
+  const handleOpenTypeahead = useCallback(() => {
+    setTypeaheadMenuOpen(true);
   }, []);
 
   React.useEffect(() => {
@@ -73,11 +124,12 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
         KEY_MODIFIER_COMMAND,
         (payload) => {
           const show = showTriggers(payload);
-          if (show && !mentionsMenuOpen) {
+          if (show && !mentionsMenuOpen && !typeaheadMenuOpen) {
             const info = getSelectionInfo(triggers);
             if (info && (info.isTextNode || !info.prevNode)) {
               payload.preventDefault();
-              setOpen(true);
+              setComboboxOpen(true);
+              setTypeaheadMenuOpen(false);
             }
           }
           return false;
@@ -85,57 +137,110 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
         COMMAND_PRIORITY_LOW,
       ),
     );
-  }, [editor, mentionsMenuOpen, showTriggers]);
+  }, [editor, mentionsMenuOpen, showTriggers, triggers, typeaheadMenuOpen]);
 
   return (
-    <ComboboxPlugin<MenuOption>
-      open={open}
-      onSelectOption={handleSelectOption}
-      options={options}
-      anchorClassName={menuAnchorClassName}
-      onClose={handleClose}
-      menuRenderFn={(
-        anchorElementRef,
-        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
-      ) =>
-        anchorElementRef.current
-          ? ReactDOM.createPortal(
-              <MenuComponent
-                loading={false}
-                open={open}
-                role="menu"
-                aria-label="Choose a trigger"
-                aria-hidden={!open}
-              >
-                {options.map((option, i) => (
-                  <MenuItemComponent
-                    key={option.key}
-                    tabIndex={-1}
-                    selected={selectedIndex === i}
-                    ref={option.setRefElement}
-                    role="menuitem"
-                    aria-selected={selectedIndex === i}
-                    aria-label={`Choose ${option.key}`}
-                    label={option.key}
-                    onClick={() => {
-                      setHighlightedIndex(i);
-                      selectOptionAndCleanUp(option);
-                    }}
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                    }}
-                    onMouseEnter={() => {
-                      setHighlightedIndex(i);
-                    }}
-                  >
-                    {option.key}
-                  </MenuItemComponent>
-                ))}
-              </MenuComponent>,
-              anchorElementRef.current,
-            )
-          : null
-      }
-    />
+    <>
+      <TypeaheadMenuPlugin<MenuOption>
+        onSelectOption={handleSelectOption}
+        options={options}
+        anchorClassName={menuAnchorClassName}
+        onClose={handleClose}
+        triggerFn={checkForTriggerMatch}
+        onOpen={handleOpenTypeahead}
+        onQueryChange={setQueryString}
+        menuRenderFn={(
+          anchorElementRef,
+          { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
+        ) =>
+          anchorElementRef.current
+            ? ReactDOM.createPortal(
+                <MenuComponent
+                  loading={false}
+                  open={typeaheadMenuOpen}
+                  role="menu"
+                  aria-label="Choose a trigger"
+                  aria-hidden={!typeaheadMenuOpen}
+                >
+                  {options.map((option, i) => (
+                    <MenuItemComponent
+                      key={option.key}
+                      tabIndex={-1}
+                      selected={selectedIndex === i}
+                      ref={option.setRefElement}
+                      role="menuitem"
+                      aria-selected={selectedIndex === i}
+                      aria-label={`Choose ${option.key}`}
+                      label={option.key}
+                      onClick={() => {
+                        setHighlightedIndex(i);
+                        selectOptionAndCleanUp(option);
+                      }}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                      }}
+                      onMouseEnter={() => {
+                        setHighlightedIndex(i);
+                      }}
+                    >
+                      {option.key}
+                    </MenuItemComponent>
+                  ))}
+                </MenuComponent>,
+                anchorElementRef.current,
+              )
+            : null
+        }
+      />
+      <ComboboxPlugin<MenuOption>
+        open={comboboxOpen}
+        onSelectOption={handleSelectOption}
+        options={options}
+        anchorClassName={menuAnchorClassName}
+        onClose={handleClose}
+        menuRenderFn={(
+          anchorElementRef,
+          { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
+        ) =>
+          anchorElementRef.current
+            ? ReactDOM.createPortal(
+                <MenuComponent
+                  loading={false}
+                  open={comboboxOpen}
+                  role="menu"
+                  aria-label="Choose a trigger"
+                  aria-hidden={!comboboxOpen}
+                >
+                  {options.map((option, i) => (
+                    <MenuItemComponent
+                      key={option.key}
+                      tabIndex={-1}
+                      selected={selectedIndex === i}
+                      ref={option.setRefElement}
+                      role="menuitem"
+                      aria-selected={selectedIndex === i}
+                      aria-label={`Choose ${option.key}`}
+                      label={option.key}
+                      onClick={() => {
+                        setHighlightedIndex(i);
+                        selectOptionAndCleanUp(option);
+                      }}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                      }}
+                      onMouseEnter={() => {
+                        setHighlightedIndex(i);
+                      }}
+                    >
+                      {option.key}
+                    </MenuItemComponent>
+                  ))}
+                </MenuComponent>,
+                anchorElementRef.current,
+              )
+            : null
+        }
+      />
+    </>
   );
 }
