@@ -48,6 +48,11 @@ interface BeautifulMentionsProps {
    */
   menuAnchorClassName?: string;
   /**
+   * At most, the specified number of menu items will be rendered.
+   * @default 6
+   */
+  menuItemLimit?: number | false;
+  /**
    * If `true`, mentions can contain spaces.
    * @default false
    */
