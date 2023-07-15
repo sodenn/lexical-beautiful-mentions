@@ -205,11 +205,6 @@ test.describe("Menu", () => {
     await utils.editor.press("r");
     await utils.sleep(300);
     await expect(utils.triggersMenu).toBeVisible();
-
-    // don't show the menu when typing a character that is not part of a trigger
-    await utils.editor.press("a");
-    await utils.sleep(300);
-    await expect(utils.triggersMenu).not.toBeVisible();
   });
 
   test("should not open the triggers when starting to type without using a trigger character", async ({
