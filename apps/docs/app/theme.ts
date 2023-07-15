@@ -12,6 +12,7 @@ const beautifulMentionsTheme: BeautifulMentionsTheme = {
   "#Focused": mentionsStyleFocused,
   "due:": `${mentionsStyle} dark:bg-yellow-400 bg-yellow-600 dark:text-gray-950 text-white`,
   "due:Focused": mentionsStyleFocused,
+  // 👇 use a configuration object if you need to apply different styles to trigger and value
   "rec:": {
     trigger: `dark:text-blue-400 text-blue-950`,
     value: `dark:text-orange-400 text-orange-950`,
