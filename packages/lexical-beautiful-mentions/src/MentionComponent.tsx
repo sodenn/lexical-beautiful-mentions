@@ -26,18 +26,19 @@ import React, { useCallback, useMemo, useState } from "react";
 import { $isBeautifulMentionNode } from "./MentionNode";
 import { IS_IOS } from "./environment";
 import { getNextSibling, getPreviousSibling } from "./mention-utils";
+import { BeautifulMentionsThemeValues } from "./theme";
 
 interface BeautifulMentionComponentProps {
-  mention: string;
   nodeKey: NodeKey;
-  className?: string;
-  classNameFocused?: string;
+  trigger: string;
+  value: string;
+  styles?: string | BeautifulMentionsThemeValues;
 }
 
 export default function BeautifulMentionComponent(
   props: BeautifulMentionComponentProps,
 ) {
-  const { mention, className = "", classNameFocused = "", nodeKey } = props;
+  const { trigger, value, styles, nodeKey } = props;
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
@@ -46,14 +47,23 @@ export default function BeautifulMentionComponent(
   >(null);
   const isFocused = $isNodeSelection(selection) && isSelected;
   const ref = React.useRef(null);
+  const mention = trigger + value;
 
-  const classNameFinal = useMemo(() => {
-    const classes = [className];
-    if (isFocused) {
-      classes.push(classNameFocused);
+  const finalStyles = useMemo(() => {
+    if (typeof styles === "string") {
+      const classes = [styles];
+      if (isFocused) {
+        classes.push(styles + "Focused");
+      }
+      return classes.join(" ").trim() || undefined;
     }
-    return classes.join(" ").trim() || undefined;
-  }, [className, classNameFocused, isFocused]);
+
+    if (!styles) {
+      return undefined;
+    }
+
+    return styles;
+  }, [isFocused, styles]);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -219,9 +229,18 @@ export default function BeautifulMentionComponent(
     onSelectionChange,
   ]);
 
+  if (typeof finalStyles === "string") {
+    return (
+      <span ref={ref} className={finalStyles} data-beautiful-mention={mention}>
+        {mention}
+      </span>
+    );
+  }
+
   return (
-    <span ref={ref} className={classNameFinal} data-beautiful-mention={mention}>
-      {mention}
+    <span ref={ref} data-beautiful-mention={mention}>
+      <span className={finalStyles?.trigger}>{trigger}</span>
+      <span className={finalStyles?.value}>{value}</span>
     </span>
   );
 }

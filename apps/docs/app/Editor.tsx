@@ -25,6 +25,7 @@ const mentionItems: Record<string, string[]> = {
   "@": ["Anton", "Boris", "Catherine", "Dmitri", "Elena", "Felix", "Gina"],
   "#": ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"],
   "due:": ["Today", "Tomorrow", "01-01-2023"],
+  "rec:": ["week", "month", "year"],
   "\\w+:": [],
 };
 

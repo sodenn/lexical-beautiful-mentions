@@ -10,6 +10,7 @@ import {
 } from "lexical";
 import React from "react";
 import MentionComponent from "./MentionComponent";
+import { BeautifulMentionsTheme } from "./theme";
 
 export type SerializedBeautifulMentionNode = Spread<
   {
@@ -122,18 +123,18 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   }
 
   decorate(_editor: LexicalEditor, config: EditorConfig) {
-    const theme: Record<string, string> = config.theme.beautifulMentions || {};
-    const entry = Object.entries(theme).find(([trigger]) =>
+    const beautifulMentionsTheme: BeautifulMentionsTheme =
+      config.theme.beautifulMentions || {};
+    const entry = Object.entries(beautifulMentionsTheme).find(([trigger]) =>
       new RegExp(trigger).test(this.__trigger),
     );
-    const className = entry && entry[1];
-    const classNameFocused = entry && theme[entry[0] + "Focused"];
+    const styles = entry && entry[1];
     return (
       <MentionComponent
         nodeKey={this.getKey()}
-        mention={this.getTextContent()}
-        className={className}
-        classNameFocused={classNameFocused}
+        trigger={this.getTrigger()}
+        value={this.getValue()}
+        styles={styles}
       />
     );
   }
