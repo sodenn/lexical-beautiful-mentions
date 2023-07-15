@@ -155,7 +155,7 @@ export default function MentionsToolbar() {
         />
         <Checkbox
           label="showTriggers"
-          helpText="Shows the available triggers when ctrl+space is pressed."
+          helpText="Shows the available triggers while typing or when pressing ctrl+space."
           checked={showTriggers}
           onChange={handleShowTriggersChange}
         />
