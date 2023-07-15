@@ -123,18 +123,26 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   }
 
   decorate(_editor: LexicalEditor, config: EditorConfig) {
-    const beautifulMentionsTheme: BeautifulMentionsTheme =
-      config.theme.beautifulMentions || {};
-    const entry = Object.entries(beautifulMentionsTheme).find(([trigger]) =>
+    const theme: BeautifulMentionsTheme = config.theme.beautifulMentions || {};
+    const entry = Object.entries(theme).find(([trigger]) =>
       new RegExp(trigger).test(this.__trigger),
     );
-    const styles = entry && entry[1];
+    const key = entry && entry[0];
+    const value = entry && entry[1];
+    const className = typeof value === "string" ? value : undefined;
+    const classNameFocused =
+      className && typeof theme[key + "Focused"] === "string"
+        ? (theme[key + "Focused"] as string)
+        : undefined;
+    const themeValues = entry && typeof value !== "string" ? value : undefined;
     return (
       <MentionComponent
         nodeKey={this.getKey()}
         trigger={this.getTrigger()}
         value={this.getValue()}
-        styles={styles}
+        className={className}
+        classNameFocused={classNameFocused}
+        themeValues={themeValues}
       />
     );
   }

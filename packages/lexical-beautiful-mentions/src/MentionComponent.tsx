@@ -32,13 +32,16 @@ interface BeautifulMentionComponentProps {
   nodeKey: NodeKey;
   trigger: string;
   value: string;
-  styles?: string | BeautifulMentionsThemeValues;
+  className?: string;
+  classNameFocused?: string;
+  themeValues?: BeautifulMentionsThemeValues;
 }
 
 export default function BeautifulMentionComponent(
   props: BeautifulMentionComponentProps,
 ) {
-  const { trigger, value, styles, nodeKey } = props;
+  const { trigger, value, className, classNameFocused, themeValues, nodeKey } =
+    props;
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
@@ -50,20 +53,15 @@ export default function BeautifulMentionComponent(
   const mention = trigger + value;
 
   const finalStyles = useMemo(() => {
-    if (typeof styles === "string") {
-      const classes = [styles];
-      if (isFocused) {
-        classes.push(styles + "Focused");
+    if (className) {
+      const classes = [className];
+      if (isFocused && classNameFocused) {
+        classes.push(classNameFocused);
       }
       return classes.join(" ").trim() || undefined;
     }
-
-    if (!styles) {
-      return undefined;
-    }
-
-    return styles;
-  }, [isFocused, styles]);
+    return "";
+  }, [isFocused, className, classNameFocused]);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -229,18 +227,18 @@ export default function BeautifulMentionComponent(
     onSelectionChange,
   ]);
 
-  if (typeof finalStyles === "string") {
+  if (themeValues) {
     return (
-      <span ref={ref} className={finalStyles} data-beautiful-mention={mention}>
-        {mention}
+      <span ref={ref} data-beautiful-mention={mention}>
+        <span className={themeValues.trigger}>{trigger}</span>
+        <span className={themeValues.value}>{value}</span>
       </span>
     );
   }
 
   return (
-    <span ref={ref} data-beautiful-mention={mention}>
-      <span className={finalStyles?.trigger}>{trigger}</span>
-      <span className={finalStyles?.value}>{value}</span>
+    <span ref={ref} className={finalStyles} data-beautiful-mention={mention}>
+      {mention}
     </span>
   );
 }
