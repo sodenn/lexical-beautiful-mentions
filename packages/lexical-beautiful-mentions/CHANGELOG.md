@@ -1,5 +1,14 @@
 # lexical-beautiful-mentions
 
+## 0.1.4
+
+### Patch Changes
+
+- d5e52fd: fix(): prevent the selection from being lost after a focused mention has been deleted
+- 6c4d983: feat(): show all available triggers via a configurable shortcut
+- 29b9749: style(): separate styles for trigger and value
+- 8a769aa: feat(): show mentions menu when mention is deleted
+
 ## 0.1.3
 
 ### Patch Changes
