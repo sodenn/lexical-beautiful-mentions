@@ -87,6 +87,16 @@ export function useBeautifulMentions() {
   }, []);
 
   /**
+   * Returns true if the triggers menu is open.
+   */
+  const isTriggersMenuOpen = useCallback(() => {
+    const element = document.querySelector(
+      '[role="menu"][aria-label="Choose a trigger"][aria-hidden="false"]',
+    );
+    return !!element;
+  }, []);
+
+  /**
    * Returns all mentions used in the editor.
    */
   const getMentions = useCallback(() => {
