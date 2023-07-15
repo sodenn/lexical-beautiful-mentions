@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.5
+
+### Patch Changes
+
+- 6d5eb6e: feat(): add option to limit suggested mentions
+- 6d5eb6e: feat(): provide a function that tells if the triggers menu is currently open
+
 ## 0.1.4
 
 ### Patch Changes
