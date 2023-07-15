@@ -13,6 +13,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import ComboboxPlugin from "./ComboboxPlugin";
+import { getSelectionInfo } from "./mention-utils";
 
 interface TriggerMenuPluginProps
   extends Pick<
@@ -73,8 +74,11 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
         (payload) => {
           const show = showTriggers(payload);
           if (show && !mentionsMenuOpen) {
-            payload.preventDefault();
-            setOpen(true);
+            const info = getSelectionInfo(triggers);
+            if (info && (info.isTextNode || !info.prevNode)) {
+              payload.preventDefault();
+              setOpen(true);
+            }
           }
           return false;
         },
