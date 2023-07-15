@@ -74,7 +74,7 @@ const beautifulMentionsTheme: BeautifulMentionsTheme = {
   // 👇 add the "Focused" suffix to style the focused mention
   "@Focused": "outline-none shadow-md ...",
   // 👇 use a configuration object if you need to apply different styles to trigger and value
-  "rec:": {
+  "due:": {
     trigger: "text-blue-400 ...",
     value: "text-orange-400 ...",
   },

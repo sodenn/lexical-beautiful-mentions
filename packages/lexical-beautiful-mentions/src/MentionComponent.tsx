@@ -49,10 +49,10 @@ export default function BeautifulMentionComponent(
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
   const isFocused = $isNodeSelection(selection) && isSelected;
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLSpanElement>(null);
   const mention = trigger + value;
 
-  const finalStyles = useMemo(() => {
+  const finalClasses = useMemo(() => {
     if (className) {
       const classes = [className];
       if (isFocused && classNameFocused) {
@@ -143,7 +143,10 @@ export default function BeautifulMentionComponent(
 
   const onClick = useCallback(
     (event: MouseEvent) => {
-      if (event.target === ref.current) {
+      if (
+        event.target === ref.current ||
+        ref.current?.contains(event.target as Node)
+      ) {
         if (!event.shiftKey) {
           clearSelection();
         }
@@ -228,7 +231,15 @@ export default function BeautifulMentionComponent(
 
   if (themeValues) {
     return (
-      <span ref={ref} data-beautiful-mention={mention}>
+      <span
+        ref={ref}
+        className={
+          isFocused
+            ? `${themeValues.container} ${themeValues.containerFocused}`
+            : themeValues.container
+        }
+        data-beautiful-mention={mention}
+      >
         <span className={themeValues.trigger}>{trigger}</span>
         <span className={themeValues.value}>{value}</span>
       </span>
@@ -236,7 +247,7 @@ export default function BeautifulMentionComponent(
   }
 
   return (
-    <span ref={ref} className={finalStyles} data-beautiful-mention={mention}>
+    <span ref={ref} className={finalClasses} data-beautiful-mention={mention}>
       {mention}
     </span>
   );
