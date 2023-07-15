@@ -71,11 +71,10 @@ export default function BeautifulMentionComponent(
         if ($isBeautifulMentionNode(node)) {
           node.remove();
         }
-        setSelected(false);
       }
       return false;
     },
-    [isSelected, nodeKey, setSelected],
+    [isSelected, nodeKey],
   );
 
   const onArrowLeftPress = useCallback(
