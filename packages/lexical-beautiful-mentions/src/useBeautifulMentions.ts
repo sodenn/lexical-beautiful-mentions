@@ -116,5 +116,6 @@ export function useBeautifulMentions() {
     hasMentions,
     openMentionsMenu,
     isMentionsMenuOpen,
+    isTriggersMenuOpen,
   };
 }
