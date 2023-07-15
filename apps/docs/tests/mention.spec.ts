@@ -12,6 +12,7 @@ test.describe("mentions handling", () => {
     await utils.editor.press("Backspace");
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.press("B");
+    await utils.sleep(200);
     await utils.editor.press("Enter");
     await utils.hasText("Hey [@Boris]");
   });
@@ -38,6 +39,7 @@ test.describe("mentions handling", () => {
     await utils.editor.press("Backspace");
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.press("B");
+    await utils.sleep(200);
     await utils.editor.press("Enter");
     await utils.hasText("Hey [@Boris] how are you doing?");
   });
