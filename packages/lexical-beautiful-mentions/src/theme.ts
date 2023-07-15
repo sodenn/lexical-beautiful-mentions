@@ -1,6 +1,8 @@
 export interface BeautifulMentionsThemeValues {
   trigger?: string;
   value?: string;
+  container?: string;
+  containerFocused?: string;
 }
 
 /**
