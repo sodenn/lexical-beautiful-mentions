@@ -72,7 +72,7 @@ test.describe("Menu", () => {
     await utils.hasText("[@abc]");
   });
 
-  test.only("should insert a selected mention by pressing enter", async ({
+  test("should insert a selected mention by pressing enter", async ({
     page,
   }) => {
     const utils = await testUtils(page);
