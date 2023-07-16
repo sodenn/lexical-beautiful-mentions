@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.7
+
+### Patch Changes
+
+- 401421d: fix(): focused mentions should not use the CSS classes defined in "container"
+
 ## 0.1.6
 
 ### Patch Changes
