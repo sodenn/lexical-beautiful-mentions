@@ -188,6 +188,43 @@ test.describe("Menu", () => {
     await utils.hasText("[@Anton]");
   });
 
+  test("should open the triggers menu when pressing slash", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      initialValue: "Hey ",
+      showTriggers: true,
+      autofocus: "end",
+    });
+    await utils.editor.press("Slash");
+    await expect(utils.triggersMenu).toBeVisible();
+    await utils.editor.press("Tab");
+    await expect(utils.mentionsMenu).toBeVisible();
+    await utils.editor.type("Ant");
+    await utils.sleep(200);
+    await utils.editor.press("Enter");
+    await utils.hasText("Hey [@Anton]");
+  });
+
+  test("should open the triggers menu in the middle of a sentence", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      initialValue: "Hey  what's up?",
+      showTriggers: true,
+      autofocus: "start",
+    });
+    await utils.moveCursorForward(4);
+    await utils.editor.press("Slash");
+    await expect(utils.triggersMenu).toBeVisible();
+    await utils.editor.press("Tab");
+    await expect(utils.mentionsMenu).toBeVisible();
+    await utils.editor.type("Ant");
+    await utils.sleep(200);
+    await utils.editor.press("Enter");
+    await utils.hasText("Hey [@Anton] what's up?");
+  });
+
   test("should not open the triggers menu when option is disabled", async ({
     page,
   }) => {

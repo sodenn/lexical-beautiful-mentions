@@ -190,7 +190,7 @@ function ComboboxPlugin<TOption extends MenuOption>(
 
       const match: MenuTextMatch = {
         matchingString: "",
-        replaceableString: text,
+        replaceableString: "",
         leadOffset: text.length,
       };
 

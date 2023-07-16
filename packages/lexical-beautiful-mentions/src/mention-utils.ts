@@ -97,6 +97,8 @@ export function getSelectionInfo(triggers: string[]) {
   const charAfterCursor = textContent.charAt(offset);
   const wordCharBeforeCursor = isWordChar(charBeforeCursor, triggers);
   const wordCharAfterCursor = isWordChar(charAfterCursor, triggers);
+  const spaceBeforeCursor = /\s/.test(charBeforeCursor);
+  const spaceAfterCursor = /\s/.test(charAfterCursor);
   const prevNode = getPreviousSibling(node);
   const nextNode = getNextSibling(node);
 
@@ -112,6 +114,8 @@ export function getSelectionInfo(triggers: string[]) {
     cursorAtEndOfNode,
     wordCharBeforeCursor,
     wordCharAfterCursor,
+    spaceBeforeCursor,
+    spaceAfterCursor,
   };
 }
 

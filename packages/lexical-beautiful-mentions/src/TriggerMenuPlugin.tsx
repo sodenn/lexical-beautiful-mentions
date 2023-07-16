@@ -7,7 +7,7 @@ import {
   $getSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_LOW,
-  KEY_MODIFIER_COMMAND,
+  KEY_DOWN_COMMAND,
   TextNode,
 } from "lexical";
 import React, { useCallback, useMemo, useState } from "react";
@@ -76,14 +76,15 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
       setTypeaheadMenuOpen(false);
       const textNode = $createTextNode(selectedOption.key);
       if (nodeToReplace) {
-        nodeToReplace.replace(textNode);
+        nodeToReplace.insertBefore(textNode);
+        textNode.select();
       } else {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
           selection.insertNodes([textNode]);
         }
+        textNode.selectNext();
       }
-      textNode.selectNext();
     },
     [],
   );
@@ -91,10 +92,13 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
   const checkForTriggerMatch = useCallback(
     (text: string) => {
       const info = getSelectionInfo(triggers);
-      if (info?.isTextNode && info.wordCharAfterCursor) {
-        return null;
-      }
-      if (mentionsMenuOpen || comboboxOpen) {
+      if (
+        !text ||
+        !info ||
+        mentionsMenuOpen ||
+        comboboxOpen ||
+        (info.isTextNode && info.wordCharAfterCursor)
+      ) {
         return null;
       }
       const queryMatch = checkForTriggers(text, triggers);
@@ -121,16 +125,23 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
   React.useEffect(() => {
     return mergeRegister(
       editor.registerCommand(
-        KEY_MODIFIER_COMMAND,
-        (payload) => {
-          const show = showTriggers(payload);
+        KEY_DOWN_COMMAND,
+        (event) => {
+          const show = showTriggers(event);
           if (show && !mentionsMenuOpen && !typeaheadMenuOpen) {
             const info = getSelectionInfo(triggers);
-            if (info && (info.isTextNode || !info.prevNode)) {
-              payload.preventDefault();
-              setComboboxOpen(true);
-              setTypeaheadMenuOpen(false);
+            if (
+              !info ||
+              (!info.isTextNode && !!info.prevNode) ||
+              (!info.spaceBeforeCursor && info.offset > 0) ||
+              (!info.spaceAfterCursor && !info.cursorAtEndOfNode) ||
+              (info.nextNode && info.cursorAtEndOfNode)
+            ) {
+              return false;
             }
+            event.preventDefault();
+            setComboboxOpen(true);
+            setTypeaheadMenuOpen(false);
           }
           return false;
         },
