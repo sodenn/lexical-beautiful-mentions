@@ -103,6 +103,7 @@ export default function Editor() {
             menuItemComponent={MenuItem}
             allowSpaces={allowSpaces}
             creatable={creatable}
+            mentionEnclosure={`"`}
             insertOnBlur={insertOnBlur}
             showMentionsOnDelete={showMentionsOnDelete}
             showTriggers={

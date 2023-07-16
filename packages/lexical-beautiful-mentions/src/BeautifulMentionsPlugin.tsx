@@ -76,6 +76,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     menuAnchorClassName,
     showTriggers,
     showMentionsOnDelete,
+    mentionEnclosure,
   } = props;
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
@@ -167,17 +168,20 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         if (!trigger) {
           return;
         }
-        const mentionNode = $createBeautifulMentionNode(
-          trigger,
-          selectedOption.value,
-        );
+        const newMention =
+          creatable && selectedOption.value !== selectedOption.label;
+        const value =
+          newMention && mentionEnclosure && /\s/.test(selectedOption.value)
+            ? mentionEnclosure + selectedOption.value + mentionEnclosure
+            : selectedOption.value;
+        const mentionNode = $createBeautifulMentionNode(trigger, value);
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
         }
         closeMenu();
       });
     },
-    [editor, trigger],
+    [editor, trigger, mentionEnclosure],
   );
 
   const checkForMentionMatch = useCallback(
