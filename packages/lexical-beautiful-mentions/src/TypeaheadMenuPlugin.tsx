@@ -2,7 +2,6 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import {
   $getSelection,
   $isRangeSelection,
-  $isTextNode,
   LexicalEditor,
   RangeSelection,
   TextNode,
@@ -18,6 +17,7 @@ import {
   MenuRenderFn,
   MenuResolution,
   TriggerFn,
+  isSelectionOnEntityBoundary,
   useMenuAnchorRef,
 } from "./Menu";
 
@@ -82,25 +82,6 @@ function getQueryTextForSearch(editor: LexicalEditor): string | null {
     text = getTextUpToAnchor(selection);
   });
   return text;
-}
-
-function isSelectionOnEntityBoundary(
-  editor: LexicalEditor,
-  offset: number,
-): boolean {
-  if (offset !== 0) {
-    return false;
-  }
-  return editor.getEditorState().read(() => {
-    const selection = $getSelection();
-    if ($isRangeSelection(selection)) {
-      const anchor = selection.anchor;
-      const anchorNode = anchor.getNode();
-      const prevSibling = anchorNode.getPreviousSibling();
-      return $isTextNode(prevSibling) && prevSibling.isTextEntity();
-    }
-    return false;
-  });
 }
 
 function startTransition(callback: () => void) {

@@ -3,7 +3,6 @@ import { mergeRegister } from "@lexical/utils";
 import {
   $getSelection,
   $isRangeSelection,
-  $isTextNode,
   BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
   KEY_DOWN_COMMAND,
@@ -18,27 +17,9 @@ import {
   MenuRenderFn,
   MenuResolution,
   MenuTextMatch,
+  isSelectionOnEntityBoundary,
   useMenuAnchorRef,
 } from "./Menu";
-
-function isSelectionOnEntityBoundary(
-  editor: LexicalEditor,
-  offset: number,
-): boolean {
-  if (offset !== 0) {
-    return false;
-  }
-  return editor.getEditorState().read(() => {
-    const selection = $getSelection();
-    if ($isRangeSelection(selection)) {
-      const anchor = selection.anchor;
-      const anchorNode = anchor.getNode();
-      const prevSibling = anchorNode.getPreviousSibling();
-      return $isTextNode(prevSibling) && prevSibling.isTextEntity();
-    }
-    return false;
-  });
-}
 
 function tryGetRect(leadOffset: number, range: Range) {
   const domSelection = window.getSelection();

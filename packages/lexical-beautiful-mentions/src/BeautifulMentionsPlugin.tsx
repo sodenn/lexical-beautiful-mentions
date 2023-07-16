@@ -181,7 +181,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         closeMenu();
       });
     },
-    [editor, trigger, mentionEnclosure],
+    [editor, trigger, creatable, mentionEnclosure],
   );
 
   const checkForMentionMatch = useCallback(
