@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.8
+
+### Patch Changes
+
+- c6072bf: fix(): trigger menu should not open before or after other nodes
+
 ## 0.1.7
 
 ### Patch Changes
