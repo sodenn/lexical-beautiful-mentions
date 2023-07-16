@@ -6,36 +6,42 @@ import {
   LexicalNode,
 } from "lexical";
 
-const PUNCTUATION = "\\.,\\*\\?\\$\\|#{}\\(\\)\\^\\[\\]\\\\/!%'\"~=<>_:;\\s";
+export const PUNCTUATION =
+  "\\.,\\*\\?\\$\\|#{}\\(\\)\\^\\[\\]\\\\/!%'\"~=<>_:;";
 
 // Strings that can trigger the mention menu.
 export const TRIGGERS = (triggers: string[]) =>
   "(?:" + triggers.join("|") + ")";
 
 // Chars we expect to see in a mention (non-space, non-punctuation).
-export const VALID_CHARS = (triggers: string[]) =>
-  "(?!" + triggers.join("|") + ")[^" + PUNCTUATION + "]";
+export const VALID_CHARS = (triggers: string[], punctuation: string) =>
+  "(?!" + triggers.join("|") + ")[^\\s" + punctuation + "]";
 
 // Non-standard series of chars. Each series must be preceded and followed by
 // a valid char.
-const VALID_JOINS =
+const VALID_JOINS = (punctuation: string) =>
   "(?:" +
   "\\.[ |$]|" + // E.g. "r. " in "Mr. Smith"
+  "\\s|" + // E.g. " " in "Josh Duck"
   "[" +
-  PUNCTUATION +
+  punctuation +
   "]|" + // E.g. "-' in "Salier-Hellendag"
   ")";
 
 export const LENGTH_LIMIT = 75;
 
 // Regex used to trigger the mention menu.
-function createMentionsRegex(triggers: string[], allowSpaces: boolean) {
+function createMentionsRegex(
+  triggers: string[],
+  punctuation: string,
+  allowSpaces: boolean,
+) {
   return new RegExp(
     "(^|\\s|\\()(" +
       TRIGGERS(triggers) +
       "((?:" +
-      VALID_CHARS(triggers) +
-      (allowSpaces ? VALID_JOINS : "") +
+      VALID_CHARS(triggers, punctuation) +
+      (allowSpaces ? VALID_JOINS(punctuation) : "") +
       "){0," +
       LENGTH_LIMIT +
       "})" +
@@ -46,9 +52,12 @@ function createMentionsRegex(triggers: string[], allowSpaces: boolean) {
 export function checkForMentions(
   text: string,
   triggers: string[],
+  punctuation: string,
   allowSpaces: boolean,
 ): MenuTextMatch | null {
-  const match = createMentionsRegex(triggers, allowSpaces).exec(text);
+  const match = createMentionsRegex(triggers, punctuation, allowSpaces).exec(
+    text,
+  );
   if (match !== null) {
     // The strategy ignores leading whitespace but we need to know it's
     // length to add it to the leadOffset
@@ -66,11 +75,15 @@ export function checkForMentions(
   return null;
 }
 
-export function isWordChar(char: string, triggers: string[]) {
-  return new RegExp(VALID_CHARS(triggers)).test(char);
+export function isWordChar(
+  char: string,
+  triggers: string[],
+  punctuation: string,
+) {
+  return new RegExp(VALID_CHARS(triggers, punctuation)).test(char);
 }
 
-export function getSelectionInfo(triggers: string[]) {
+export function getSelectionInfo(triggers: string[], punctuation: string) {
   const selection = $getSelection();
   if (!selection || !$isRangeSelection(selection)) {
     return;
@@ -95,8 +108,16 @@ export function getSelectionInfo(triggers: string[]) {
   const cursorAtEndOfNode = textContent.length === offset;
   const charBeforeCursor = textContent.charAt(offset - 1);
   const charAfterCursor = textContent.charAt(offset);
-  const wordCharBeforeCursor = isWordChar(charBeforeCursor, triggers);
-  const wordCharAfterCursor = isWordChar(charAfterCursor, triggers);
+  const wordCharBeforeCursor = isWordChar(
+    charBeforeCursor,
+    triggers,
+    punctuation,
+  );
+  const wordCharAfterCursor = isWordChar(
+    charAfterCursor,
+    triggers,
+    punctuation,
+  );
   const spaceBeforeCursor = /\s/.test(charBeforeCursor);
   const spaceAfterCursor = /\s/.test(charAfterCursor);
   const prevNode = getPreviousSibling(node);

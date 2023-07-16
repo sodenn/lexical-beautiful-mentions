@@ -99,10 +99,11 @@ export const OPEN_MENTIONS_MENU_COMMAND: LexicalCommand<OpenMentionsMenu> =
 
 export function insertMention(
   triggers: string[],
+  punctuation: string,
   trigger: string,
   value?: string,
 ) {
-  const selectionInfo = getSelectionInfo(triggers);
+  const selectionInfo = getSelectionInfo(triggers, punctuation);
   if (!selectionInfo) {
     return false;
   }

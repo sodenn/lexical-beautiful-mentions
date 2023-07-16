@@ -1,6 +1,11 @@
 import { $createTextNode, LexicalNode } from "lexical";
 import { $createBeautifulMentionNode } from "./MentionNode";
-import { LENGTH_LIMIT, TRIGGERS, VALID_CHARS } from "./mention-utils";
+import {
+  LENGTH_LIMIT,
+  PUNCTUATION,
+  TRIGGERS,
+  VALID_CHARS,
+} from "./mention-utils";
 
 interface MentionEntry {
   type: "mention";
@@ -15,11 +20,11 @@ interface TextEntry {
 
 type Entry = MentionEntry | TextEntry;
 
-function findMentions(text: string, triggers: string[]) {
+function findMentions(text: string, triggers: string[], punctuation: string) {
   const regex = new RegExp(
     TRIGGERS(triggers) +
       "((?:" +
-      VALID_CHARS(triggers) +
+      VALID_CHARS(triggers, punctuation) +
       "){1," +
       LENGTH_LIMIT +
       "})",
@@ -40,8 +45,9 @@ function findMentions(text: string, triggers: string[]) {
 export function convertToMentionEntries(
   text: string,
   triggers: string[],
+  punctuation: string,
 ): Entry[] {
-  const matches = findMentions(text, triggers);
+  const matches = findMentions(text, triggers, punctuation);
 
   const result: Entry[] = [];
   let lastIndex = 0;
@@ -88,8 +94,12 @@ export function convertToMentionEntries(
  * 🚨 Only works for mentions without spaces. Make sure to disable spaces via
  * the `allowSpaces` prop.
  */
-export function convertToMentionNodes(text: string, triggers: string[]) {
-  const entries = convertToMentionEntries(text, triggers);
+export function convertToMentionNodes(
+  text: string,
+  triggers: string[],
+  punctuation = PUNCTUATION,
+) {
+  const entries = convertToMentionEntries(text, triggers, punctuation);
   const nodes: LexicalNode[] = [];
   for (const entry of entries) {
     if (entry.type === "text") {

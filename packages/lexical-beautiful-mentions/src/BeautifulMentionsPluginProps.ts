@@ -78,6 +78,11 @@ interface BeautifulMentionsProps {
    * If `true`, the mention menu will be shown when the user deletes a mention.
    */
   showMentionsOnDelete?: boolean;
+  /**
+   * Punctuation characters used when looking for mentions.
+   * @default "\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%'\"~=<>_:;"
+   */
+  punctuation?: string;
 }
 
 export interface BeautifulMentionsSearchProps extends BeautifulMentionsProps {
