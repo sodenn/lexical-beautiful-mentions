@@ -30,6 +30,7 @@ import {
 } from "./MentionNode";
 import TriggerMenuPlugin from "./TriggerMenuPlugin";
 import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
+import { CAN_USE_DOM } from "./environment";
 import { handleKeydown } from "./handle-keydown";
 import {
   INSERT_MENTION_COMMAND,
@@ -372,6 +373,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     archiveSelection,
     handleDeleteMention,
   ]);
+
+  if (!CAN_USE_DOM) {
+    return null;
+  }
 
   return (
     <>

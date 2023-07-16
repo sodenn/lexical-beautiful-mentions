@@ -18,7 +18,8 @@ const beautifulMentionsTheme: BeautifulMentionsTheme = {
     value: `dark:text-orange-400 text-orange-950`,
     container:
       "mx-[2px] px-[4px] rounded ring-1 ring-gray-400 dark:ring-gray-700 cursor-pointer",
-    containerFocused: "!ring-gray-800",
+    containerFocused:
+      "mx-[2px] px-[4px] rounded ring-1 ring-gray-500 dark:ring-gray-400 cursor-pointer",
   },
   "\\w+:": `${mentionsStyle} dark:bg-gray-400 bg-gray-500 dark:text-gray-950 text-white`,
   "\\w+:Focused": mentionsStyleFocused,

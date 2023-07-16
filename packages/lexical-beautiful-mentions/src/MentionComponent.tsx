@@ -234,8 +234,8 @@ export default function BeautifulMentionComponent(
       <span
         ref={ref}
         className={
-          isFocused
-            ? `${themeValues.container} ${themeValues.containerFocused}`
+          isFocused && !!themeValues.containerFocused
+            ? themeValues.containerFocused
             : themeValues.container
         }
         data-beautiful-mention={mention}
