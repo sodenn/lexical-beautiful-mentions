@@ -32,7 +32,7 @@ export function checkForTriggers(
   triggers: string[],
 ): MenuTextMatch | null {
   const last = text.split(/\s/).pop() || text;
-  const offset = text.lastIndexOf(last);
+  const offset = text !== last ? text.lastIndexOf(last) : text.length;
   const match = triggers.some((t) => t.startsWith(last) && t !== last);
   if (match) {
     return {
@@ -55,7 +55,11 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
   } = props;
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
-  const options = useMemo(
+  const dropbownOptions = useMemo(
+    () => triggers.map((trigger) => new MenuOption(trigger)),
+    [triggers],
+  );
+  const typeaheadOptions = useMemo(
     () =>
       triggers
         .filter((t) => queryString === null || t.startsWith(queryString))
@@ -65,7 +69,30 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const [typeaheadMenuOpen, setTypeaheadMenuOpen] = useState(false);
 
-  const handleSelectOption = useCallback(
+  const handleSelectTypeaheadOption = useCallback(
+    (
+      selectedOption: MenuOption,
+      nodeToReplace: TextNode | null,
+      closeMenu: () => void,
+    ) => {
+      closeMenu();
+      setTypeaheadMenuOpen(false);
+      const textNode = $createTextNode(selectedOption.key);
+      if (nodeToReplace) {
+        nodeToReplace.replace(textNode);
+        textNode.select();
+      } else {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          selection.insertNodes([textNode]);
+        }
+        textNode.selectNext();
+      }
+    },
+    [],
+  );
+
+  const handleSelectComboboxOption = useCallback(
     (
       selectedOption: MenuOption,
       nodeToReplace: TextNode | null,
@@ -73,7 +100,6 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
     ) => {
       closeMenu();
       setComboboxOpen(false);
-      setTypeaheadMenuOpen(false);
       const textNode = $createTextNode(selectedOption.key);
       if (nodeToReplace) {
         nodeToReplace.insertBefore(textNode);
@@ -142,6 +168,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
             event.preventDefault();
             setComboboxOpen(true);
             setTypeaheadMenuOpen(false);
+            return true;
           }
           return false;
         },
@@ -153,8 +180,8 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
   return (
     <>
       <TypeaheadMenuPlugin<MenuOption>
-        onSelectOption={handleSelectOption}
-        options={options}
+        onSelectOption={handleSelectTypeaheadOption}
+        options={typeaheadOptions}
         anchorClassName={menuAnchorClassName}
         onClose={handleClose}
         triggerFn={checkForTriggerMatch}
@@ -173,7 +200,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
                   aria-label="Choose a trigger"
                   aria-hidden={!typeaheadMenuOpen}
                 >
-                  {options.map((option, i) => (
+                  {typeaheadOptions.map((option, i) => (
                     <MenuItemComponent
                       key={option.key}
                       tabIndex={-1}
@@ -205,8 +232,8 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
       />
       <ComboboxPlugin<MenuOption>
         open={comboboxOpen}
-        onSelectOption={handleSelectOption}
-        options={options}
+        onSelectOption={handleSelectComboboxOption}
+        options={dropbownOptions}
         anchorClassName={menuAnchorClassName}
         onClose={handleClose}
         menuRenderFn={(
@@ -222,7 +249,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
                   aria-label="Choose a trigger"
                   aria-hidden={!comboboxOpen}
                 >
-                  {options.map((option, i) => (
+                  {dropbownOptions.map((option, i) => (
                     <MenuItemComponent
                       key={option.key}
                       tabIndex={-1}
