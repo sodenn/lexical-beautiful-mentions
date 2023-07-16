@@ -106,7 +106,9 @@ export default function Editor() {
             insertOnBlur={insertOnBlur}
             showMentionsOnDelete={showMentionsOnDelete}
             showTriggers={
-              showTriggers ? (e) => e.ctrlKey && e.code === "Space" : undefined
+              showTriggers
+                ? (e) => (e.ctrlKey && e.code === "Space") || e.code === "Slash"
+                : undefined
             }
           />
         </div>

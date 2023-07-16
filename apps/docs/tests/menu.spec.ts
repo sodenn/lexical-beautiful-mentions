@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { testUtils } from "./test-utils";
 
-test.describe("Menu", () => {
+test.describe("Mentions Menu", () => {
   test("should open the menu before a comma", async ({ page }) => {
     const utils = await testUtils(page, {
       autofocus: "start",
@@ -170,50 +170,5 @@ test.describe("Menu", () => {
     await expect(utils.mentionsMenu.getByText("a")).toBeVisible();
     await utils.editor.press("Enter");
     await utils.hasText("[abc:a] [abc:a]");
-  });
-
-  test("should open the triggers menu when pressing ctrl+space", async ({
-    page,
-  }) => {
-    const utils = await testUtils(page, {
-      showTriggers: true,
-    });
-    await utils.editor.press("Control+Space");
-    await expect(utils.triggersMenu).toBeVisible();
-    await utils.editor.press("Tab");
-    await expect(utils.mentionsMenu).toBeVisible();
-    await utils.editor.type("Ant");
-    await utils.sleep(200);
-    await utils.editor.press("Enter");
-    await utils.hasText("[@Anton]");
-  });
-
-  test("should not open the triggers menu when option is disabled", async ({
-    page,
-  }) => {
-    const utils = await testUtils(page);
-    await utils.editor.press("Control+Space");
-    await utils.sleep(300);
-    await expect(utils.triggersMenu).not.toBeVisible();
-  });
-
-  test("should open the triggers menu when starting to type", async ({
-    page,
-  }) => {
-    const utils = await testUtils(page, { showTriggers: true });
-    await expect(utils.triggersMenu).not.toBeVisible();
-    await utils.editor.press("r");
-    await utils.sleep(300);
-    await expect(utils.triggersMenu).toBeVisible();
-  });
-
-  test("should not open the triggers when starting to type without using a trigger character", async ({
-    page,
-  }) => {
-    const utils = await testUtils(page, { showTriggers: true });
-    await expect(utils.triggersMenu).not.toBeVisible();
-    await utils.editor.press("a");
-    await utils.sleep(300);
-    await expect(utils.triggersMenu).not.toBeVisible();
   });
 });
