@@ -28,7 +28,7 @@ interface BeautifulMentionsProps {
    * If `true`, the user can also create new mentions instead of selecting
    * one from the list of suggestions.
    * If a string is provided, it will be used as the option label for the
-   * option that creates a new mention. The expression `{{value}}` will be
+   * option that creates a new mention. The expression `{{name}}` will be
    * replaced with the value of the user input.
    * @default true
    */
