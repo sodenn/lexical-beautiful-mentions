@@ -342,7 +342,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         INSERT_MENTION_COMMAND,
         ({ trigger, value, focus = true }) => {
           setSelection();
-          const inserted = insertMention(triggers, trigger, value);
+          const inserted = insertMention(triggers, punctuation, trigger, value);
           if (!focus) {
             archiveSelection();
           }
