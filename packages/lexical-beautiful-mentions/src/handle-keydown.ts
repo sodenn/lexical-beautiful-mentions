@@ -2,12 +2,16 @@ import { $createTextNode } from "lexical";
 import { $isBeautifulMentionNode } from "./MentionNode";
 import { getSelectionInfo, isWordChar } from "./mention-utils";
 
-export function handleKeydown(event: KeyboardEvent, triggers: string[]) {
+export function handleKeydown(
+  event: KeyboardEvent,
+  triggers: string[],
+  punctuation: string,
+) {
   const { key, metaKey, ctrlKey } = event;
   const simpleKey = key.length === 1;
   const isTrigger = triggers.some((trigger) => key === trigger);
-  const wordChar = isWordChar(key, triggers);
-  const selectionInfo = getSelectionInfo(triggers);
+  const wordChar = isWordChar(key, triggers, punctuation);
+  const selectionInfo = getSelectionInfo(triggers, punctuation);
   if (
     !simpleKey ||
     (!wordChar && !isTrigger) ||

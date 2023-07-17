@@ -58,6 +58,11 @@ interface BeautifulMentionsProps {
    */
   allowSpaces?: boolean;
   /**
+   * Only used if `allowSpaces` is `true`. The given characters are
+   * used to enclose mentions if they contain spaces.
+   */
+  mentionEnclosure?: string;
+  /**
    * If `true`, the mention will be inserted when the user blurs the editor.
    * @default true
    */
@@ -73,6 +78,11 @@ interface BeautifulMentionsProps {
    * If `true`, the mention menu will be shown when the user deletes a mention.
    */
   showMentionsOnDelete?: boolean;
+  /**
+   * Punctuation characters used when looking for mentions.
+   * @default "\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%'\"~=<>_:;"
+   */
+  punctuation?: string;
 }
 
 export interface BeautifulMentionsSearchProps extends BeautifulMentionsProps {

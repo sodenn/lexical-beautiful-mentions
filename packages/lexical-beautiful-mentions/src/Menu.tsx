@@ -3,6 +3,7 @@ import { mergeRegister } from "@lexical/utils";
 import {
   $getSelection,
   $isRangeSelection,
+  $isTextNode,
   COMMAND_PRIORITY_LOW,
   KEY_ARROW_DOWN_COMMAND,
   KEY_ARROW_UP_COMMAND,
@@ -555,3 +556,22 @@ export type TriggerFn = (
   text: string,
   editor: LexicalEditor,
 ) => MenuTextMatch | null;
+
+export function isSelectionOnEntityBoundary(
+  editor: LexicalEditor,
+  offset: number,
+): boolean {
+  if (offset !== 0) {
+    return false;
+  }
+  return editor.getEditorState().read(() => {
+    const selection = $getSelection();
+    if ($isRangeSelection(selection)) {
+      const anchor = selection.anchor;
+      const anchorNode = anchor.getNode();
+      const prevSibling = anchorNode.getPreviousSibling();
+      return $isTextNode(prevSibling) && prevSibling.isTextEntity();
+    }
+    return false;
+  });
+}

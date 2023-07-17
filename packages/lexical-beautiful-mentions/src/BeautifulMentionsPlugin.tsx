@@ -41,7 +41,11 @@ import {
   removeMention,
   renameMention,
 } from "./mention-commands";
-import { checkForMentions, getSelectionInfo } from "./mention-utils";
+import {
+  PUNCTUATION,
+  checkForMentions,
+  getSelectionInfo,
+} from "./mention-utils";
 import { useDebounce } from "./useDebounce";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
@@ -76,6 +80,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     menuAnchorClassName,
     showTriggers,
     showMentionsOnDelete,
+    mentionEnclosure,
+    punctuation = PUNCTUATION,
   } = props;
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
@@ -167,23 +173,26 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         if (!trigger) {
           return;
         }
-        const mentionNode = $createBeautifulMentionNode(
-          trigger,
-          selectedOption.value,
-        );
+        const newMention =
+          creatable && selectedOption.value !== selectedOption.label;
+        const value =
+          newMention && mentionEnclosure && /\s/.test(selectedOption.value)
+            ? mentionEnclosure + selectedOption.value + mentionEnclosure
+            : selectedOption.value;
+        const mentionNode = $createBeautifulMentionNode(trigger, value);
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
         }
         closeMenu();
       });
     },
-    [editor, trigger],
+    [editor, trigger, creatable, mentionEnclosure],
   );
 
   const checkForMentionMatch = useCallback(
     (text: string) => {
       // Don't show the menu if the next character is a word character
-      const info = getSelectionInfo(triggers);
+      const info = getSelectionInfo(triggers, punctuation);
       if (info?.isTextNode && info.wordCharAfterCursor) {
         return null;
       }
@@ -193,7 +202,12 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         return null;
       }
 
-      const queryMatch = checkForMentions(text, triggers, allowSpaces);
+      const queryMatch = checkForMentions(
+        text,
+        triggers,
+        punctuation,
+        allowSpaces,
+      );
       if (queryMatch) {
         const { replaceableString, matchingString } = queryMatch;
         const index = replaceableString.lastIndexOf(matchingString);
@@ -211,17 +225,22 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       }
       return null;
     },
-    [checkForSlashTriggerMatch, editor, triggers, allowSpaces],
+    [checkForSlashTriggerMatch, editor, triggers, allowSpaces, punctuation],
   );
 
   const insertTextAsMention = useCallback(() => {
-    const info = getSelectionInfo(triggers);
+    const info = getSelectionInfo(triggers, punctuation);
     if (!info || !info.isTextNode) {
       return false;
     }
     const node = info.node;
     const textContent = node.getTextContent();
-    const queryMatch = checkForMentions(textContent, triggers, false);
+    const queryMatch = checkForMentions(
+      textContent,
+      triggers,
+      punctuation,
+      false,
+    );
     if (queryMatch && queryMatch.replaceableString.length > 1) {
       const trigger = triggers.find((trigger) =>
         queryMatch.replaceableString.startsWith(trigger),
@@ -241,7 +260,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       return true;
     }
     return false;
-  }, [triggers]);
+  }, [triggers, punctuation]);
 
   const setSelection = useCallback(() => {
     const selection = $getSelection();
@@ -266,7 +285,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       if (!showMentionsOnDelete) {
         return false;
       }
-      const info = getSelectionInfo(triggers);
+      const info = getSelectionInfo(triggers, punctuation);
       if (info) {
         const { node, prevNode, offset } = info;
         const mentionNode = $isBeautifulMentionNode(node)
@@ -283,14 +302,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       }
       return false;
     },
-    [triggers, showMentionsOnDelete],
+    [showMentionsOnDelete, triggers, punctuation],
   );
 
   React.useEffect(() => {
     return mergeRegister(
       editor.registerCommand(
         KEY_DOWN_COMMAND,
-        (event) => handleKeydown(event, triggers),
+        (event) => handleKeydown(event, triggers, punctuation),
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
@@ -323,7 +342,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         INSERT_MENTION_COMMAND,
         ({ trigger, value, focus = true }) => {
           setSelection();
-          const inserted = insertMention(triggers, trigger, value);
+          const inserted = insertMention(triggers, punctuation, trigger, value);
           if (!focus) {
             archiveSelection();
           }
@@ -357,13 +376,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ),
       editor.registerCommand(
         OPEN_MENTIONS_MENU_COMMAND,
-        ({ trigger }) => insertMention(triggers, trigger),
+        ({ trigger }) => insertMention(triggers, punctuation, trigger),
         COMMAND_PRIORITY_LOW,
       ),
     );
   }, [
     editor,
     triggers,
+    punctuation,
     allowSpaces,
     insertOnBlur,
     creatable,
@@ -433,6 +453,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       {showTriggers && (
         <TriggerMenuPlugin
           triggers={triggers}
+          punctuation={punctuation}
           mentionsMenuOpen={open}
           menuAnchorClassName={menuAnchorClassName}
           menuComponent={props.menuComponent}

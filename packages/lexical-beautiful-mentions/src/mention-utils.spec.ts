@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { convertToMentionEntries } from "./mention-converter";
+import { PUNCTUATION } from "./mention-utils";
 
 describe("mention-utils", () => {
   it("should get text and mention entries", () => {
     const triggers = ["@", "due:", "#"];
     const text = "Hey @john, the task is #urgent and due:tomorrow";
-    const entries = convertToMentionEntries(text, triggers);
+    const entries = convertToMentionEntries(text, triggers, PUNCTUATION);
 
     expect(entries.length).toBe(6);
 
@@ -40,7 +41,7 @@ describe("mention-utils", () => {
   it("should get text and mention entries with multiple mentions", () => {
     const triggers = ["@", "due:", "#"];
     const text = "Hey @john and @jane.";
-    const entries = convertToMentionEntries(text, triggers);
+    const entries = convertToMentionEntries(text, triggers, PUNCTUATION);
 
     expect(entries.length).toBe(5);
 
@@ -66,7 +67,7 @@ describe("mention-utils", () => {
   it("should ignore triggers without a value", () => {
     const triggers = ["@", "#"];
     const text = "Hey @ john and # jane.";
-    const entries = convertToMentionEntries(text, triggers);
+    const entries = convertToMentionEntries(text, triggers, PUNCTUATION);
     expect(entries.length).toBe(1);
     expect(entries[0].type).toBe("text");
   });

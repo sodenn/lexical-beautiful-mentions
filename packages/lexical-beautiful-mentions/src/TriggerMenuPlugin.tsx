@@ -22,7 +22,9 @@ interface TriggerMenuPluginProps
       BeautifulMentionsPluginProps,
       "menuAnchorClassName" | "menuComponent" | "menuItemComponent"
     >,
-    Required<Pick<BeautifulMentionsPluginProps, "showTriggers">> {
+    Required<
+      Pick<BeautifulMentionsPluginProps, "showTriggers" | "punctuation">
+    > {
   triggers: string[];
   mentionsMenuOpen: boolean;
 }
@@ -47,6 +49,7 @@ export function checkForTriggers(
 export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
   const {
     triggers,
+    punctuation,
     mentionsMenuOpen,
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
@@ -117,7 +120,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
 
   const checkForTriggerMatch = useCallback(
     (text: string) => {
-      const info = getSelectionInfo(triggers);
+      const info = getSelectionInfo(triggers, punctuation);
       if (
         !text ||
         !info ||
@@ -136,7 +139,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
       }
       return null;
     },
-    [comboboxOpen, mentionsMenuOpen, triggers],
+    [comboboxOpen, mentionsMenuOpen, triggers, punctuation],
   );
 
   const handleClose = useCallback(() => {
@@ -155,7 +158,7 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
         (event) => {
           const show = showTriggers(event);
           if (show && !mentionsMenuOpen && !typeaheadMenuOpen) {
-            const info = getSelectionInfo(triggers);
+            const info = getSelectionInfo(triggers, punctuation);
             if (
               !info ||
               (!info.isTextNode && !!info.prevNode) ||
@@ -175,7 +178,14 @@ export default function TriggerMenuPlugin(props: TriggerMenuPluginProps) {
         COMMAND_PRIORITY_LOW,
       ),
     );
-  }, [editor, mentionsMenuOpen, showTriggers, triggers, typeaheadMenuOpen]);
+  }, [
+    editor,
+    mentionsMenuOpen,
+    showTriggers,
+    triggers,
+    typeaheadMenuOpen,
+    punctuation,
+  ]);
 
   return (
     <>
