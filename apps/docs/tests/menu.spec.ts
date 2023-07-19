@@ -25,7 +25,7 @@ test.describe("Mentions Menu", () => {
     await utils.editor.type(" @ant");
     await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(2);
     await expect(utils.mentionsMenu.getByText("Anton")).toBeVisible();
-    await expect(utils.mentionsMenu.getByText(`Add "ant"`)).toBeVisible();
+    await expect(utils.mentionsMenu.getByText(`Add user "ant"`)).toBeVisible();
     await utils.hasText("Hey [@lisa] @ant");
   });
 
