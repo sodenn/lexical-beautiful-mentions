@@ -107,7 +107,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     // Add options from the lookup service
     let opt = results.map((result) => new MenuOption(result));
     if (menuItemLimit !== false && menuItemLimit > 0) {
-      opt = opt.slice(0, menuItemLimit - 1);
+      opt = opt.slice(0, menuItemLimit);
     }
     // Add mentions from the editor
     const readyToAddEditorMentions = !onSearch || debouncedQueryString !== null;

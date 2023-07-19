@@ -99,7 +99,6 @@ export default function Editor() {
             onSearch={handleSearch}
             searchDelay={asynchronous ? 250 : 0}
             triggers={Object.keys(mentionItems)}
-            menuItemLimit={1}
             menuComponent={Menu}
             menuItemComponent={MenuItem}
             allowSpaces={allowSpaces}
