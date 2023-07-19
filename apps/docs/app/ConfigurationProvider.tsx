@@ -32,6 +32,13 @@ interface Configuration
 
 const ConfigurationCtx = createContext<Configuration>(undefined);
 
+const creatableMap = {
+  "@": 'Add user "{{name}}"',
+  "#": 'Add tag "{{name}}"',
+  "due:": 'Add due date "{{name}}"',
+  "rec:": 'Add recurrence "{{name}}"',
+};
+
 const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const { updateQueryParam, hasQueryParams, getQueryParam } = useQueryParams();
   const [asynchronous, _setAsynchronous] = useState(
@@ -120,7 +127,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         showTriggers,
         showMentionsOnDelete,
         allowSpaces,
-        creatable,
+        creatable: creatable ? creatableMap : false,
         insertOnBlur,
         setAsynchronous,
         setAllowSpaces,
