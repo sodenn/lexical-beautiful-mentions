@@ -1,8 +1,8 @@
 import { $createTextNode, LexicalNode } from "lexical";
 import { $createBeautifulMentionNode } from "./MentionNode";
 import {
+  DEFAULT_PUNCTUATION,
   LENGTH_LIMIT,
-  PUNCTUATION,
   TRIGGERS,
   VALID_CHARS,
 } from "./mention-utils";
@@ -97,7 +97,7 @@ export function convertToMentionEntries(
 export function convertToMentionNodes(
   text: string,
   triggers: string[],
-  punctuation = PUNCTUATION,
+  punctuation = DEFAULT_PUNCTUATION,
 ) {
   const entries = convertToMentionEntries(text, triggers, punctuation);
   const nodes: LexicalNode[] = [];

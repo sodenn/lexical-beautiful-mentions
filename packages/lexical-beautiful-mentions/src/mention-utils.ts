@@ -1,4 +1,3 @@
-import { MenuTextMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import {
   $getSelection,
   $isRangeSelection,
@@ -7,7 +6,7 @@ import {
 } from "lexical";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 
-export const PUNCTUATION =
+export const DEFAULT_PUNCTUATION =
   "\\.,\\*\\?\\$\\|#{}\\(\\)\\^\\[\\]\\\\/!%'\"~=<>_:;";
 
 // Strings that can trigger the mention menu.
@@ -18,63 +17,7 @@ export const TRIGGERS = (triggers: string[]) =>
 export const VALID_CHARS = (triggers: string[], punctuation: string) =>
   "(?!" + triggers.join("|") + ")[^\\s" + punctuation + "]";
 
-// Non-standard series of chars. Each series must be preceded and followed by
-// a valid char.
-const VALID_JOINS = (punctuation: string) =>
-  "(?:" +
-  "\\.[ |$]|" + // E.g. "r. " in "Mr. Smith"
-  "\\s|" + // E.g. " " in "Josh Duck"
-  "[" +
-  punctuation +
-  "]|" + // E.g. "-' in "Salier-Hellendag"
-  ")";
-
 export const LENGTH_LIMIT = 75;
-
-// Regex used to trigger the mention menu.
-function createMentionsRegex(
-  triggers: string[],
-  punctuation: string,
-  allowSpaces: boolean,
-) {
-  return new RegExp(
-    "(^|\\s|\\()(" +
-      TRIGGERS(triggers) +
-      "((?:" +
-      VALID_CHARS(triggers, punctuation) +
-      (allowSpaces ? VALID_JOINS(punctuation) : "") +
-      "){0," +
-      LENGTH_LIMIT +
-      "})" +
-      ")$",
-  );
-}
-
-export function checkForMentions(
-  text: string,
-  triggers: string[],
-  punctuation: string,
-  allowSpaces: boolean,
-): MenuTextMatch | null {
-  const match = createMentionsRegex(triggers, punctuation, allowSpaces).exec(
-    text,
-  );
-  if (match !== null) {
-    // The strategy ignores leading whitespace but we need to know it's
-    // length to add it to the leadOffset
-    const maybeLeadingWhitespace = match[1];
-    const matchingStringWithTrigger = match[2];
-    const matchingString = match[3];
-    if (matchingStringWithTrigger.length >= 1) {
-      return {
-        leadOffset: match.index + maybeLeadingWhitespace.length,
-        matchingString: matchingString,
-        replaceableString: matchingStringWithTrigger,
-      };
-    }
-  }
-  return null;
-}
 
 export function isWordChar(
   char: string,

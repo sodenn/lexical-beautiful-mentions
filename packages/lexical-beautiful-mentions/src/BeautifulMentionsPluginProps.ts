@@ -83,7 +83,7 @@ interface BeautifulMentionsProps {
   showMentionsOnDelete?: boolean;
   /**
    * Punctuation characters used when looking for mentions.
-   * @default "\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%'\"~=<>_:;"
+   * @default {@link DEFAULT_PUNCTUATION}
    */
   punctuation?: string;
 }
