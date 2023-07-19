@@ -25,14 +25,15 @@ export interface BeautifulMentionsMenuItemProps
 
 interface BeautifulMentionsProps {
   /**
-   * If `true`, the user can also create new mentions instead of selecting
-   * one from the list of suggestions.
-   * If a string is provided, it will be used as the option label for the
+   * If `truthy`, the user can also create new mentions instead of just
+   * selecting one from the mention list.
+   * If a string is provided, it will be used as the label for the
    * option that creates a new mention. The expression `{{name}}` will be
-   * replaced with the value of the user input.
-   * @default true
+   * replaced with the value of the user input. If a map is provided,
+   * individual labels can be specified for each trigger.
+   * @default false
    */
-  creatable?: boolean | string;
+  creatable?: boolean | string | Record<string, boolean | string>;
   /**
    * The component to use for the menu.
    * @default ul
@@ -49,9 +50,11 @@ interface BeautifulMentionsProps {
   menuAnchorClassName?: string;
   /**
    * At most, the specified number of menu items will be rendered.
-   * @default 6
+   * If a map is provided, individual limits can be specified for each
+   * trigger.
+   * @default 5
    */
-  menuItemLimit?: number | false;
+  menuItemLimit?: number | false | Record<string, number | false>;
   /**
    * If `true`, mentions can contain spaces.
    * @default false

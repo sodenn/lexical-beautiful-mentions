@@ -44,14 +44,13 @@ import {
 import {
   PUNCTUATION,
   checkForMentions,
+  getCreatableProp,
+  getMenuItemLimitProp,
   getSelectionInfo,
 } from "./mention-utils";
 import { useDebounce } from "./useDebounce";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
-
-// At most, 6 suggestions are shown in the popup.
-const SUGGESTION_LIST_LENGTH_LIMIT = 5;
 
 class MenuOption extends _MenuOption {
   value: string;
@@ -71,12 +70,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     items,
     onSearch,
     searchDelay = props.onSearch ? 250 : 0,
-    creatable,
     allowSpaces = true,
     insertOnBlur = true,
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
-    menuItemLimit,
     menuAnchorClassName,
     showTriggers,
     showMentionsOnDelete,
@@ -104,12 +101,13 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const [oldSelection, setOldSelection] = useState<
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
-
+  const creatable = getCreatableProp(props.creatable, trigger);
+  const menuItemLimit = getMenuItemLimitProp(props.menuItemLimit, trigger);
   const options = useMemo(() => {
     // Add options from the lookup service
     let opt = results.map((result) => new MenuOption(result));
-    if (menuItemLimit !== false) {
-      opt = opt.slice(0, menuItemLimit || SUGGESTION_LIST_LENGTH_LIMIT);
+    if (menuItemLimit !== false && menuItemLimit > 0) {
+      opt = opt.slice(0, menuItemLimit);
     }
     // Add mentions from the editor
     const readyToAddEditorMentions = !onSearch || debouncedQueryString !== null;

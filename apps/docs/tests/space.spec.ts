@@ -120,11 +120,11 @@ test.describe("Space handling", () => {
       creatable: true,
       autofocus: "start",
     });
-    await utils.editor.type("@xxx");
+    await utils.editor.type("#xxx");
     await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(1);
-    await expect(utils.mentionsMenu.getByText(`Add "xxx"`)).toBeVisible();
+    await expect(utils.mentionsMenu.getByText(`Add tag "xxx"`)).toBeVisible();
     await utils.editor.press("Space");
-    await utils.hasText("[@xxx] ");
+    await utils.hasText("[#xxx] ");
   });
 
   test("should insert a new mention with dashes", async ({ page }) => {

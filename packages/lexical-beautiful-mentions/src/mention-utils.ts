@@ -5,6 +5,7 @@ import {
   $isTextNode,
   LexicalNode,
 } from "lexical";
+import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 
 export const PUNCTUATION =
   "\\.,\\*\\?\\$\\|#{}\\(\\)\\^\\[\\]\\\\/!%'\"~=<>_:;";
@@ -157,4 +158,36 @@ export function getPreviousSibling(node: LexicalNode) {
     previousSibling = previousSibling.getPreviousSibling();
   }
   return previousSibling;
+}
+
+export function getCreatableProp(
+  creatable: BeautifulMentionsPluginProps["creatable"],
+  trigger: string | null,
+) {
+  if (typeof creatable === "string" || typeof creatable === "boolean") {
+    return creatable;
+  }
+  if (trigger === null) {
+    return false;
+  }
+  if (typeof creatable === "object") {
+    return creatable[trigger];
+  }
+  return false;
+}
+
+export function getMenuItemLimitProp(
+  menuItemLimit: BeautifulMentionsPluginProps["menuItemLimit"],
+  trigger: string | null,
+) {
+  if (typeof menuItemLimit === "number" || typeof menuItemLimit === "boolean") {
+    return menuItemLimit;
+  }
+  if (trigger === null) {
+    return false;
+  }
+  if (typeof menuItemLimit === "object") {
+    return menuItemLimit[trigger];
+  }
+  return 5;
 }
