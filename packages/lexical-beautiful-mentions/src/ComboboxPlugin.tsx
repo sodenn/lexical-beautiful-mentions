@@ -12,13 +12,7 @@ import {
   RangeSelection,
   TextNode,
 } from "lexical";
-import {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import {
@@ -30,10 +24,10 @@ import {
 import { insertMention } from "./mention-commands";
 import { useIsFocused } from "./useIsFocused";
 
-interface CommandPluginProps
+interface ComboboxPluginProps
   extends Pick<
       BeautifulMentionsPluginProps,
-      "commandComponent" | "commandItemComponent"
+      "comboboxComponent" | "comboboxItemComponent"
     >,
     Required<Pick<BeautifulMentionsPluginProps, "punctuation">> {
   triggerFn: TriggerFn;
@@ -73,10 +67,18 @@ function getTextUpToAnchor(selection: RangeSelection): string | null {
   return anchorNode.getTextContent().slice(0, anchorOffset);
 }
 
-export function useAnchorRef(): MutableRefObject<HTMLElement> {
+function filterTriggers(triggers: string[], text: string | null) {
+  if (!text || triggers.every((t) => !t.startsWith(text))) {
+    return triggers;
+  }
+  return triggers.filter((t) => t.startsWith(text));
+}
+
+export function useAnchorRef(render: boolean) {
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
   const [editor] = useLexicalComposerContext();
-  const ref = useRef<HTMLElement>(document.createElement("div"));
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const minHeight = useRef<number>(0);
 
   useEffect(() => {
     return editor.registerRootListener((rootElement) => {
@@ -86,18 +88,29 @@ export function useAnchorRef(): MutableRefObject<HTMLElement> {
 
   useEffect(() => {
     const parent = rootElement?.parentElement;
-    if (!parent) {
+    if (!render && parent && anchor && parent.contains(anchor)) {
+      parent.removeChild(anchor);
+      setAnchor(null);
+    }
+  }, [anchor, render, rootElement?.parentElement]);
+
+  useEffect(() => {
+    const parent = rootElement?.parentElement;
+    if (!parent || !render) {
       return;
     }
     const { width } = parent.getBoundingClientRect();
-    const ele = ref.current;
-    ele.style.position = "absolute";
-    ele.style.width = `${width}px`;
-    parent.appendChild(ele);
+    const element = anchor || document.createElement("div");
+    if (!anchor) {
+      setAnchor(element);
+    }
+    element.style.position = "absolute";
+    element.style.width = `${width}px`;
+    parent.appendChild(element);
     return () => {
-      parent.removeChild(ele);
+      parent.removeChild(element);
     };
-  }, [rootElement]);
+  }, [rootElement, render, anchor]);
 
   useEffect(() => {
     const parent = rootElement?.parentElement;
@@ -105,21 +118,38 @@ export function useAnchorRef(): MutableRefObject<HTMLElement> {
       return;
     }
     const resizeObserver = new ResizeObserver(([entry]) => {
-      console.log(entry.contentRect.height);
-      if (ref.current) {
-        ref.current.style.width = `${entry.contentRect.width}px`;
+      if (anchor) {
+        anchor.style.width = `${entry.contentRect.width}px`;
       }
     });
     resizeObserver.observe(parent);
     return () => {
       resizeObserver.disconnect();
     };
-  }, [rootElement]);
+  }, [anchor, rootElement]);
 
-  return ref;
+  useEffect(() => {
+    if (!anchor) {
+      return;
+    }
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      console.log(entry);
+      if (entry.contentRect.height > minHeight.current) {
+        minHeight.current = entry.contentRect.height;
+        anchor.style.minHeight = `${minHeight.current}px`;
+        anchor.style.height = `1px`;
+      }
+    });
+    resizeObserver.observe(anchor);
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [anchor]);
+
+  return anchor;
 }
 
-export function CommandPlugin(props: CommandPluginProps) {
+export function ComboboxPlugin(props: ComboboxPluginProps) {
   const {
     queryString,
     onSelectOption,
@@ -129,55 +159,84 @@ export function CommandPlugin(props: CommandPluginProps) {
     triggerFn,
     onQueryChange,
     options,
-    commandComponent: CommandComponent = "div",
-    commandItemComponent: CommandItemComponent = "div",
+    comboboxComponent: ComboboxComponent = "div",
+    comboboxItemComponent: ComboboxItemComponent = "div",
   } = props;
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
-  const anchor = useAnchorRef();
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const anchor = useAnchorRef(focused);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [match, setMatch] = useState<MenuTextMatch | null>(null);
   const [text, setText] = useState<string | null>(null);
+  const itemRef = useRef<Record<string, HTMLElement | null>>({});
+
+  const scrollIntoView = useCallback(
+    (index: number) => {
+      const items = options.length === 0 ? triggers : options;
+      const item = items[index];
+      const el =
+        typeof item === "string"
+          ? itemRef.current[item]
+          : itemRef.current[item.key];
+      if (el) {
+        el.scrollIntoView({ block: "nearest" });
+      }
+    },
+    [options, triggers],
+  );
 
   const handleArrowKeyDown = useCallback(
     (event: KeyboardEvent, direction: "up" | "down") => {
       if (!focused) {
         return false;
       }
-      const optionsLength =
+      const index = selectedIndex === null ? -1 : selectedIndex;
+      const length =
         options.length === 0 ? triggers.length - 1 : options.length - 1;
-      const newSelectedIndex =
+      const newIndex =
         direction === "down"
-          ? selectedIndex < optionsLength
-            ? selectedIndex + 1
+          ? index < length
+            ? index + 1
             : 0
-          : selectedIndex > 0
-          ? selectedIndex - 1
-          : optionsLength;
-      setSelectedIndex(newSelectedIndex);
+          : index > 0
+          ? index - 1
+          : length;
+      setSelectedIndex(newIndex);
+      scrollIntoView(newIndex);
       event.preventDefault();
       event.stopImmediatePropagation();
       return true;
     },
-    [focused, options.length, selectedIndex, triggers.length],
+    [focused, options.length, selectedIndex, triggers.length, scrollIntoView],
   );
+
+  const handleMouseEnter = useCallback(
+    (index: number) => {
+      setSelectedIndex(index);
+      scrollIntoView(index);
+    },
+    [scrollIntoView],
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    setSelectedIndex(null);
+  }, []);
 
   const cleanup = useCallback(() => {
     setMatch(null);
-    setSelectedIndex(0);
     onQueryChange(null);
     setText(null);
   }, [onQueryChange]);
 
   const handleSelectOption = useCallback(
     (index: number) => {
-      setSelectedIndex(index);
       const option = options[index];
       editor.update(() => {
         const textNode = match ? $splitNodeContainingQuery(match) : null;
         onSelectOption(option, textNode);
       });
       cleanup();
+      setSelectedIndex(null);
     },
     [cleanup, editor, match, onSelectOption, options],
   );
@@ -195,12 +254,15 @@ export function CommandPlugin(props: CommandPluginProps) {
 
   const handleKeySelect = useCallback(
     (event: KeyboardEvent) => {
+      if (!focused || selectedIndex === null) {
+        return false;
+      }
       let handled = false;
-      if (focused && options.length === 0) {
+      if (options.length === 0) {
         handled = true;
         handleSelectTrigger(selectedIndex);
       }
-      if (focused && options.length > 0) {
+      if (options.length > 0) {
         handled = true;
         handleSelectOption(selectedIndex);
       }
@@ -208,6 +270,7 @@ export function CommandPlugin(props: CommandPluginProps) {
         event.preventDefault();
         event.stopImmediatePropagation();
       }
+      console.log(handled);
       return handled;
     },
     [
@@ -276,37 +339,43 @@ export function CommandPlugin(props: CommandPluginProps) {
   return (
     <>
       {ReactDOM.createPortal(
-        <CommandComponent open={focused}>
+        <ComboboxComponent>
           {options.length === 0 &&
-            triggers
-              .filter((t) => !text || t.includes(text))
-              .map((trigger, index) => (
-                <CommandItemComponent
-                  key={trigger}
-                  label={trigger}
-                  onClick={() => handleSelectTrigger(index)}
-                  onMouseEnter={() => setSelectedIndex(index)}
-                  onMouseDown={(e) => e.preventDefault()}
-                  selected={index === selectedIndex}
-                >
-                  {trigger}
-                </CommandItemComponent>
-              ))}
+            filterTriggers(triggers, text).map((trigger, index) => (
+              <ComboboxItemComponent
+                key={trigger}
+                label={trigger}
+                ref={(el: HTMLElement | null) =>
+                  (itemRef.current[trigger] = el)
+                }
+                onClick={() => handleSelectTrigger(index)}
+                onMouseEnter={() => handleMouseEnter(index)}
+                onMouseLeave={handleMouseLeave}
+                onMouseDown={(e) => e.preventDefault()}
+                selected={index === selectedIndex}
+              >
+                {trigger}
+              </ComboboxItemComponent>
+            ))}
           {options.length > 0 &&
             options.map((option, index) => (
-              <CommandItemComponent
+              <ComboboxItemComponent
                 key={option.key}
                 label={option.label}
+                ref={(el: HTMLElement | null) =>
+                  (itemRef.current[option.key] = el)
+                }
                 onClick={() => handleSelectOption(index)}
-                onMouseEnter={() => setSelectedIndex(index)}
+                onMouseEnter={() => handleMouseEnter(index)}
+                onMouseLeave={handleMouseLeave}
                 onMouseDown={(e) => e.preventDefault()}
                 selected={index === selectedIndex}
               >
                 {option.label}
-              </CommandItemComponent>
+              </ComboboxItemComponent>
             ))}
-        </CommandComponent>,
-        anchor.current!,
+        </ComboboxComponent>,
+        anchor,
       )}
     </>
   );

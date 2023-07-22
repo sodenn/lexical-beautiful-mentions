@@ -20,7 +20,7 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
-import { CommandPlugin } from "./CommandPlugin";
+import { ComboboxPlugin } from "./ComboboxPlugin";
 import {
   $createBeautifulMentionNode,
   $isBeautifulMentionNode,
@@ -171,7 +171,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertOnBlur = true,
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
-    command,
+    combobox,
     menuAnchorClassName,
     showMentionsOnDelete,
     mentionEnclosure,
@@ -493,9 +493,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return null;
   }
 
-  if (command) {
+  if (combobox) {
     return (
-      <CommandPlugin
+      <ComboboxPlugin
         options={options}
         onQueryChange={setQueryString}
         onSelectOption={handleSelectOption}
@@ -504,8 +504,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         triggers={triggers}
         punctuation={punctuation}
         creatable={creatable}
-        commandComponent={props.commandComponent}
-        commandItemComponent={props.commandItemComponent}
+        comboboxComponent={props.comboboxComponent}
+        comboboxItemComponent={props.comboboxItemComponent}
       />
     );
   }

@@ -20,14 +20,14 @@ interface Configuration
   autoFocus: "rootStart" | "rootEnd" | "none";
   asynchronous: boolean;
   commandFocus: boolean;
-  command: boolean;
+  combobox: boolean;
   showMentionsOnDelete: boolean;
   setAsynchronous: (asynchronous: boolean) => void;
   setAllowSpaces: (allowSpaces: boolean) => void;
   setCreatable: (creatable: boolean) => void;
   setInsertOnBlur: (insertOnBlur: boolean) => void;
-  setCommand: (showTriggers: boolean) => void;
-  setShowMentionsOnDelete: (showTriggers: boolean) => void;
+  setCombobox: (combobox: boolean) => void;
+  setShowMentionsOnDelete: (showMentionsOnDelete: boolean) => void;
 }
 
 const ConfigurationCtx = createContext<Configuration>(undefined);
@@ -51,7 +51,9 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const [insertOnBlur, _setInsertOnBlur] = useState(
     getQueryParam("blur") === "true",
   );
-  const [command, _setCommand] = useState(getQueryParam("command") === "true");
+  const [combobox, _setCombobox] = useState(
+    getQueryParam("combobox") === "true",
+  );
   const [showMentionsOnDelete, _setShowMentionsOnDelete] = useState(
     getQueryParam("mentions") === "true",
   );
@@ -76,10 +78,10 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     [updateQueryParam],
   );
 
-  const setCommand = useCallback(
-    (command: boolean) => {
-      _setCommand(command);
-      updateQueryParam("command", command);
+  const setCombobox = useCallback(
+    (combobox: boolean) => {
+      _setCombobox(combobox);
+      updateQueryParam("combobox", combobox);
     },
     [updateQueryParam],
   );
@@ -122,7 +124,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         initialValue,
         autoFocus,
         asynchronous,
-        command,
+        combobox,
         showMentionsOnDelete,
         allowSpaces,
         creatable: creatable ? creatableMap : false,
@@ -131,7 +133,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         setAllowSpaces,
         setCreatable,
         setInsertOnBlur,
-        setCommand,
+        setCombobox,
         setShowMentionsOnDelete,
         commandFocus,
       }}

@@ -9,7 +9,7 @@ function getRandomItem<T>(array: T[]): T {
   return array[randomIndex];
 }
 
-export default function MentionsToolbar() {
+export default function MentionsToolbarPlugin() {
   const {
     openMentionsMenu,
     renameMentions,
@@ -19,14 +19,14 @@ export default function MentionsToolbar() {
   } = useBeautifulMentions();
   const {
     asynchronous,
-    showTriggers,
+    combobox,
     showMentionsOnDelete,
     allowSpaces,
     creatable,
     insertOnBlur,
     commandFocus,
     setAsynchronous,
-    setShowTriggers,
+    setCombobox,
     setAllowSpaces,
     setCreatable,
     setInsertOnBlur,
@@ -60,11 +60,11 @@ export default function MentionsToolbar() {
     [setAllowSpaces],
   );
 
-  const handleShowTriggersChange: CheckboxProps["onChange"] = useCallback(
+  const handleComboboxChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
-      setShowTriggers(event.target.checked);
+      setCombobox(event.target.checked);
     },
-    [setShowTriggers],
+    [setCombobox],
   );
 
   const handleShowMentionsOnDelete: CheckboxProps["onChange"] = useCallback(
@@ -154,10 +154,10 @@ export default function MentionsToolbar() {
           onChange={handleAsynchronousChange}
         />
         <Checkbox
-          label="showTriggers"
-          helpText="Shows the available triggers while typing or when pressing ctrl+space."
-          checked={showTriggers}
-          onChange={handleShowTriggersChange}
+          label="combobox"
+          helpText="Use a combobox instead of a menu."
+          checked={combobox}
+          onChange={handleComboboxChange}
         />
       </div>
     </>

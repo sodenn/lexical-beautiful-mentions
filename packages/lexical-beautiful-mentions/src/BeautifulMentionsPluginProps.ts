@@ -23,6 +23,10 @@ export interface BeautifulMentionsMenuItemProps
   label: string;
 }
 
+export type BeautifulMentionsComboboxProps = ComponentPropsWithRef<any>;
+
+export type BeautifulMentionsComboboxItemProps = BeautifulMentionsMenuItemProps;
+
 interface BeautifulMentionsProps {
   /**
    * If `truthy`, the user can also create new mentions instead of just
@@ -81,23 +85,23 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    * The component to use for a menu item.
    * @default li
    */
-  menuItemComponent?: ElementType<BeautifulMentionsMenuItemProps>;
-  command?: never;
-  commandComponent?: never;
-  commandItemComponent?: never;
+  menuItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
+  combobox?: never;
+  comboboxComponent?: never;
+  comboboxItemComponent?: never;
 };
 
 type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
-  command: true;
+  combobox: true;
   /**
-   * The component to use for the command.
+   * The component to use for the combobox.
    * @default ul
    */
-  commandComponent?: ElementType<BeautifulMentionsMenuProps>;
+  comboboxComponent?: ElementType<ComponentPropsWithRef<any>>;
   /**
-   * The component to use for a command item.
+   * The component to use for a combobox item.
    */
-  commandItemComponent?: ElementType<BeautifulMentionsMenuItemProps>;
+  comboboxItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
   menuComponent?: never;
   menuItemComponent?: never;
 };

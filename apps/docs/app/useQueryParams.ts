@@ -10,7 +10,7 @@ interface QueryParams {
   space: string;
   new: string;
   blur: string;
-  command: string;
+  combobox: string;
   mentions: string;
 }
 
