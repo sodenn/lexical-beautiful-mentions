@@ -1,8 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  MenuOption as _MenuOption,
-  useBasicTypeaheadTriggerMatch,
-} from "@lexical/react/LexicalTypeaheadMenuPlugin";
+import { useBasicTypeaheadTriggerMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
   $createRangeSelection,
@@ -23,13 +20,13 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
+import { CommandPlugin } from "./CommandPlugin";
 import {
   $createBeautifulMentionNode,
   $isBeautifulMentionNode,
   BeautifulMentionNode,
 } from "./MentionNode";
-import { MenuTextMatch } from "./Menu";
-import TriggerMenuPlugin from "./TriggerMenuPlugin";
+import { MenuOption, MenuTextMatch } from "./Menu";
 import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { CAN_USE_DOM } from "./environment";
 import {
@@ -54,16 +51,6 @@ import {
 import { useDebounce } from "./useDebounce";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
-
-class MenuOption extends _MenuOption {
-  value: string;
-  label: string;
-  constructor(value: string, label?: string) {
-    super(value);
-    this.value = value;
-    this.label = label ?? value;
-  }
-}
 
 export function handleKeydown(
   event: KeyboardEvent,
@@ -184,8 +171,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertOnBlur = true,
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
+    command,
     menuAnchorClassName,
-    showTriggers,
     showMentionsOnDelete,
     mentionEnclosure,
     punctuation = DEFAULT_PUNCTUATION,
@@ -232,7 +219,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             mention.getTrigger() === trigger &&
             (debouncedQueryString === null ||
               mention.getValue().startsWith(debouncedQueryString)) &&
-            opt.every((o) => o.value !== mentionName)
+            opt.every((o) => o.key !== mentionName)
           ) {
             opt.push(new MenuOption(mentionName, mentionName));
           }
@@ -275,23 +262,23 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     (
       selectedOption: MenuOption,
       nodeToReplace: TextNode | null,
-      closeMenu: () => void,
+      closeMenu?: () => void,
     ) => {
       editor.update(() => {
         if (!trigger) {
           return;
         }
         const newMention =
-          creatable && selectedOption.value !== selectedOption.label;
+          creatable && selectedOption.key !== selectedOption.label;
         const value =
-          newMention && mentionEnclosure && /\s/.test(selectedOption.value)
-            ? mentionEnclosure + selectedOption.value + mentionEnclosure
-            : selectedOption.value;
+          newMention && mentionEnclosure && /\s/.test(selectedOption.key)
+            ? mentionEnclosure + selectedOption.key + mentionEnclosure
+            : selectedOption.key;
         const mentionNode = $createBeautifulMentionNode(trigger, value);
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
         }
-        closeMenu();
+        closeMenu?.();
       });
     },
     [editor, trigger, creatable, mentionEnclosure],
@@ -506,69 +493,73 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return null;
   }
 
-  return (
-    <>
-      <TypeaheadMenuPlugin<MenuOption>
+  if (command) {
+    return (
+      <CommandPlugin
+        options={options}
         onQueryChange={setQueryString}
         onSelectOption={handleSelectOption}
         triggerFn={checkForMentionMatch}
-        options={options}
-        anchorClassName={menuAnchorClassName}
-        onClose={handleClose}
-        menuRenderFn={(
-          anchorElementRef,
-          { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
-        ) =>
-          anchorElementRef.current
-            ? ReactDOM.createPortal(
-                <MenuComponent
-                  loading={loading}
-                  open={open}
-                  role="menu"
-                  aria-label="Choose a mention"
-                  aria-hidden={!open}
-                >
-                  {options.map((option, i) => (
-                    <MenuItemComponent
-                      key={option.key}
-                      tabIndex={-1}
-                      selected={selectedIndex === i}
-                      ref={option.setRefElement}
-                      role="menuitem"
-                      aria-selected={selectedIndex === i}
-                      aria-label={`Choose ${option.label}`}
-                      label={option.label}
-                      onClick={() => {
-                        setHighlightedIndex(i);
-                        selectOptionAndCleanUp(option);
-                      }}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                      }}
-                      onMouseEnter={() => {
-                        setHighlightedIndex(i);
-                      }}
-                    >
-                      {option.label}
-                    </MenuItemComponent>
-                  ))}
-                </MenuComponent>,
-                anchorElementRef.current,
-              )
-            : null
-        }
+        queryString={debouncedQueryString}
+        triggers={triggers}
+        punctuation={punctuation}
+        creatable={creatable}
+        commandComponent={props.commandComponent}
+        commandItemComponent={props.commandItemComponent}
       />
-      {showTriggers && (
-        <TriggerMenuPlugin
-          triggers={triggers}
-          punctuation={punctuation}
-          mentionsMenuOpen={open}
-          menuAnchorClassName={menuAnchorClassName}
-          menuComponent={props.menuComponent}
-          menuItemComponent={props.menuItemComponent}
-          showTriggers={showTriggers}
-        />
-      )}
-    </>
+    );
+  }
+
+  return (
+    <TypeaheadMenuPlugin<MenuOption>
+      onQueryChange={setQueryString}
+      onSelectOption={handleSelectOption}
+      triggerFn={checkForMentionMatch}
+      options={options}
+      anchorClassName={menuAnchorClassName}
+      onClose={handleClose}
+      menuRenderFn={(
+        anchorElementRef,
+        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
+      ) =>
+        anchorElementRef.current
+          ? ReactDOM.createPortal(
+              <MenuComponent
+                loading={loading}
+                open={open}
+                role="menu"
+                aria-label="Choose a mention"
+                aria-hidden={!open}
+              >
+                {options.map((option, i) => (
+                  <MenuItemComponent
+                    key={option.key}
+                    tabIndex={-1}
+                    selected={selectedIndex === i}
+                    ref={option.setRefElement}
+                    role="menuitem"
+                    aria-selected={selectedIndex === i}
+                    aria-label={`Choose ${option.label}`}
+                    label={option.label}
+                    onClick={() => {
+                      setHighlightedIndex(i);
+                      selectOptionAndCleanUp(option);
+                    }}
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                    }}
+                    onMouseEnter={() => {
+                      setHighlightedIndex(i);
+                    }}
+                  >
+                    {option.label}
+                  </MenuItemComponent>
+                ))}
+              </MenuComponent>,
+              anchorElementRef.current,
+            )
+          : null
+      }
+    />
   );
 }

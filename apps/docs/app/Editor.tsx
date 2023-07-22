@@ -15,7 +15,6 @@ import { useCallback, useState } from "react";
 import { useConfiguration } from "./ConfigurationProvider";
 import "./Editor.css";
 import MentionsToolbar from "./MentionsToolbar";
-import Menu from "./Menu";
 import MenuItem from "./MenuItem";
 import { Placeholder } from "./Placeholder";
 import { getDebugTextContent } from "./debug";
@@ -55,7 +54,7 @@ export default function Editor() {
     allowSpaces,
     creatable,
     insertOnBlur,
-    showTriggers,
+    command,
     showMentionsOnDelete,
   } = useConfiguration();
 
@@ -99,17 +98,12 @@ export default function Editor() {
             onSearch={handleSearch}
             searchDelay={asynchronous ? 250 : 0}
             triggers={Object.keys(mentionItems)}
-            menuComponent={Menu}
-            menuItemComponent={MenuItem}
             allowSpaces={allowSpaces}
             creatable={creatable}
             insertOnBlur={insertOnBlur}
             showMentionsOnDelete={showMentionsOnDelete}
-            showTriggers={
-              showTriggers
-                ? (e) => (e.ctrlKey && e.code === "Space") || e.code === "Slash"
-                : undefined
-            }
+            command
+            commandItemComponent={MenuItem}
           />
         </div>
         <MentionsToolbar />

@@ -20,13 +20,13 @@ interface Configuration
   autoFocus: "rootStart" | "rootEnd" | "none";
   asynchronous: boolean;
   commandFocus: boolean;
-  showTriggers: boolean;
+  command: boolean;
   showMentionsOnDelete: boolean;
   setAsynchronous: (asynchronous: boolean) => void;
   setAllowSpaces: (allowSpaces: boolean) => void;
   setCreatable: (creatable: boolean) => void;
   setInsertOnBlur: (insertOnBlur: boolean) => void;
-  setShowTriggers: (showTriggers: boolean) => void;
+  setCommand: (showTriggers: boolean) => void;
   setShowMentionsOnDelete: (showTriggers: boolean) => void;
 }
 
@@ -51,9 +51,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const [insertOnBlur, _setInsertOnBlur] = useState(
     getQueryParam("blur") === "true",
   );
-  const [showTriggers, _setShowTriggers] = useState(
-    getQueryParam("triggers") === "true",
-  );
+  const [command, _setCommand] = useState(getQueryParam("command") === "true");
   const [showMentionsOnDelete, _setShowMentionsOnDelete] = useState(
     getQueryParam("mentions") === "true",
   );
@@ -78,10 +76,10 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     [updateQueryParam],
   );
 
-  const setShowTriggers = useCallback(
-    (showTriggers: boolean) => {
-      _setShowTriggers(showTriggers);
-      updateQueryParam("triggers", showTriggers);
+  const setCommand = useCallback(
+    (command: boolean) => {
+      _setCommand(command);
+      updateQueryParam("command", command);
     },
     [updateQueryParam],
   );
@@ -124,7 +122,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         initialValue,
         autoFocus,
         asynchronous,
-        showTriggers,
+        command,
         showMentionsOnDelete,
         allowSpaces,
         creatable: creatable ? creatableMap : false,
@@ -133,7 +131,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         setAllowSpaces,
         setCreatable,
         setInsertOnBlur,
-        setShowTriggers,
+        setCommand,
         setShowMentionsOnDelete,
         commandFocus,
       }}

@@ -35,16 +35,6 @@ interface BeautifulMentionsProps {
    */
   creatable?: boolean | string | Record<string, boolean | string>;
   /**
-   * The component to use for the menu.
-   * @default ul
-   */
-  menuComponent?: ElementType<BeautifulMentionsMenuProps>;
-  /**
-   * The component to use for a menu item.
-   * @default li
-   */
-  menuItemComponent?: ElementType<BeautifulMentionsMenuItemProps>;
-  /**
    * The class name to apply to the menu component root element.
    */
   menuAnchorClassName?: string;
@@ -71,13 +61,6 @@ interface BeautifulMentionsProps {
    */
   insertOnBlur?: boolean;
   /**
-   * If the return value is `true`, all available mention triggers will be
-   * shown in a menu at the current cursor position.
-   *
-   * @param event Use the keyboard event to specify a shortcut as a trigger
-   */
-  showTriggers?: (event: KeyboardEvent) => boolean;
-  /**
    * If `true`, the mention menu will be shown when the user deletes a mention.
    */
   showMentionsOnDelete?: boolean;
@@ -88,36 +71,76 @@ interface BeautifulMentionsProps {
   punctuation?: string;
 }
 
-export interface BeautifulMentionsSearchProps extends BeautifulMentionsProps {
-  items?: never;
+type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
   /**
-   * The characters that trigger the mention menu.
+   * The component to use for the menu.
+   * @default ul
    */
-  triggers: string[];
+  menuComponent?: ElementType<BeautifulMentionsMenuProps>;
   /**
-   * A function that returns a list of suggestions for a given trigger and
-   * query string.
+   * The component to use for a menu item.
+   * @default li
    */
-  onSearch: (trigger: string, queryString?: string | null) => Promise<string[]>;
-  /**
-   * The delay in milliseconds before the `onSearch` function is called.
-   * @default 250
-   */
-  searchDelay?: number;
-}
+  menuItemComponent?: ElementType<BeautifulMentionsMenuItemProps>;
+  command?: never;
+  commandComponent?: never;
+  commandItemComponent?: never;
+};
 
-export interface BeautifulMentionsItemsProps extends BeautifulMentionsProps {
+type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
+  command: true;
   /**
-   * A map of trigger characters to a list of suggestions.
-   * The keys of the map are the trigger characters that will be used to
-   * open the mention menu. The values are the list of suggestions that
-   * will be shown in the menu.
+   * The component to use for the command.
+   * @default ul
    */
-  items: Record<string, string[]>;
-  triggers?: never;
-  onSearch?: never;
-  searchDelay?: never;
-}
+  commandComponent?: ElementType<BeautifulMentionsMenuProps>;
+  /**
+   * The component to use for a command item.
+   */
+  commandItemComponent?: ElementType<BeautifulMentionsMenuItemProps>;
+  menuComponent?: never;
+  menuItemComponent?: never;
+};
+
+type BeautifulMentionsPluginWithCompProps =
+  | BeautifulMentionsMenuComponentsProps
+  | BeautifulMentionsMenuCommandComponentProps;
+
+export type BeautifulMentionsSearchProps =
+  BeautifulMentionsPluginWithCompProps & {
+    items?: never;
+    /**
+     * The characters that trigger the mention menu.
+     */
+    triggers: string[];
+    /**
+     * A function that returns a list of suggestions for a given trigger and
+     * query string.
+     */
+    onSearch: (
+      trigger: string,
+      queryString?: string | null,
+    ) => Promise<string[]>;
+    /**
+     * The delay in milliseconds before the `onSearch` function is called.
+     * @default 250
+     */
+    searchDelay?: number;
+  };
+
+export type BeautifulMentionsItemsProps =
+  BeautifulMentionsPluginWithCompProps & {
+    /**
+     * A map of trigger characters to a list of suggestions.
+     * The keys of the map are the trigger characters that will be used to
+     * open the mention menu. The values are the list of suggestions that
+     * will be shown in the menu.
+     */
+    items: Record<string, string[]>;
+    triggers?: never;
+    onSearch?: never;
+    searchDelay?: never;
+  };
 
 export type BeautifulMentionsPluginProps =
   | BeautifulMentionsSearchProps
