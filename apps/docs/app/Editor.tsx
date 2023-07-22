@@ -11,7 +11,7 @@ import {
   BeautifulMentionsPlugin,
   ZeroWidthPlugin,
 } from "lexical-beautiful-mentions";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Combobox from "./Combobox";
 import ComboboxItem from "./ComboboxItem";
 import { useConfiguration } from "./ConfigurationProvider";
@@ -75,6 +75,7 @@ function Plugins() {
     showMentionsOnDelete,
   } = useConfiguration();
   const focused = useIsFocused();
+  const comboboxAnchor = useRef<HTMLDivElement>(null);
 
   const handleChange = useCallback((editorState: EditorState) => {
     editorState.read(() => {
@@ -93,58 +94,71 @@ function Plugins() {
   return (
     <>
       <div
+        ref={comboboxAnchor}
         className={cn(
           "relative bg-slate-300 text-left dark:bg-slate-600",
-          !combobox ? "rounded" : focused ? "rounded-t" : "rounded",
+          !combobox && "rounded",
+          combobox && !focused && "rounded",
+          combobox && focused && "rounded-t",
         )}
       >
-        <PlainTextPlugin
-          contentEditable={
-            <ContentEditable
-              style={{ tabSize: 1 }}
-              className={cn(
-                "relative resize-none px-3 py-4 caret-gray-900 outline-none outline-0 dark:text-gray-100 dark:caret-gray-100",
-                combobox && "rounded-t",
-                !combobox && "min-h-[150px]",
-              )}
+        <div className={cn(combobox && "p-1")}>
+          <div
+            className={cn(
+              combobox &&
+                "rounded border-2 border-gray-200 dark:border-gray-800",
+            )}
+          >
+            <PlainTextPlugin
+              contentEditable={
+                <ContentEditable
+                  style={{ tabSize: 1 }}
+                  className={cn(
+                    "relative resize-none px-3 py-4 caret-gray-900 outline-none outline-0 dark:text-gray-100 dark:caret-gray-100",
+                    combobox && "rounded-t",
+                    !combobox && "min-h-[150px]",
+                  )}
+                />
+              }
+              placeholder={<Placeholder />}
+              ErrorBoundary={LexicalErrorBoundary}
             />
-          }
-          placeholder={<Placeholder />}
-          ErrorBoundary={LexicalErrorBoundary}
-        />
-        <OnChangePlugin onChange={handleChange} />
-        <HistoryPlugin />
-        {autoFocus !== "none" && (
-          <AutoFocusPlugin defaultSelection={autoFocus} />
-        )}
-        <ZeroWidthPlugin />
-        {!combobox && (
-          <BeautifulMentionsPlugin
-            onSearch={handleSearch}
-            searchDelay={asynchronous ? 250 : 0}
-            triggers={Object.keys(mentionItems)}
-            allowSpaces={allowSpaces}
-            creatable={creatable}
-            insertOnBlur={insertOnBlur}
-            showMentionsOnDelete={showMentionsOnDelete}
-            menuComponent={Menu}
-            menuItemComponent={MenuItem}
-          />
-        )}
-        {combobox && (
-          <BeautifulMentionsPlugin
-            onSearch={handleSearch}
-            searchDelay={asynchronous ? 250 : 0}
-            triggers={Object.keys(mentionItems)}
-            allowSpaces={allowSpaces}
-            creatable={creatable}
-            insertOnBlur={insertOnBlur}
-            showMentionsOnDelete={showMentionsOnDelete}
-            combobox
-            comboboxComponent={Combobox}
-            comboboxItemComponent={ComboboxItem}
-          />
-        )}
+            <OnChangePlugin onChange={handleChange} />
+            <HistoryPlugin />
+            {autoFocus !== "none" && (
+              <AutoFocusPlugin defaultSelection={autoFocus} />
+            )}
+            <ZeroWidthPlugin />
+            {!combobox && (
+              <BeautifulMentionsPlugin
+                onSearch={handleSearch}
+                searchDelay={asynchronous ? 250 : 0}
+                triggers={Object.keys(mentionItems)}
+                allowSpaces={allowSpaces}
+                creatable={creatable}
+                insertOnBlur={insertOnBlur}
+                showMentionsOnDelete={showMentionsOnDelete}
+                menuComponent={Menu}
+                menuItemComponent={MenuItem}
+              />
+            )}
+            {combobox && (
+              <BeautifulMentionsPlugin
+                onSearch={handleSearch}
+                searchDelay={asynchronous ? 250 : 0}
+                triggers={Object.keys(mentionItems)}
+                allowSpaces={allowSpaces}
+                creatable={creatable}
+                insertOnBlur={insertOnBlur}
+                showMentionsOnDelete={showMentionsOnDelete}
+                combobox
+                comboboxAnchor={comboboxAnchor.current}
+                comboboxComponent={Combobox}
+                comboboxItemComponent={ComboboxItem}
+              />
+            )}
+          </div>
+        </div>
       </div>
       <MentionsToolbarPlugin />
       <div className="hidden" data-testid="plaintext">

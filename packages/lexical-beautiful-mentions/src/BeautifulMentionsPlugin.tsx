@@ -52,57 +52,6 @@ import { useDebounce } from "./useDebounce";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
 
-export function handleKeydown(
-  event: KeyboardEvent,
-  triggers: string[],
-  punctuation: string,
-) {
-  const { key, metaKey, ctrlKey } = event;
-  const simpleKey = key.length === 1;
-  const isTrigger = triggers.some((trigger) => key === trigger);
-  const wordChar = isWordChar(key, triggers, punctuation);
-  const selectionInfo = getSelectionInfo(triggers, punctuation);
-  if (
-    !simpleKey ||
-    (!wordChar && !isTrigger) ||
-    !selectionInfo ||
-    metaKey ||
-    ctrlKey
-  ) {
-    return false;
-  }
-  const {
-    node,
-    offset,
-    isTextNode,
-    textContent,
-    prevNode,
-    nextNode,
-    wordCharAfterCursor,
-    cursorAtStartOfNode,
-    cursorAtEndOfNode,
-  } = selectionInfo;
-  if (isTextNode && cursorAtStartOfNode && $isBeautifulMentionNode(prevNode)) {
-    node.insertBefore($createTextNode(" "));
-    return true;
-  }
-  if (isTextNode && cursorAtEndOfNode && $isBeautifulMentionNode(nextNode)) {
-    node.insertAfter($createTextNode(" "));
-    return true;
-  }
-  if (isTextNode && isTrigger && wordCharAfterCursor) {
-    const content =
-      textContent.substring(0, offset) + " " + textContent.substring(offset);
-    node.setTextContent(content);
-    return true;
-  }
-  if ($isBeautifulMentionNode(node) && nextNode === null) {
-    node.insertAfter($createTextNode(" "));
-    return true;
-  }
-  return false;
-}
-
 // Non-standard series of chars. Each series must be preceded and followed by
 // a valid char.
 const VALID_JOINS = (punctuation: string) =>
@@ -400,11 +349,67 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     [showMentionsOnDelete, triggers, punctuation],
   );
 
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const { key, metaKey, ctrlKey } = event;
+      const simpleKey = key.length === 1;
+      const isTrigger = triggers.some((trigger) => key === trigger);
+      const wordChar = isWordChar(key, triggers, punctuation);
+      const selectionInfo = getSelectionInfo(triggers, punctuation);
+      if (
+        !simpleKey ||
+        (!wordChar && !isTrigger) ||
+        !selectionInfo ||
+        metaKey ||
+        ctrlKey
+      ) {
+        return false;
+      }
+      const {
+        node,
+        offset,
+        isTextNode,
+        textContent,
+        prevNode,
+        nextNode,
+        wordCharAfterCursor,
+        cursorAtStartOfNode,
+        cursorAtEndOfNode,
+      } = selectionInfo;
+      if (
+        isTextNode &&
+        cursorAtStartOfNode &&
+        $isBeautifulMentionNode(prevNode)
+      ) {
+        node.insertBefore($createTextNode(" "));
+      }
+      if (
+        isTextNode &&
+        cursorAtEndOfNode &&
+        $isBeautifulMentionNode(nextNode)
+      ) {
+        node.insertAfter($createTextNode(" "));
+      }
+      if (isTextNode && isTrigger && wordCharAfterCursor) {
+        const content =
+          textContent.substring(0, offset) +
+          " " +
+          textContent.substring(offset);
+        node.setTextContent(content);
+      }
+      if ($isBeautifulMentionNode(node) && nextNode === null) {
+        node.insertAfter($createTextNode(" "));
+      }
+      return false;
+    },
+    [punctuation, triggers],
+  );
+
   React.useEffect(() => {
     return mergeRegister(
       editor.registerCommand(
         KEY_DOWN_COMMAND,
-        (event) => handleKeydown(event, triggers, punctuation),
+        handleKeyDown,
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
@@ -486,6 +491,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertTextAsMention,
     setSelection,
     archiveSelection,
+    handleKeyDown,
     handleDeleteMention,
   ]);
 
@@ -497,13 +503,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return (
       <ComboboxPlugin
         options={options}
+        loading={loading}
         onQueryChange={setQueryString}
         onSelectOption={handleSelectOption}
         triggerFn={checkForMentionMatch}
-        queryString={debouncedQueryString}
         triggers={triggers}
         punctuation={punctuation}
         creatable={creatable}
+        comboboxAnchor={props.comboboxAnchor}
         comboboxComponent={props.comboboxComponent}
         comboboxItemComponent={props.comboboxItemComponent}
       />

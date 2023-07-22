@@ -23,7 +23,17 @@ export interface BeautifulMentionsMenuItemProps
   label: string;
 }
 
-export type BeautifulMentionsComboboxProps = ComponentPropsWithRef<any>;
+export interface BeautifulMentionsComboboxProps
+  extends ComponentPropsWithRef<any> {
+  /**
+   * The options shown in the combobox can be either triggers or mentions.
+   */
+  optionType: "triggers" | "mentions";
+  /**
+   * If `true`, the `onSearch` function is currently running.
+   */
+  loading?: boolean;
+}
 
 export type BeautifulMentionsComboboxItemProps = BeautifulMentionsMenuItemProps;
 
@@ -87,17 +97,19 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    */
   menuItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
   combobox?: never;
+  comboboxAnchor?: never;
   comboboxComponent?: never;
   comboboxItemComponent?: never;
 };
 
 type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
   combobox: true;
+  comboboxAnchor?: HTMLElement;
   /**
    * The component to use for the combobox.
    * @default ul
    */
-  comboboxComponent?: ElementType<ComponentPropsWithRef<any>>;
+  comboboxComponent?: ElementType<BeautifulMentionsComboboxProps>;
   /**
    * The component to use for a combobox item.
    */
