@@ -6,35 +6,16 @@ import {
   RangeSelection,
   TextNode,
 } from "lexical";
-import React, {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Menu,
+  MenuOption,
   MenuRenderFn,
   MenuResolution,
   TriggerFn,
   isSelectionOnEntityBoundary,
   useMenuAnchorRef,
 } from "./Menu";
-
-export class TypeaheadOption {
-  key: string;
-  ref?: MutableRefObject<HTMLElement | null>;
-
-  constructor(key: string) {
-    this.key = key;
-    this.ref = { current: null };
-    this.setRefElement = this.setRefElement.bind(this);
-  }
-
-  setRefElement(element: HTMLElement | null) {
-    this.ref = { current: element };
-  }
-}
 
 function getTextUpToAnchor(selection: RangeSelection): string | null {
   const anchor = selection.anchor;
@@ -92,7 +73,7 @@ function startTransition(callback: () => void) {
   }
 }
 
-export type TypeaheadMenuPluginProps<TOption extends TypeaheadOption> = {
+export type TypeaheadMenuPluginProps<TOption extends MenuOption> = {
   onQueryChange: (matchingString: string | null) => void;
   onSelectOption: (
     option: TOption,
@@ -108,7 +89,7 @@ export type TypeaheadMenuPluginProps<TOption extends TypeaheadOption> = {
   anchorClassName?: string;
 };
 
-export function TypeaheadMenuPlugin<TOption extends TypeaheadOption>({
+export function TypeaheadMenuPlugin<TOption extends MenuOption>({
   options,
   onQueryChange,
   onSelectOption,
