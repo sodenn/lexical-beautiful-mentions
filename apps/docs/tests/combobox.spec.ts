@@ -153,6 +153,7 @@ test.describe("Combobox", () => {
       combobox: true,
     });
     await utils.editor.type("@");
+    await utils.sleep(200);
     await utils.editor.press("Enter");
     await expect(utils.mentionsMenu).not.toBeVisible();
     await expect(utils.triggersMenu).toBeVisible();
