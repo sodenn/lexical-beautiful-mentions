@@ -10,7 +10,7 @@ interface TestUtilsOptions {
   creatable?: boolean;
   insertOnBlur?: boolean;
   commandFocus?: boolean;
-  showTriggers?: boolean;
+  combobox?: boolean;
   showMentionsOnDelete?: boolean;
 }
 
@@ -23,7 +23,7 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     creatable = false,
     insertOnBlur = false,
     commandFocus = true,
-    showTriggers = false,
+    combobox = false,
     showMentionsOnDelete = false,
   } = options;
   const utils = new TestUtils(
@@ -35,7 +35,7 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     creatable,
     insertOnBlur,
     commandFocus,
-    showTriggers,
+    combobox,
     showMentionsOnDelete,
   );
   await utils.init();
@@ -54,7 +54,7 @@ export class TestUtils {
     private creatable: boolean,
     private insertOnBlur: boolean,
     private commandFocus: boolean,
-    private showTriggers: boolean,
+    private combobox: boolean,
     private showMentionsOnDelete: boolean,
   ) {
     this.setInitialValue(initialValue);
@@ -137,7 +137,7 @@ export class TestUtils {
     const host = process.env.HOST || "localhost";
     let url = `http://${host}:3000?focus=${this.autofocus}`;
     url += `&async=${this.asynchronous}`;
-    url += `&triggers=${this.showTriggers}`;
+    url += `&combobox=${this.combobox}`;
     url += `&mentions=${this.showMentionsOnDelete}`;
     url += `&spaces=${this.allowSpaces}`;
     url += `&new=${this.creatable}`;

@@ -49,10 +49,12 @@ type UseMenuAnchorRefOptions = {
 
 export class MenuOption {
   key: string;
+  label: string;
   ref?: MutableRefObject<HTMLElement | null>;
 
-  constructor(key: string) {
+  constructor(key: string, label?: string) {
     this.key = key;
+    this.label = label ?? key;
     this.ref = { current: null };
     this.setRefElement = this.setRefElement.bind(this);
   }
@@ -116,7 +118,9 @@ function getFullMatchOffset(
  * Split Lexical TextNode and return a new TextNode only containing matched text.
  * Common use cases include: removing the node, replacing with a new node.
  */
-function $splitNodeContainingQuery(match: MenuTextMatch): TextNode | null {
+export function $splitNodeContainingQuery(
+  match: MenuTextMatch,
+): TextNode | null {
   const selection = $getSelection();
   if (!$isRangeSelection(selection) || !selection.isCollapsed()) {
     return null;

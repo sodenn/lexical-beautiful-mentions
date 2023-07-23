@@ -77,6 +77,7 @@ test.describe("Mentions Menu", () => {
   }) => {
     const utils = await testUtils(page);
     await utils.editor.type("@b");
+    await utils.sleep(200);
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.press("Enter");
     await expect(utils.mentionsMenu).not.toBeVisible();

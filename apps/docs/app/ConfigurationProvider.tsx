@@ -20,14 +20,14 @@ interface Configuration
   autoFocus: "rootStart" | "rootEnd" | "none";
   asynchronous: boolean;
   commandFocus: boolean;
-  showTriggers: boolean;
+  combobox: boolean;
   showMentionsOnDelete: boolean;
   setAsynchronous: (asynchronous: boolean) => void;
   setAllowSpaces: (allowSpaces: boolean) => void;
   setCreatable: (creatable: boolean) => void;
   setInsertOnBlur: (insertOnBlur: boolean) => void;
-  setShowTriggers: (showTriggers: boolean) => void;
-  setShowMentionsOnDelete: (showTriggers: boolean) => void;
+  setCombobox: (combobox: boolean) => void;
+  setShowMentionsOnDelete: (showMentionsOnDelete: boolean) => void;
 }
 
 const ConfigurationCtx = createContext<Configuration>(undefined);
@@ -51,8 +51,8 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const [insertOnBlur, _setInsertOnBlur] = useState(
     getQueryParam("blur") === "true",
   );
-  const [showTriggers, _setShowTriggers] = useState(
-    getQueryParam("triggers") === "true",
+  const [combobox, _setCombobox] = useState(
+    getQueryParam("combobox") === "true",
   );
   const [showMentionsOnDelete, _setShowMentionsOnDelete] = useState(
     getQueryParam("mentions") === "true",
@@ -78,10 +78,10 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     [updateQueryParam],
   );
 
-  const setShowTriggers = useCallback(
-    (showTriggers: boolean) => {
-      _setShowTriggers(showTriggers);
-      updateQueryParam("triggers", showTriggers);
+  const setCombobox = useCallback(
+    (combobox: boolean) => {
+      _setCombobox(combobox);
+      updateQueryParam("combobox", combobox);
     },
     [updateQueryParam],
   );
@@ -124,7 +124,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         initialValue,
         autoFocus,
         asynchronous,
-        showTriggers,
+        combobox,
         showMentionsOnDelete,
         allowSpaces,
         creatable: creatable ? creatableMap : false,
@@ -133,7 +133,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         setAllowSpaces,
         setCreatable,
         setInsertOnBlur,
-        setShowTriggers,
+        setCombobox,
         setShowMentionsOnDelete,
         commandFocus,
       }}

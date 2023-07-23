@@ -3,45 +3,59 @@ import { mergeRegister } from "@lexical/utils";
 import {
   $getSelection,
   $isRangeSelection,
-  BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
+  KEY_ARROW_DOWN_COMMAND,
+  KEY_ARROW_UP_COMMAND,
+  KEY_BACKSPACE_COMMAND,
   KEY_DOWN_COMMAND,
+  KEY_ENTER_COMMAND,
+  KEY_ESCAPE_COMMAND,
+  KEY_TAB_COMMAND,
   LexicalEditor,
   RangeSelection,
   TextNode,
 } from "lexical";
-import { startTransition, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import * as ReactDOM from "react-dom";
+import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import {
-  Menu,
+  $splitNodeContainingQuery,
   MenuOption,
-  MenuRenderFn,
-  MenuResolution,
   MenuTextMatch,
-  isSelectionOnEntityBoundary,
-  useMenuAnchorRef,
+  TriggerFn,
 } from "./Menu";
+import { insertMention } from "./mention-commands";
+import { useIsFocused } from "./useIsFocused";
 
-function tryGetRect(leadOffset: number, range: Range) {
-  const domSelection = window.getSelection();
-  if (domSelection === null || !domSelection.isCollapsed) {
-    return null;
-  }
-  const anchorNode = domSelection.anchorNode;
-  const startOffset = leadOffset;
-  const endOffset = domSelection.anchorOffset;
-  if (anchorNode == null || endOffset == null) {
-    return null;
-  }
-  if (anchorNode instanceof HTMLElement) {
-    return () => anchorNode.getBoundingClientRect();
-  }
-  try {
-    range.setStart(anchorNode, startOffset);
-    range.setEnd(anchorNode, endOffset);
-  } catch (error) {
-    return null;
-  }
-  return () => range.getBoundingClientRect();
+interface ComboboxPluginProps
+  extends Pick<
+      BeautifulMentionsPluginProps,
+      "comboboxAnchor" | "comboboxComponent" | "comboboxItemComponent"
+    >,
+    Required<Pick<BeautifulMentionsPluginProps, "punctuation">> {
+  loading: boolean;
+  triggerFn: TriggerFn;
+  onSelectOption: (
+    option: MenuOption,
+    textNodeContainingQuery: TextNode | null,
+  ) => void;
+  onQueryChange: (matchingString: string | null) => void;
+  options: MenuOption[];
+  triggers: string[];
+  onReset: () => void;
+  creatable: boolean | string;
+}
+
+function getQueryTextForSearch(editor: LexicalEditor): string | null {
+  let text = null;
+  editor.getEditorState().read(() => {
+    const selection = $getSelection();
+    if (!$isRangeSelection(selection)) {
+      return;
+    }
+    text = getTextUpToAnchor(selection);
+  });
+  return text;
 }
 
 function getTextUpToAnchor(selection: RangeSelection): string | null {
@@ -57,152 +71,379 @@ function getTextUpToAnchor(selection: RangeSelection): string | null {
   return anchorNode.getTextContent().slice(0, anchorOffset);
 }
 
-function getQueryTextForSearch(editor: LexicalEditor): string | null {
-  let text = null;
-  editor.getEditorState().read(() => {
-    const selection = $getSelection();
-    if (!$isRangeSelection(selection)) {
+function isCharacterKey(event: KeyboardEvent) {
+  return (
+    event.key.length === 1 &&
+    !event.ctrlKey &&
+    !event.altKey &&
+    !event.metaKey &&
+    !event.repeat
+  );
+}
+
+export function useAnchorRef(render: boolean, root?: HTMLElement) {
+  const [rootElement, setRootElement] = useState<HTMLElement | null>(
+    root || null,
+  );
+  const [editor] = useLexicalComposerContext();
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const minHeight = useRef<number>(0);
+
+  useEffect(() => {
+    if (root) {
+      setRootElement(root);
       return;
     }
-    text = getTextUpToAnchor(selection);
-  });
-  return text;
-}
+    return editor.registerRootListener((rootElement) => {
+      if (rootElement) {
+        setRootElement(rootElement.parentElement);
+      }
+    });
+  }, [editor, root]);
 
-interface ComboboxProps<TOption extends MenuOption> {
-  open: boolean;
-  onClose?: () => void;
-  onOpen?: (resolution: MenuResolution) => void;
-  options: Array<TOption>;
-  onSelectOption: (
-    option: TOption,
-    textNodeContainingQuery: TextNode | null,
-    closeMenu: () => void,
-  ) => void;
-  menuRenderFn: MenuRenderFn<TOption>;
-  anchorClassName?: string;
-}
-
-function ComboboxPlugin<TOption extends MenuOption>(
-  props: ComboboxProps<TOption>,
-) {
-  const {
-    open,
-    onClose,
-    onOpen,
-    options,
-    menuRenderFn,
-    onSelectOption,
-    anchorClassName,
-  } = props;
-  const [editor] = useLexicalComposerContext();
-  const [resolution, setResolution] = useState<MenuResolution | null>(null);
-  const anchorElementRef = useMenuAnchorRef({
-    resolution,
-    setResolution,
-    className: anchorClassName,
-  });
-
-  const closeCombobox = useCallback(() => {
-    setResolution(null);
-    if (onClose != null) {
-      onClose();
+  useEffect(() => {
+    if (!rootElement) {
+      return;
     }
-  }, [onClose]);
+    if (!render && anchor && rootElement.contains(anchor)) {
+      rootElement.removeChild(anchor);
+      setAnchor(null);
+      return;
+    }
+    const element = anchor || document.createElement("div");
+    element.style.position = "absolute";
+    element.style.left = "0";
+    element.style.right = "0";
+    rootElement.appendChild(element);
+    if (!anchor) {
+      setAnchor(element);
+    }
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      if (entry.contentRect.height > minHeight.current) {
+        minHeight.current = entry.contentRect.height;
+        element.style.minHeight = `${minHeight.current}px`;
+        element.style.height = `1px`;
+      }
+    });
+    resizeObserver.observe(element);
+    return () => {
+      resizeObserver.disconnect();
+      rootElement.removeChild(element);
+    };
+  }, [rootElement, render, anchor]);
 
-  const openCombobox = useCallback(
-    (res: MenuResolution) => {
-      setResolution(res);
-      if (onOpen != null) {
-        onOpen(res);
+  return anchor;
+}
+
+export function ComboboxPlugin(props: ComboboxPluginProps) {
+  const {
+    onSelectOption,
+    triggers,
+    punctuation,
+    loading,
+    triggerFn,
+    onQueryChange,
+    comboboxAnchor,
+    onReset,
+    comboboxComponent: ComboboxComponent = "div",
+    comboboxItemComponent: ComboboxItemComponent = "div",
+  } = props;
+  const focused = useIsFocused();
+  const [editor] = useLexicalComposerContext();
+  const anchor = useAnchorRef(focused, comboboxAnchor);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [match, setMatch] = useState<MenuTextMatch | null>(null);
+  const [queryString, setQueryString] = useState<string | null>(null);
+  const itemRefs = useRef<Record<string, HTMLElement | null>>({});
+  const optionsType = props.options.length === 0 ? "triggers" : "mentions";
+  const options = useMemo(() => {
+    if (optionsType === "triggers") {
+      const triggerOptions = triggers.map(
+        (trigger) => new MenuOption(trigger, trigger),
+      );
+      if (
+        !queryString ||
+        triggerOptions.every((o) => !o.key.startsWith(queryString))
+      ) {
+        return triggerOptions;
+      }
+      return triggerOptions.filter((o) => o.key.startsWith(queryString));
+    }
+    return props.options;
+  }, [optionsType, props.options, triggers, queryString]);
+  const [open, setOpen] = useState(false);
+
+  const scrollIntoView = useCallback(
+    (index: number) => {
+      const option = options[index];
+      const el = itemRefs.current[option.key];
+      if (el) {
+        el.scrollIntoView({ block: "nearest" });
       }
     },
-    [onOpen],
+    [options],
+  );
+
+  const handleArrowKeyDown = useCallback(
+    (event: KeyboardEvent, direction: "up" | "down") => {
+      if (!focused) {
+        return false;
+      }
+      const index = selectedIndex === null ? -1 : selectedIndex;
+      const newIndex =
+        direction === "down"
+          ? index < options.length - 1
+            ? index + 1
+            : 0
+          : index > 0
+          ? index - 1
+          : options.length - 1;
+      setSelectedIndex(newIndex);
+      scrollIntoView(newIndex);
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return true;
+    },
+    [focused, selectedIndex, options.length, scrollIntoView],
+  );
+
+  const handleMouseEnter = useCallback(
+    (index: number) => {
+      setSelectedIndex(index);
+      scrollIntoView(index);
+    },
+    [scrollIntoView],
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    setSelectedIndex(null);
+  }, []);
+
+  const cleanup = useCallback(() => {
+    setMatch(null);
+    onQueryChange(null);
+    setQueryString(null);
+  }, [onQueryChange]);
+
+  const handleSelectMention = useCallback(
+    (index: number) => {
+      const option = options[index];
+      editor.update(() => {
+        const textNode = match ? $splitNodeContainingQuery(match) : null;
+        onSelectOption(option, textNode);
+      });
+      cleanup();
+      setSelectedIndex(null);
+    },
+    [cleanup, editor, match, onSelectOption, options],
+  );
+
+  const handleSelectTrigger = useCallback(
+    (index: number) => {
+      const option = options[index];
+      editor.update(() => {
+        insertMention(triggers, punctuation, option.key);
+      });
+      cleanup();
+      setSelectedIndex(0);
+    },
+    [editor, punctuation, triggers, options, cleanup],
+  );
+
+  const handleClickOption = useCallback(
+    (index: number) => {
+      if (optionsType === "triggers") {
+        handleSelectTrigger(index);
+      }
+      if (optionsType === "mentions") {
+        handleSelectMention(index);
+      }
+    },
+    [handleSelectMention, handleSelectTrigger, optionsType],
+  );
+
+  const handleKeySelect = useCallback(
+    (event: KeyboardEvent) => {
+      if (!focused || selectedIndex === null) {
+        return false;
+      }
+      let handled = false;
+      if (optionsType === "triggers") {
+        handled = true;
+        handleSelectTrigger(selectedIndex);
+      }
+      if (optionsType === "mentions") {
+        handled = true;
+        handleSelectMention(selectedIndex);
+      }
+      if (handled) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+      return handled;
+    },
+    [
+      focused,
+      handleSelectMention,
+      handleSelectTrigger,
+      optionsType,
+      selectedIndex,
+    ],
+  );
+
+  const handleBackspace = useCallback(() => {
+    setSelectedIndex(null);
+    return false;
+  }, []);
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      setOpen(true);
+      if (!isCharacterKey(event)) {
+        return false;
+      }
+      const value = queryString === null ? event.key : queryString + event.key;
+      if (
+        options.some(
+          (o) => o.label.startsWith(value) && value.length <= o.label.length,
+        )
+      ) {
+        setSelectedIndex(0);
+      } else if (optionsType === "triggers") {
+        setSelectedIndex(null);
+      }
+      return false;
+    },
+    [options, optionsType, queryString],
   );
 
   useEffect(() => {
+    if (focused) {
+      setOpen(true);
+    } else {
+      setOpen(false);
+      setSelectedIndex(null);
+    }
+  }, [focused]);
+
+  useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        KEY_DOWN_COMMAND,
+      editor.registerCommand<KeyboardEvent>(
+        KEY_ARROW_DOWN_COMMAND,
         (event) => {
-          const ignoredKeys = [
-            "ArrowUp",
-            "ArrowDown",
-            "Enter",
-            "Escape",
-            "Tab",
-            "ShiftLeft",
-            "ShiftRight",
-          ];
-          if (open && !ignoredKeys.includes(event.code)) {
-            closeCombobox();
-          }
-          return false;
+          return handleArrowKeyDown(event, "down");
         },
         COMMAND_PRIORITY_LOW,
       ),
-      editor.registerCommand(
-        BLUR_COMMAND,
+      editor.registerCommand<KeyboardEvent>(
+        KEY_ARROW_UP_COMMAND,
+        (event) => {
+          return handleArrowKeyDown(event, "up");
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand<KeyboardEvent>(
+        KEY_ENTER_COMMAND,
+        handleKeySelect,
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand<KeyboardEvent>(
+        KEY_TAB_COMMAND,
+        handleKeySelect,
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand<KeyboardEvent>(
+        KEY_BACKSPACE_COMMAND,
+        handleBackspace,
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand<KeyboardEvent>(
+        KEY_DOWN_COMMAND,
+        handleKeyDown,
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand<KeyboardEvent>(
+        KEY_ESCAPE_COMMAND,
         () => {
-          closeCombobox();
+          setOpen(false);
           return false;
         },
         COMMAND_PRIORITY_LOW,
       ),
     );
-  }, [closeCombobox, editor, open]);
+  }, [
+    editor,
+    handleArrowKeyDown,
+    handleKeySelect,
+    handleBackspace,
+    handleKeyDown,
+  ]);
 
   useEffect(() => {
-    if (!open || resolution != null) {
-      return;
-    }
-    editor.getEditorState().read(() => {
-      const range = document.createRange();
-      const selection = $getSelection();
-      const text = getQueryTextForSearch(editor) || "";
-      if (
-        !$isRangeSelection(selection) ||
-        !selection.isCollapsed() ||
-        range === null
-      ) {
-        closeCombobox();
-        return;
-      }
-
-      const match: MenuTextMatch = {
-        matchingString: "",
-        replaceableString: "",
-        leadOffset: text.length,
-      };
-
-      if (!isSelectionOnEntityBoundary(editor, match.leadOffset)) {
-        const getRect = tryGetRect(match.leadOffset, range);
-        if (getRect) {
-          startTransition(() =>
-            openCombobox({
-              getRect,
-              match,
-            }),
-          );
+    const updateListener = () => {
+      editor.getEditorState().read(() => {
+        const text = getQueryTextForSearch(editor);
+        if (!text) {
+          onReset();
+          setMatch(null);
+          setQueryString(null);
           return;
         }
-      }
-      closeCombobox();
-    });
-  }, [closeCombobox, editor, open, openCombobox, resolution]);
+        setQueryString(text.trim());
+        const match = triggerFn(text, editor);
+        setMatch(match);
+        onQueryChange(match ? match.matchingString : null);
+      });
+    };
+    const removeUpdateListener = editor.registerUpdateListener(updateListener);
+    return () => {
+      removeUpdateListener();
+    };
+  }, [editor, triggerFn, onQueryChange, onReset]);
 
-  return resolution === null || editor === null ? null : (
-    <Menu
-      options={options}
-      resolution={resolution}
-      menuRenderFn={menuRenderFn}
-      onSelectOption={onSelectOption}
-      anchorElementRef={anchorElementRef}
-      editor={editor}
-      close={closeCombobox}
-      shouldSplitNodeWithQuery
-    />
+  if (!open || !anchor) {
+    return null;
+  }
+
+  return (
+    <>
+      {ReactDOM.createPortal(
+        <ComboboxComponent
+          loading={loading}
+          optionType={optionsType}
+          role="menu"
+          aria-activedescendant={
+            selectedIndex !== null
+              ? `beautiful-mention-combobox-${options[selectedIndex].label}`
+              : ""
+          }
+          aria-label={
+            optionsType === "triggers" ? "Choose a trigger" : "Choose a mention"
+          }
+        >
+          {options.map((option, index) => (
+            <ComboboxItemComponent
+              key={option.key}
+              label={option.key}
+              selected={index === selectedIndex}
+              role="menuitem"
+              id={`beautiful-mention-combobox-${option.key}`}
+              aria-selected={selectedIndex === index}
+              aria-label={`Choose ${option.label}`}
+              ref={(el: HTMLElement | null) =>
+                (itemRefs.current[option.key] = el)
+              }
+              onClick={() => handleClickOption(index)}
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={handleMouseLeave}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {option.label}
+            </ComboboxItemComponent>
+          ))}
+        </ComboboxComponent>,
+        anchor,
+      )}
+    </>
   );
 }
-
-export default ComboboxPlugin;

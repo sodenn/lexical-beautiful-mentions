@@ -1,8 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  MenuOption as _MenuOption,
-  useBasicTypeaheadTriggerMatch,
-} from "@lexical/react/LexicalTypeaheadMenuPlugin";
+import { useBasicTypeaheadTriggerMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
   $createRangeSelection,
@@ -23,15 +20,15 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
+import { ComboboxPlugin } from "./ComboboxPlugin";
 import {
   $createBeautifulMentionNode,
   $isBeautifulMentionNode,
   BeautifulMentionNode,
 } from "./MentionNode";
-import TriggerMenuPlugin from "./TriggerMenuPlugin";
+import { MenuOption, MenuTextMatch } from "./Menu";
 import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { CAN_USE_DOM } from "./environment";
-import { handleKeydown } from "./handle-keydown";
 import {
   INSERT_MENTION_COMMAND,
   OPEN_MENTIONS_MENU_COMMAND,
@@ -42,24 +39,73 @@ import {
   renameMention,
 } from "./mention-commands";
 import {
-  PUNCTUATION,
-  checkForMentions,
+  DEFAULT_PUNCTUATION,
+  LENGTH_LIMIT,
+  TRIGGERS,
+  VALID_CHARS,
   getCreatableProp,
   getMenuItemLimitProp,
   getSelectionInfo,
+  isWordChar,
 } from "./mention-utils";
 import { useDebounce } from "./useDebounce";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
 
-class MenuOption extends _MenuOption {
-  value: string;
-  label: string;
-  constructor(value: string, label?: string) {
-    super(value);
-    this.value = value;
-    this.label = label ?? value;
+// Non-standard series of chars. Each series must be preceded and followed by
+// a valid char.
+const VALID_JOINS = (punctuation: string) =>
+  "(?:" +
+  "\\.[ |$]|" + // E.g. "r. " in "Mr. Smith"
+  "\\s|" + // E.g. " " in "Josh Duck"
+  "[" +
+  punctuation +
+  "]|" + // E.g. "-' in "Salier-Hellendag"
+  ")";
+
+// Regex used to trigger the mention menu.
+function createMentionsRegex(
+  triggers: string[],
+  punctuation: string,
+  allowSpaces: boolean,
+) {
+  return new RegExp(
+    "(^|\\s|\\()(" +
+      TRIGGERS(triggers) +
+      "((?:" +
+      VALID_CHARS(triggers, punctuation) +
+      (allowSpaces ? VALID_JOINS(punctuation) : "") +
+      "){0," +
+      LENGTH_LIMIT +
+      "})" +
+      ")$",
+  );
+}
+
+export function checkForMentions(
+  text: string,
+  triggers: string[],
+  punctuation: string,
+  allowSpaces: boolean,
+): MenuTextMatch | null {
+  const match = createMentionsRegex(triggers, punctuation, allowSpaces).exec(
+    text,
+  );
+  if (match !== null) {
+    // The strategy ignores leading whitespace but we need to know it's
+    // length to add it to the leadOffset
+    const maybeLeadingWhitespace = match[1];
+    const matchingStringWithTrigger = match[2];
+    const matchingString = match[3];
+    if (matchingStringWithTrigger.length >= 1) {
+      return {
+        leadOffset: match.index + maybeLeadingWhitespace.length,
+        matchingString: matchingString,
+        replaceableString: matchingStringWithTrigger,
+      };
+    }
   }
+  return null;
 }
 
 /**
@@ -74,11 +120,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertOnBlur = true,
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
+    combobox,
     menuAnchorClassName,
-    showTriggers,
     showMentionsOnDelete,
     mentionEnclosure,
-    punctuation = PUNCTUATION,
+    punctuation = DEFAULT_PUNCTUATION,
   } = props;
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
@@ -122,7 +168,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             mention.getTrigger() === trigger &&
             (debouncedQueryString === null ||
               mention.getValue().startsWith(debouncedQueryString)) &&
-            opt.every((o) => o.value !== mentionName)
+            opt.every((o) => o.key !== mentionName)
           ) {
             opt.push(new MenuOption(mentionName, mentionName));
           }
@@ -165,23 +211,23 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     (
       selectedOption: MenuOption,
       nodeToReplace: TextNode | null,
-      closeMenu: () => void,
+      closeMenu?: () => void,
     ) => {
       editor.update(() => {
         if (!trigger) {
           return;
         }
         const newMention =
-          creatable && selectedOption.value !== selectedOption.label;
+          creatable && selectedOption.key !== selectedOption.label;
         const value =
-          newMention && mentionEnclosure && /\s/.test(selectedOption.value)
-            ? mentionEnclosure + selectedOption.value + mentionEnclosure
-            : selectedOption.value;
+          newMention && mentionEnclosure && /\s/.test(selectedOption.key)
+            ? mentionEnclosure + selectedOption.key + mentionEnclosure
+            : selectedOption.key;
         const mentionNode = $createBeautifulMentionNode(trigger, value);
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
         }
-        closeMenu();
+        closeMenu?.();
       });
     },
     [editor, trigger, creatable, mentionEnclosure],
@@ -303,11 +349,67 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     [showMentionsOnDelete, triggers, punctuation],
   );
 
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const { key, metaKey, ctrlKey } = event;
+      const simpleKey = key.length === 1;
+      const isTrigger = triggers.some((trigger) => key === trigger);
+      const wordChar = isWordChar(key, triggers, punctuation);
+      const selectionInfo = getSelectionInfo(triggers, punctuation);
+      if (
+        !simpleKey ||
+        (!wordChar && !isTrigger) ||
+        !selectionInfo ||
+        metaKey ||
+        ctrlKey
+      ) {
+        return false;
+      }
+      const {
+        node,
+        offset,
+        isTextNode,
+        textContent,
+        prevNode,
+        nextNode,
+        wordCharAfterCursor,
+        cursorAtStartOfNode,
+        cursorAtEndOfNode,
+      } = selectionInfo;
+      if (
+        isTextNode &&
+        cursorAtStartOfNode &&
+        $isBeautifulMentionNode(prevNode)
+      ) {
+        node.insertBefore($createTextNode(" "));
+      }
+      if (
+        isTextNode &&
+        cursorAtEndOfNode &&
+        $isBeautifulMentionNode(nextNode)
+      ) {
+        node.insertAfter($createTextNode(" "));
+      }
+      if (isTextNode && isTrigger && wordCharAfterCursor) {
+        const content =
+          textContent.substring(0, offset) +
+          " " +
+          textContent.substring(offset);
+        node.setTextContent(content);
+      }
+      if ($isBeautifulMentionNode(node) && nextNode === null) {
+        node.insertAfter($createTextNode(" "));
+      }
+      return false;
+    },
+    [punctuation, triggers],
+  );
+
   React.useEffect(() => {
     return mergeRegister(
       editor.registerCommand(
         KEY_DOWN_COMMAND,
-        (event) => handleKeydown(event, triggers, punctuation),
+        handleKeyDown,
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
@@ -389,6 +491,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertTextAsMention,
     setSelection,
     archiveSelection,
+    handleKeyDown,
     handleDeleteMention,
   ]);
 
@@ -396,69 +499,75 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return null;
   }
 
-  return (
-    <>
-      <TypeaheadMenuPlugin<MenuOption>
+  if (combobox) {
+    return (
+      <ComboboxPlugin
+        options={options}
+        loading={loading}
         onQueryChange={setQueryString}
         onSelectOption={handleSelectOption}
+        onReset={() => setTrigger(null)}
         triggerFn={checkForMentionMatch}
-        options={options}
-        anchorClassName={menuAnchorClassName}
-        onClose={handleClose}
-        menuRenderFn={(
-          anchorElementRef,
-          { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
-        ) =>
-          anchorElementRef.current
-            ? ReactDOM.createPortal(
-                <MenuComponent
-                  loading={loading}
-                  open={open}
-                  role="menu"
-                  aria-label="Choose a mention"
-                  aria-hidden={!open}
-                >
-                  {options.map((option, i) => (
-                    <MenuItemComponent
-                      key={option.key}
-                      tabIndex={-1}
-                      selected={selectedIndex === i}
-                      ref={option.setRefElement}
-                      role="menuitem"
-                      aria-selected={selectedIndex === i}
-                      aria-label={`Choose ${option.label}`}
-                      label={option.label}
-                      onClick={() => {
-                        setHighlightedIndex(i);
-                        selectOptionAndCleanUp(option);
-                      }}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                      }}
-                      onMouseEnter={() => {
-                        setHighlightedIndex(i);
-                      }}
-                    >
-                      {option.label}
-                    </MenuItemComponent>
-                  ))}
-                </MenuComponent>,
-                anchorElementRef.current,
-              )
-            : null
-        }
+        triggers={triggers}
+        punctuation={punctuation}
+        creatable={creatable}
+        comboboxAnchor={props.comboboxAnchor}
+        comboboxComponent={props.comboboxComponent}
+        comboboxItemComponent={props.comboboxItemComponent}
       />
-      {showTriggers && (
-        <TriggerMenuPlugin
-          triggers={triggers}
-          punctuation={punctuation}
-          mentionsMenuOpen={open}
-          menuAnchorClassName={menuAnchorClassName}
-          menuComponent={props.menuComponent}
-          menuItemComponent={props.menuItemComponent}
-          showTriggers={showTriggers}
-        />
-      )}
-    </>
+    );
+  }
+
+  return (
+    <TypeaheadMenuPlugin<MenuOption>
+      onQueryChange={setQueryString}
+      onSelectOption={handleSelectOption}
+      triggerFn={checkForMentionMatch}
+      options={options}
+      anchorClassName={menuAnchorClassName}
+      onClose={handleClose}
+      menuRenderFn={(
+        anchorElementRef,
+        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
+      ) =>
+        anchorElementRef.current
+          ? ReactDOM.createPortal(
+              <MenuComponent
+                loading={loading}
+                open={open}
+                role="menu"
+                aria-label="Choose a mention"
+                aria-hidden={!open}
+              >
+                {options.map((option, i) => (
+                  <MenuItemComponent
+                    key={option.key}
+                    tabIndex={-1}
+                    selected={selectedIndex === i}
+                    ref={option.setRefElement}
+                    role="menuitem"
+                    aria-selected={selectedIndex === i}
+                    aria-label={`Choose ${option.label}`}
+                    label={option.label}
+                    onClick={() => {
+                      setHighlightedIndex(i);
+                      selectOptionAndCleanUp(option);
+                    }}
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                    }}
+                    onMouseEnter={() => {
+                      setHighlightedIndex(i);
+                    }}
+                  >
+                    {option.label}
+                  </MenuItemComponent>
+                ))}
+              </MenuComponent>,
+              anchorElementRef.current,
+            )
+          : null
+      }
+    />
   );
 }

@@ -25,6 +25,7 @@ export default function Fade({
   const style = {
     transition: `opacity ${duration}ms`,
     opacity: mount ? 1 : 0,
+    height: "100%",
   };
 
   return <div style={style}>{mount ? children : null}</div>;

@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import Fade from "./Fade";
 
 const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
-  ({ open, loading, ...props }, ref) => {
+  ({ open, loading, ...other }, ref) => {
     if (loading) {
       return (
         <Fade>
@@ -25,7 +25,7 @@ const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
             msOverflowStyle: "none",
           }}
           className="m-0 mt-6 list-none overflow-scroll overflow-y-scroll rounded-lg bg-white p-0 shadow-lg shadow-gray-900 dark:bg-gray-900"
-          {...props}
+          {...other}
         />
       </Fade>
     );
