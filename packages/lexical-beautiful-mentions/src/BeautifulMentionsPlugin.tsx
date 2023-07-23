@@ -48,7 +48,6 @@ import {
   getSelectionInfo,
   isWordChar,
 } from "./mention-utils";
-import { useDebounce } from "./useDebounce";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
 
@@ -133,14 +132,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   );
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
-  const debouncedQueryString = useDebounce(queryString, searchDelay);
   const [trigger, setTrigger] = useState<string | null>(null);
-  const { results, loading } = useMentionLookupService(
-    debouncedQueryString,
+  const { results, loading, query } = useMentionLookupService({
+    queryString,
+    searchDelay,
     trigger,
     items,
     onSearch,
-  );
+  });
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,
   });
@@ -156,7 +155,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       opt = opt.slice(0, menuItemLimit);
     }
     // Add mentions from the editor
-    const readyToAddEditorMentions = !onSearch || debouncedQueryString !== null;
+    const readyToAddEditorMentions = !onSearch || (!loading && query !== null);
     // when a search function is provided, wait for the delayed search to prevent flickering
     if (readyToAddEditorMentions) {
       editor.getEditorState().read(() => {
@@ -166,8 +165,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           // only add the mention if it's not already in the list
           if (
             mention.getTrigger() === trigger &&
-            (debouncedQueryString === null ||
-              mention.getValue().startsWith(debouncedQueryString)) &&
+            (query === null || mention.getValue().startsWith(query)) &&
             opt.every((o) => o.key !== mentionName)
           ) {
             opt.push(new MenuOption(mentionName, mentionName));
@@ -176,25 +174,23 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       });
     }
     // Add option to create a new mention
-    if (
-      debouncedQueryString &&
-      opt.every((o) => o.label !== debouncedQueryString)
-    ) {
+    if (query && opt.every((o) => o.label !== query)) {
       const creatableName =
         typeof creatable === "string"
-          ? creatable.replace("{{name}}", debouncedQueryString)
+          ? creatable.replace("{{name}}", query)
           : typeof creatable === "undefined" || creatable
-          ? `Add "${debouncedQueryString}"`
+          ? `Add "${query}"`
           : undefined;
       if (creatableName) {
-        opt.push(new MenuOption(debouncedQueryString, creatableName));
+        opt.push(new MenuOption(query, creatableName));
       }
     }
     return opt;
   }, [
     results,
     onSearch,
-    debouncedQueryString,
+    loading,
+    query,
     editor,
     trigger,
     creatable,

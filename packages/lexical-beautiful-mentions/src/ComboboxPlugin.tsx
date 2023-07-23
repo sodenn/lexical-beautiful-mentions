@@ -219,12 +219,6 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     setSelectedIndex(null);
   }, []);
 
-  const cleanup = useCallback(() => {
-    setMatch(null);
-    onQueryChange(null);
-    setQueryString(null);
-  }, [onQueryChange]);
-
   const handleSelectMention = useCallback(
     (index: number) => {
       const option = options[index];
@@ -232,10 +226,12 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         const textNode = match ? $splitNodeContainingQuery(match) : null;
         onSelectOption(option, textNode);
       });
-      cleanup();
+      setMatch(null);
+      onQueryChange(null);
+      setQueryString(null);
       setSelectedIndex(null);
     },
-    [cleanup, editor, match, onSelectOption, options],
+    [editor, match, onQueryChange, onSelectOption, options],
   );
 
   const handleSelectTrigger = useCallback(
@@ -244,10 +240,11 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       editor.update(() => {
         insertMention(triggers, punctuation, option.key);
       });
-      cleanup();
+      setMatch(null);
+      setQueryString(null);
       setSelectedIndex(0);
     },
-    [editor, punctuation, triggers, options, cleanup],
+    [editor, punctuation, triggers, options],
   );
 
   const handleClickOption = useCallback(
@@ -323,6 +320,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     } else {
       setOpen(false);
       setSelectedIndex(null);
+      setQueryString(null);
     }
   }, [focused]);
 
@@ -386,13 +384,17 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         if (!text) {
           onReset();
           setMatch(null);
-          setQueryString(null);
-          return;
+          onQueryChange(null);
+        } else {
+          const match = triggerFn(text, editor);
+          setMatch(match);
+          onQueryChange(match ? match.matchingString : null);
+          if (!match || !match.matchingString) {
+            setQueryString(text.trim());
+          } else {
+            setQueryString(match.matchingString);
+          }
         }
-        setQueryString(text.trim());
-        const match = triggerFn(text, editor);
-        setMatch(match);
-        onQueryChange(match ? match.matchingString : null);
       });
     };
     const removeUpdateListener = editor.registerUpdateListener(updateListener);
