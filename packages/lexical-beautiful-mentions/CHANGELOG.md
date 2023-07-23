@@ -1,5 +1,14 @@
 # lexical-beautiful-mentions
 
+## 0.1.9
+
+### Patch Changes
+
+- 7e1eb6d: feat(): add combobox as alternative to typeahead menu. **BREAKING**: the `showTriggers` prop has been removed as the combobox shows all available triggers by default.
+- 0f55446: feat(): allow mentions with spaces to enclose with custom-defined characters
+- 0f55446: feat(): allow to define custom punctuation when looking for mentions
+- 10f2c1e: fix(): trigger menu should not re-position when typing
+
 ## 0.1.8
 
 ### Patch Changes
