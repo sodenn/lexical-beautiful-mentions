@@ -103,7 +103,16 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
 };
 
 type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
+  /**
+   * If `true`, replaces the typeahead menu with a combobox that opens below
+   * the editor. The combobox shows the currently available triggers and
+   * mentions.
+   */
   combobox: true;
+  /**
+   * The element that the combobox will be attached to.
+   * @default editor root element
+   */
   comboboxAnchor?: HTMLElement;
   /**
    * The component to use for the combobox.

@@ -32,9 +32,7 @@ interface ComboboxPluginProps
       BeautifulMentionsPluginProps,
       "comboboxAnchor" | "comboboxComponent" | "comboboxItemComponent"
     >,
-    Required<
-      Pick<BeautifulMentionsPluginProps, "punctuation" | "searchDelay">
-    > {
+    Required<Pick<BeautifulMentionsPluginProps, "punctuation">> {
   loading: boolean;
   triggerFn: TriggerFn;
   onSelectOption: (
@@ -145,7 +143,6 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     loading,
     triggerFn,
     onQueryChange,
-    searchDelay,
     comboboxAnchor,
     onReset,
     comboboxComponent: ComboboxComponent = "div",

@@ -504,7 +504,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       <ComboboxPlugin
         options={options}
         loading={loading}
-        searchDelay={searchDelay}
         onQueryChange={setQueryString}
         onSelectOption={handleSelectOption}
         onReset={() => setTrigger(null)}
