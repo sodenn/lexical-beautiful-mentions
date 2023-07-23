@@ -145,7 +145,7 @@ export class TestUtils {
     url += `&cf=${this.commandFocus}`;
     url += `&value=${this.initialValue}`;
     await this.page.goto(url);
-    await this.page.waitForTimeout(100);
+    await this.sleep(100);
   }
 
   private async pressKey(key: string, n = 1) {

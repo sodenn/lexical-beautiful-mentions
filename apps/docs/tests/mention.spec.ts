@@ -24,7 +24,7 @@ test.describe("mentions handling", () => {
       initialValue: "Hey @John",
     });
     await utils.editor.press("Backspace");
-    await utils.sleep(300);
+    await utils.sleep(200);
     await expect(utils.mentionsMenu).not.toBeVisible();
   });
 

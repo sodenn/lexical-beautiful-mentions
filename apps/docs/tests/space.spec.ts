@@ -131,6 +131,7 @@ test.describe("Space handling", () => {
     const utils = await testUtils(page, {
       initialValue: "due:2023-06-06",
     });
+    await utils.sleep(100);
     await utils.hasText("[due:2023-06-06]");
   });
 });
