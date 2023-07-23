@@ -9,8 +9,8 @@
     "@typescript-eslint/parser": "6.1.0",
     "eslint": "8.45.0",
     "eslint-config-prettier": "8.8.0",
-    "eslint-config-turbo": "1.10.8",
-    "eslint-plugin-react": "7.32.2",
+    "eslint-config-turbo": "1.10.9",
+    "eslint-plugin-react": "7.33.0",
     "eslint-plugin-react-hooks": "4.6.0"
   }
 }
