@@ -111,7 +111,7 @@ test.describe("Combobox", () => {
     );
   });
 
-  test.only("should remove the trigger selection when pressing backspace", async ({
+  test("should remove the trigger selection when pressing backspace", async ({
     page,
   }) => {
     const utils = await testUtils(page, {
@@ -125,7 +125,6 @@ test.describe("Combobox", () => {
       "beautiful-mention-combobox-Anton",
     );
     await utils.editor.press("Backspace");
-    await utils.sleep(200);
     await expect(utils.triggersMenu).toBeVisible();
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
@@ -136,30 +135,78 @@ test.describe("Combobox", () => {
   test("should render the mentions after selecting a trigger", async ({
     page,
   }) => {
-    //
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    await utils.editor.type("due");
+    await utils.editor.press("Tab");
+    await expect(utils.mentionsMenu).toBeVisible();
+    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(3);
   });
 
   test("should render the triggers after selecting a mention by pressing enter", async ({
     page,
   }) => {
-    //
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    await utils.editor.type("@");
+    await utils.editor.press("Enter");
+    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.triggersMenu).toBeVisible();
+    await expect(utils.triggersMenu.getByRole("menuitem")).toHaveCount(5);
+    await utils.hasText("[@Anton]");
   });
 
   test("should render the triggers after selecting a mention by pressing tab", async ({
     page,
   }) => {
-    //
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    await utils.editor.type("@");
+    await utils.editor.press("Tab");
+    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.triggersMenu).toBeVisible();
+    await expect(utils.triggersMenu.getByRole("menuitem")).toHaveCount(5);
+    await utils.hasText("[@Anton]");
   });
 
   test("should render the triggers after selecting a mention by clicking on it", async ({
     page,
   }) => {
-    //
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    await utils.editor.type("@");
+    await utils.mentionsMenu.getByText("Anton").click();
+    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.triggersMenu).toBeVisible();
+    await expect(utils.triggersMenu.getByRole("menuitem")).toHaveCount(5);
+    await utils.hasText("[@Anton]");
   });
 
   test("should remove the selection when the editor is blurred", async ({
     page,
   }) => {
-    //
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    await utils.editor.press("ArrowDown");
+    await expect(utils.triggersMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "beautiful-mention-combobox-@",
+    );
+    await utils.editor.blur();
+    await utils.editor.focus();
+    await expect(utils.triggersMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "",
+    );
   });
 });

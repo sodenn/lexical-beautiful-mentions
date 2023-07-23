@@ -114,9 +114,9 @@ function Plugins() {
                 <ContentEditable
                   style={{ tabSize: 1 }}
                   className={cn(
-                    "relative resize-none px-3 py-4 caret-gray-900 outline-none outline-0 dark:text-gray-100 dark:caret-gray-100",
-                    combobox && "rounded-t",
-                    !combobox && "min-h-[150px]",
+                    "relative resize-none caret-gray-900 outline-none outline-0 dark:text-gray-100 dark:caret-gray-100",
+                    combobox && "rounded-t px-2 py-3",
+                    !combobox && "min-h-[150px] px-3 py-4",
                   )}
                 />
               }

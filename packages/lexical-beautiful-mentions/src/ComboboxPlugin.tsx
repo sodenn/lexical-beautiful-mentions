@@ -32,7 +32,9 @@ interface ComboboxPluginProps
       BeautifulMentionsPluginProps,
       "comboboxAnchor" | "comboboxComponent" | "comboboxItemComponent"
     >,
-    Required<Pick<BeautifulMentionsPluginProps, "punctuation">> {
+    Required<
+      Pick<BeautifulMentionsPluginProps, "punctuation" | "searchDelay">
+    > {
   loading: boolean;
   triggerFn: TriggerFn;
   onSelectOption: (
@@ -42,6 +44,7 @@ interface ComboboxPluginProps
   onQueryChange: (matchingString: string | null) => void;
   options: MenuOption[];
   triggers: string[];
+  onReset: () => void;
   creatable: boolean | string;
 }
 
@@ -142,7 +145,9 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     loading,
     triggerFn,
     onQueryChange,
+    searchDelay,
     comboboxAnchor,
+    onReset,
     comboboxComponent: ComboboxComponent = "div",
     comboboxItemComponent: ComboboxItemComponent = "div",
   } = props;
@@ -152,7 +157,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [match, setMatch] = useState<MenuTextMatch | null>(null);
   const [queryString, setQueryString] = useState<string | null>(null);
-  const debouncedQueryString = useDebounce(queryString, 0);
+  const debouncedQueryString = useDebounce(queryString, searchDelay);
   const itemRefs = useRef<Record<string, HTMLElement | null>>({});
   const options = useMemo(() => {
     if (props.options.length === 0) {
@@ -293,7 +298,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
 
   const handleBackspace = useCallback(() => {
     setSelectedIndex(null);
-    return true;
+    return false;
   }, []);
 
   const handleKeyDown = useCallback(
@@ -315,6 +320,12 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     },
     [options, optionsType, queryString],
   );
+
+  useEffect(() => {
+    if (!focused) {
+      setSelectedIndex(null);
+    }
+  }, [focused]);
 
   useEffect(() => {
     return mergeRegister(
@@ -366,6 +377,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       editor.getEditorState().read(() => {
         const text = getQueryTextForSearch(editor);
         if (!text) {
+          onReset();
           setMatch(null);
           setQueryString(null);
           return;
@@ -380,7 +392,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     return () => {
       removeUpdateListener();
     };
-  }, [editor, triggerFn, onQueryChange]);
+  }, [editor, triggerFn, onQueryChange, onReset]);
 
   if (!focused || !anchor) {
     return null;
