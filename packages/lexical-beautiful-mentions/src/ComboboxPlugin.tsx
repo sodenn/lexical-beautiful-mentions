@@ -9,6 +9,7 @@ import {
   KEY_BACKSPACE_COMMAND,
   KEY_DOWN_COMMAND,
   KEY_ENTER_COMMAND,
+  KEY_ESCAPE_COMMAND,
   KEY_TAB_COMMAND,
   LexicalEditor,
   RangeSelection,
@@ -24,7 +25,6 @@ import {
   TriggerFn,
 } from "./Menu";
 import { insertMention } from "./mention-commands";
-import { useDebounce } from "./useDebounce";
 import { useIsFocused } from "./useIsFocused";
 
 interface ComboboxPluginProps
@@ -157,26 +157,24 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [match, setMatch] = useState<MenuTextMatch | null>(null);
   const [queryString, setQueryString] = useState<string | null>(null);
-  const debouncedQueryString = useDebounce(queryString, searchDelay);
   const itemRefs = useRef<Record<string, HTMLElement | null>>({});
+  const optionsType = props.options.length === 0 ? "triggers" : "mentions";
   const options = useMemo(() => {
-    if (props.options.length === 0) {
+    if (optionsType === "triggers") {
       const triggerOptions = triggers.map(
         (trigger) => new MenuOption(trigger, trigger),
       );
       if (
-        !debouncedQueryString ||
-        triggerOptions.every((o) => !o.key.startsWith(debouncedQueryString))
+        !queryString ||
+        triggerOptions.every((o) => !o.key.startsWith(queryString))
       ) {
         return triggerOptions;
       }
-      return triggerOptions.filter((o) =>
-        o.key.startsWith(debouncedQueryString),
-      );
+      return triggerOptions.filter((o) => o.key.startsWith(queryString));
     }
     return props.options;
-  }, [props.options, triggers, debouncedQueryString]);
-  const optionsType = props.options.length === 0 ? "triggers" : "mentions";
+  }, [optionsType, props.options, triggers, queryString]);
+  const [open, setOpen] = useState(false);
 
   const scrollIntoView = useCallback(
     (index: number) => {
@@ -303,6 +301,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      setOpen(true);
       if (!isCharacterKey(event)) {
         return false;
       }
@@ -322,7 +321,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   );
 
   useEffect(() => {
-    if (!focused) {
+    if (focused) {
+      setOpen(true);
+    } else {
+      setOpen(false);
       setSelectedIndex(null);
     }
   }, [focused]);
@@ -363,6 +365,14 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         handleKeyDown,
         COMMAND_PRIORITY_LOW,
       ),
+      editor.registerCommand<KeyboardEvent>(
+        KEY_ESCAPE_COMMAND,
+        () => {
+          setOpen(false);
+          return false;
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [
     editor,
@@ -394,7 +404,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     };
   }, [editor, triggerFn, onQueryChange, onReset]);
 
-  if (!focused || !anchor) {
+  if (!open || !anchor) {
     return null;
   }
 
