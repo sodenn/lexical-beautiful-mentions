@@ -22,7 +22,7 @@
     "dompurify": "3.0.5",
     "lexical": "0.11.2",
     "lexical-beautiful-mentions": "*",
-    "next": "13.4.10",
+    "next": "13.4.12",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "tailwind-merge": "1.14.0",
