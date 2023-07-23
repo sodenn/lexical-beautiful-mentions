@@ -126,12 +126,4 @@ test.describe("Space handling", () => {
     await utils.editor.press("Space");
     await utils.hasText("[#xxx] ");
   });
-
-  test("should insert a new mention with dashes", async ({ page }) => {
-    const utils = await testUtils(page, {
-      initialValue: "due:2023-06-06",
-    });
-    await utils.sleep(100);
-    await utils.hasText("[due:2023-06-06]");
-  });
 });

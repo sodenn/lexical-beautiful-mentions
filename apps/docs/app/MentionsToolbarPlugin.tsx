@@ -20,6 +20,7 @@ export default function MentionsToolbarPlugin() {
   const {
     asynchronous,
     combobox,
+    mentionEnclosure,
     showMentionsOnDelete,
     allowSpaces,
     creatable,
@@ -27,6 +28,7 @@ export default function MentionsToolbarPlugin() {
     commandFocus,
     setAsynchronous,
     setCombobox,
+    setMentionEnclosure,
     setAllowSpaces,
     setCreatable,
     setInsertOnBlur,
@@ -65,6 +67,13 @@ export default function MentionsToolbarPlugin() {
       setCombobox(event.target.checked);
     },
     [setCombobox],
+  );
+
+  const handleMentionEnclosureChange: CheckboxProps["onChange"] = useCallback(
+    (event) => {
+      setMentionEnclosure(event.target.checked);
+    },
+    [setMentionEnclosure],
   );
 
   const handleShowMentionsOnDelete: CheckboxProps["onChange"] = useCallback(
@@ -146,6 +155,12 @@ export default function MentionsToolbarPlugin() {
           checked={showMentionsOnDelete}
           onChange={handleShowMentionsOnDelete}
         />
+        <Checkbox
+          label="combobox"
+          helpText="Use a combobox instead of a menu."
+          checked={combobox}
+          onChange={handleComboboxChange}
+        />
         <hr className="my-1 h-px border-0 bg-gray-300 dark:bg-gray-600 sm:col-span-2" />
         <Checkbox
           label="Asynchronous"
@@ -154,10 +169,10 @@ export default function MentionsToolbarPlugin() {
           onChange={handleAsynchronousChange}
         />
         <Checkbox
-          label="combobox"
-          helpText="Use a combobox instead of a menu."
-          checked={combobox}
-          onChange={handleComboboxChange}
+          label="mentionEnclosure"
+          helpText="Enclose mentions with quotes if they contain spaces. The characters used to enclose the mentions are configurable."
+          checked={!!mentionEnclosure}
+          onChange={handleMentionEnclosureChange}
         />
       </div>
     </>

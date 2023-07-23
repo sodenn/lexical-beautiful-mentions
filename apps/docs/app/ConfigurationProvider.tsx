@@ -21,11 +21,13 @@ interface Configuration
   asynchronous: boolean;
   commandFocus: boolean;
   combobox: boolean;
+  mentionEnclosure?: string;
   showMentionsOnDelete: boolean;
-  setAsynchronous: (asynchronous: boolean) => void;
   setAllowSpaces: (allowSpaces: boolean) => void;
   setCreatable: (creatable: boolean) => void;
   setInsertOnBlur: (insertOnBlur: boolean) => void;
+  setMentionEnclosure: (mentionEnclosure: boolean) => void;
+  setAsynchronous: (asynchronous: boolean) => void;
   setCombobox: (combobox: boolean) => void;
   setShowMentionsOnDelete: (showMentionsOnDelete: boolean) => void;
 }
@@ -53,6 +55,9 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   );
   const [combobox, _setCombobox] = useState(
     getQueryParam("combobox") === "true",
+  );
+  const [mentionEnclosure, _setMentionEnclosure] = useState(
+    getQueryParam("enclosure") === "true",
   );
   const [showMentionsOnDelete, _setShowMentionsOnDelete] = useState(
     getQueryParam("mentions") === "true",
@@ -82,6 +87,14 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     (combobox: boolean) => {
       _setCombobox(combobox);
       updateQueryParam("combobox", combobox);
+    },
+    [updateQueryParam],
+  );
+
+  const setMentionEnclosure = useCallback(
+    (mentionEnclosure: boolean) => {
+      _setMentionEnclosure(mentionEnclosure);
+      updateQueryParam("enclosure", mentionEnclosure);
     },
     [updateQueryParam],
   );
@@ -125,6 +138,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         autoFocus,
         asynchronous,
         combobox,
+        mentionEnclosure: mentionEnclosure ? '"' : undefined,
         showMentionsOnDelete,
         allowSpaces,
         creatable: creatable ? creatableMap : false,
@@ -134,6 +148,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
         setCreatable,
         setInsertOnBlur,
         setCombobox,
+        setMentionEnclosure,
         setShowMentionsOnDelete,
         commandFocus,
       }}
