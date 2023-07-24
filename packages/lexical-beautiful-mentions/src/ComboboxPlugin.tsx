@@ -3,6 +3,7 @@ import { mergeRegister } from "@lexical/utils";
 import {
   $getSelection,
   $isRangeSelection,
+  CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   KEY_ARROW_DOWN_COMMAND,
   KEY_ARROW_UP_COMMAND,
@@ -30,7 +31,10 @@ import { useIsFocused } from "./useIsFocused";
 interface ComboboxPluginProps
   extends Pick<
       BeautifulMentionsPluginProps,
-      "comboboxAnchor" | "comboboxComponent" | "comboboxItemComponent"
+      | "comboboxAnchor"
+      | "comboboxAnchorClassName"
+      | "comboboxComponent"
+      | "comboboxItemComponent"
     >,
     Required<Pick<BeautifulMentionsPluginProps, "punctuation">> {
   loading: boolean;
@@ -81,58 +85,82 @@ function isCharacterKey(event: KeyboardEvent) {
   );
 }
 
-export function useAnchorRef(render: boolean, root?: HTMLElement) {
-  const [rootElement, setRootElement] = useState<HTMLElement | null>(
-    root || null,
-  );
+export function useAnchorRef(
+  render: boolean,
+  comboboxAnchor?: HTMLElement,
+  comboboxAnchorClassName?: string,
+) {
   const [editor] = useLexicalComposerContext();
-  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const minHeight = useRef<number>(0);
+  const [anchor, setAnchor] = useState<HTMLElement | null>(
+    comboboxAnchor || null,
+  );
+  const [anchorChild, setAnchorChild] = useState<HTMLElement | null>(null);
+  const anchorHeight = useRef<number>(0);
+  const anchorChildMinHeight = useRef<number>(0);
 
   useEffect(() => {
-    if (root) {
-      setRootElement(root);
+    if (comboboxAnchor) {
+      setAnchor(comboboxAnchor);
       return;
     }
     return editor.registerRootListener((rootElement) => {
       if (rootElement) {
-        setRootElement(rootElement.parentElement);
+        setAnchor(rootElement.parentElement);
       }
     });
-  }, [editor, root]);
+  }, [editor, comboboxAnchor]);
 
   useEffect(() => {
-    if (!rootElement) {
-      return;
-    }
-    if (!render && anchor && rootElement.contains(anchor)) {
-      rootElement.removeChild(anchor);
-      setAnchor(null);
-      return;
-    }
-    const element = anchor || document.createElement("div");
-    element.style.position = "absolute";
-    element.style.left = "0";
-    element.style.right = "0";
-    rootElement.appendChild(element);
     if (!anchor) {
-      setAnchor(element);
+      return;
     }
-    const resizeObserver = new ResizeObserver(([entry]) => {
-      if (entry.contentRect.height > minHeight.current) {
-        minHeight.current = entry.contentRect.height;
-        element.style.minHeight = `${minHeight.current}px`;
-        element.style.height = `1px`;
+    if (!render) {
+      if (anchorChild) {
+        anchorChild.remove();
+        setAnchorChild(null);
+      }
+      return;
+    }
+    const { height } = anchor.getBoundingClientRect();
+    anchorHeight.current = height;
+    const newAnchorChild = anchorChild || document.createElement("div");
+    newAnchorChild.style.position = "absolute";
+    newAnchorChild.style.left = "0";
+    newAnchorChild.style.right = "0";
+    newAnchorChild.style.paddingTop = `${anchorHeight.current}px`;
+    newAnchorChild.className = comboboxAnchorClassName || "";
+    anchor.prepend(newAnchorChild);
+    if (!anchorChild) {
+      setAnchorChild(newAnchorChild);
+    }
+    const anchorObserver = new ResizeObserver(([entry]) => {
+      const diff = entry.contentRect.height - anchorHeight.current;
+      anchorHeight.current = entry.contentRect.height;
+      newAnchorChild.style.paddingTop = `${anchorHeight.current}px`;
+      const newMinHeight = parseInt(newAnchorChild.style.minHeight) + diff;
+      if (!isNaN(newMinHeight)) {
+        newAnchorChild.style.minHeight = `${newMinHeight}px`;
       }
     });
-    resizeObserver.observe(element);
+    const anchorChildObserver = new ResizeObserver(([entry]) => {
+      if (entry.contentRect.height > anchorChildMinHeight.current) {
+        anchorChildMinHeight.current = entry.contentRect.height;
+        const newMinHeight =
+          anchorChildMinHeight.current + anchorHeight.current;
+        newAnchorChild.style.minHeight = `${newMinHeight}px`;
+        newAnchorChild.style.height = `1px`;
+      }
+    });
+    anchorObserver.observe(anchor);
+    anchorChildObserver.observe(newAnchorChild);
     return () => {
-      resizeObserver.disconnect();
-      rootElement.removeChild(element);
+      anchorObserver.disconnect();
+      anchorChildObserver.disconnect();
+      anchor.removeChild(newAnchorChild);
     };
-  }, [rootElement, render, anchor]);
+  }, [anchor, render, anchorChild, comboboxAnchorClassName]);
 
-  return anchor;
+  return anchorChild;
 }
 
 export function ComboboxPlugin(props: ComboboxPluginProps) {
@@ -144,13 +172,13 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     triggerFn,
     onQueryChange,
     comboboxAnchor,
+    comboboxAnchorClassName,
     onReset,
     comboboxComponent: ComboboxComponent = "div",
     comboboxItemComponent: ComboboxItemComponent = "div",
   } = props;
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
-  const anchor = useAnchorRef(focused, comboboxAnchor);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [match, setMatch] = useState<MenuTextMatch | null>(null);
   const [queryString, setQueryString] = useState<string | null>(null);
@@ -172,6 +200,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     return props.options;
   }, [optionsType, props.options, triggers, queryString]);
   const [open, setOpen] = useState(false);
+  const anchor = useAnchorRef(open, comboboxAnchor, comboboxAnchorClassName);
 
   const scrollIntoView = useCallback(
     (index: number) => {
@@ -219,12 +248,6 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     setSelectedIndex(null);
   }, []);
 
-  const cleanup = useCallback(() => {
-    setMatch(null);
-    onQueryChange(null);
-    setQueryString(null);
-  }, [onQueryChange]);
-
   const handleSelectMention = useCallback(
     (index: number) => {
       const option = options[index];
@@ -232,10 +255,12 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         const textNode = match ? $splitNodeContainingQuery(match) : null;
         onSelectOption(option, textNode);
       });
-      cleanup();
+      setMatch(null);
+      onQueryChange(null);
+      setQueryString(null);
       setSelectedIndex(null);
     },
-    [cleanup, editor, match, onSelectOption, options],
+    [editor, match, onQueryChange, onSelectOption, options],
   );
 
   const handleSelectTrigger = useCallback(
@@ -244,10 +269,11 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       editor.update(() => {
         insertMention(triggers, punctuation, option.key);
       });
-      cleanup();
+      setMatch(null);
+      setQueryString(null);
       setSelectedIndex(0);
     },
-    [editor, punctuation, triggers, options, cleanup],
+    [editor, punctuation, triggers, options],
   );
 
   const handleClickOption = useCallback(
@@ -323,6 +349,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     } else {
       setOpen(false);
       setSelectedIndex(null);
+      setQueryString(null);
     }
   }, [focused]);
 
@@ -363,6 +390,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand<KeyboardEvent>(
+        CLICK_COMMAND,
+        () => {
+          if (!open) {
+            setOpen(true);
+          }
+          return false;
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand<KeyboardEvent>(
         KEY_ESCAPE_COMMAND,
         () => {
           setOpen(false);
@@ -373,6 +410,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     );
   }, [
     editor,
+    open,
     handleArrowKeyDown,
     handleKeySelect,
     handleBackspace,
@@ -386,13 +424,17 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         if (!text) {
           onReset();
           setMatch(null);
-          setQueryString(null);
-          return;
+          onQueryChange(null);
+        } else {
+          const match = triggerFn(text, editor);
+          setMatch(match);
+          onQueryChange(match ? match.matchingString : null);
+          if (!match || !match.matchingString) {
+            setQueryString(text.trim());
+          } else {
+            setQueryString(match.matchingString);
+          }
         }
-        setQueryString(text.trim());
-        const match = triggerFn(text, editor);
-        setMatch(match);
-        onQueryChange(match ? match.matchingString : null);
       });
     };
     const removeUpdateListener = editor.registerUpdateListener(updateListener);

@@ -25,9 +25,13 @@ const queryFn = async (
 describe("useMentionLookupService", () => {
   it("should return all mentions for predefined items and no search term", async () => {
     const { result } = renderHook(() =>
-      useMentionLookupService("", "due:", items),
+      useMentionLookupService({
+        queryString: "",
+        trigger: "due:",
+        items: items,
+        searchDelay: 0,
+      }),
     );
-
     await waitFor(() => {
       expect(result.current.results).toStrictEqual(["today", "tomorrow"]);
     });
@@ -35,9 +39,13 @@ describe("useMentionLookupService", () => {
 
   it("should return a filtered mention list for predefined items and search term", async () => {
     const { result } = renderHook(() =>
-      useMentionLookupService("tomo", "due:", items),
+      useMentionLookupService({
+        queryString: "tomo",
+        trigger: "due:",
+        items: items,
+        searchDelay: 0,
+      }),
     );
-
     await waitFor(() => {
       expect(result.current.results).toStrictEqual(["tomorrow"]);
     });
@@ -45,7 +53,13 @@ describe("useMentionLookupService", () => {
 
   it("should execute the mentions query function", async () => {
     const { result } = renderHook(() =>
-      useMentionLookupService("tomo", "due:", undefined, queryFn),
+      useMentionLookupService({
+        queryString: "tomo",
+        trigger: "due:",
+        items: undefined,
+        onSearch: queryFn,
+        searchDelay: 0,
+      }),
     );
 
     await waitFor(() => {

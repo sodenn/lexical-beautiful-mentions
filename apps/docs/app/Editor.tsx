@@ -156,6 +156,7 @@ function Plugins() {
                 showMentionsOnDelete={showMentionsOnDelete}
                 combobox
                 comboboxAnchor={comboboxAnchor.current}
+                comboboxAnchorClassName="shadow-lg shadow-gray-900 rounded"
                 comboboxComponent={Combobox}
                 comboboxItemComponent={ComboboxItem}
               />

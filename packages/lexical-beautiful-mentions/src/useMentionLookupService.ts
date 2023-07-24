@@ -1,47 +1,60 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useDebounce } from "./useDebounce";
 
-export function useMentionLookupService(
-  queryString: string | null,
-  trigger: string | null,
-  items?: Record<string, string[]>,
+interface MentionsLookupServiceOptions {
+  queryString: string | null;
+  trigger: string | null;
+  searchDelay: number;
+  items?: Record<string, string[]>;
   onSearch?: (
     trigger: string,
     queryString?: string | null,
-  ) => Promise<string[]>,
-) {
+  ) => Promise<string[]>;
+}
+
+export function useMentionLookupService(options: MentionsLookupServiceOptions) {
+  const { queryString, trigger, searchDelay, items, onSearch } = options;
+  const debouncedQueryString = useDebounce(queryString, searchDelay);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Array<string>>([]);
+  const [query, setQuery] = useState<string | null>(null);
 
-  const lookupService = useCallback(
-    async (queryString: string | null, trigger: string) => {
+  useEffect(() => {
+    if (trigger === null || debouncedQueryString === null) {
+      setResults([]);
+      setQuery(null);
+      return;
+    }
+    if (items) {
       const mentions =
         items &&
         Object.entries(items).find(([key]) => {
           return new RegExp(key).test(trigger);
         });
-      if (mentions) {
-        return !queryString
-          ? [...mentions[1]]
-          : mentions[1].filter((item) =>
-              item.toLowerCase().includes(queryString.toLowerCase()),
-            );
+      if (!mentions) {
+        return;
       }
-      if (onSearch) {
-        setLoading(true);
-        return onSearch(trigger, queryString).finally(() => setLoading(false));
-      }
-      throw new Error("No lookup service provided");
-    },
-    [items, onSearch],
-  );
-
-  useEffect(() => {
-    if (trigger === null || queryString === null) {
-      setResults([]);
+      const result = !debouncedQueryString
+        ? [...mentions[1]]
+        : mentions[1].filter((item) =>
+            item.toLowerCase().includes(debouncedQueryString.toLowerCase()),
+          );
+      setResults(result);
+      setQuery(debouncedQueryString);
       return;
     }
-    lookupService(queryString, trigger).then(setResults);
-  }, [queryString, lookupService, trigger]);
+    if (onSearch) {
+      setLoading(true);
+      setQuery(debouncedQueryString);
+      onSearch(trigger, debouncedQueryString)
+        .then(setResults)
+        .finally(() => setLoading(false));
+      return;
+    }
+  }, [debouncedQueryString, items, onSearch, trigger]);
 
-  return useMemo(() => ({ loading, results }), [loading, results]);
+  return useMemo(
+    () => ({ loading, results, query }),
+    [loading, results, query],
+  );
 }

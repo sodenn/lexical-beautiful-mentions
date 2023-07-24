@@ -98,6 +98,7 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
   menuItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
   combobox?: never;
   comboboxAnchor?: never;
+  comboboxAnchorClassName?: never;
   comboboxComponent?: never;
   comboboxItemComponent?: never;
 };
@@ -114,6 +115,10 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
    * @default editor root element
    */
   comboboxAnchor?: HTMLElement;
+  /**
+   * The class name to apply to the combobox anchor element.
+   */
+  comboboxAnchorClassName?: string;
   /**
    * The component to use for the combobox.
    * @default ul
