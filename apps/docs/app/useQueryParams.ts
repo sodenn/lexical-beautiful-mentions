@@ -12,6 +12,7 @@ interface QueryParams {
   blur: string;
   combobox: string;
   mentions: string;
+  enclosure: string;
 }
 
 export default function useQueryParams() {

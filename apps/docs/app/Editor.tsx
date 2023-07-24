@@ -72,6 +72,7 @@ function Plugins() {
     creatable,
     insertOnBlur,
     combobox,
+    mentionEnclosure,
     showMentionsOnDelete,
   } = useConfiguration();
   const focused = useIsFocused();
@@ -134,6 +135,7 @@ function Plugins() {
                 onSearch={handleSearch}
                 searchDelay={asynchronous ? 250 : 0}
                 triggers={Object.keys(mentionItems)}
+                mentionEnclosure={mentionEnclosure}
                 allowSpaces={allowSpaces}
                 creatable={creatable}
                 insertOnBlur={insertOnBlur}
@@ -147,6 +149,7 @@ function Plugins() {
                 onSearch={handleSearch}
                 searchDelay={asynchronous ? 250 : 0}
                 triggers={Object.keys(mentionItems)}
+                mentionEnclosure={mentionEnclosure}
                 allowSpaces={allowSpaces}
                 creatable={creatable}
                 insertOnBlur={insertOnBlur}

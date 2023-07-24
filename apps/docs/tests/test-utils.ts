@@ -11,6 +11,7 @@ interface TestUtilsOptions {
   insertOnBlur?: boolean;
   commandFocus?: boolean;
   combobox?: boolean;
+  mentionEnclosure?: boolean;
   showMentionsOnDelete?: boolean;
 }
 
@@ -24,6 +25,7 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     insertOnBlur = false,
     commandFocus = true,
     combobox = false,
+    mentionEnclosure = false,
     showMentionsOnDelete = false,
   } = options;
   const utils = new TestUtils(
@@ -36,6 +38,7 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     insertOnBlur,
     commandFocus,
     combobox,
+    mentionEnclosure,
     showMentionsOnDelete,
   );
   await utils.init();
@@ -55,6 +58,7 @@ export class TestUtils {
     private insertOnBlur: boolean,
     private commandFocus: boolean,
     private combobox: boolean,
+    private mentionEnclosure: boolean,
     private showMentionsOnDelete: boolean,
   ) {
     this.setInitialValue(initialValue);
@@ -138,8 +142,9 @@ export class TestUtils {
     let url = `http://${host}:3000?focus=${this.autofocus}`;
     url += `&async=${this.asynchronous}`;
     url += `&combobox=${this.combobox}`;
+    url += `&enclosure=${this.mentionEnclosure}`;
     url += `&mentions=${this.showMentionsOnDelete}`;
-    url += `&spaces=${this.allowSpaces}`;
+    url += `&space=${this.allowSpaces}`;
     url += `&new=${this.creatable}`;
     url += `&blur=${this.insertOnBlur}`;
     url += `&cf=${this.commandFocus}`;
