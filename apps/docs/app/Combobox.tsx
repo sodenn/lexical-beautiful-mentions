@@ -24,7 +24,7 @@ const Combobox = forwardRef<any, BeautifulMentionsComboboxProps>(
             scrollbarWidth: "none",
             msOverflowStyle: "none",
           }}
-          className="m-0 h-full list-none overflow-scroll overflow-y-scroll rounded-b-lg bg-slate-300 p-0 dark:bg-slate-600"
+          className="m-0 h-full list-none overflow-scroll overflow-y-scroll rounded-b bg-slate-300 p-0 dark:bg-slate-600"
           {...other}
         />
       </Fade>
