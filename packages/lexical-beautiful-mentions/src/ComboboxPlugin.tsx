@@ -410,6 +410,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     );
   }, [
     editor,
+    open,
     handleArrowKeyDown,
     handleKeySelect,
     handleBackspace,
