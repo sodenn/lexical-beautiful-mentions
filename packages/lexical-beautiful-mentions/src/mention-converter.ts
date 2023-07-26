@@ -94,7 +94,7 @@ export function convertToMentionEntries(
  * 🚨 Only works for mentions without spaces. Make sure to disable spaces via
  * the `allowSpaces` prop.
  */
-export function convertToMentionNodes(
+export function $convertToMentionNodes(
   text: string,
   triggers: string[],
   punctuation = DEFAULT_PUNCTUATION,
