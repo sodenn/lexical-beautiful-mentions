@@ -30,22 +30,23 @@ import { MenuOption, MenuTextMatch } from "./Menu";
 import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { CAN_USE_DOM } from "./environment";
 import {
+  $insertMentionAtSelection,
+  $insertTriggerAtSelection,
+  $removeMention,
+  $renameMention,
   INSERT_MENTION_COMMAND,
   OPEN_MENTIONS_MENU_COMMAND,
   REMOVE_MENTIONS_COMMAND,
   RENAME_MENTIONS_COMMAND,
-  insertMention,
-  removeMention,
-  renameMention,
 } from "./mention-commands";
 import {
+  $getSelectionInfo,
   DEFAULT_PUNCTUATION,
   LENGTH_LIMIT,
   TRIGGERS,
   VALID_CHARS,
   getCreatableProp,
   getMenuItemLimitProp,
-  getSelectionInfo,
   isWordChar,
 } from "./mention-utils";
 import { useIsFocused } from "./useIsFocused";
@@ -232,7 +233,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const checkForMentionMatch = useCallback(
     (text: string) => {
       // Don't show the menu if the next character is a word character
-      const info = getSelectionInfo(triggers, punctuation);
+      const info = $getSelectionInfo(triggers, punctuation);
       if (info?.isTextNode && info.wordCharAfterCursor) {
         return null;
       }
@@ -269,7 +270,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   );
 
   const insertTextAsMention = useCallback(() => {
-    const info = getSelectionInfo(triggers, punctuation);
+    const info = $getSelectionInfo(triggers, punctuation);
     if (!info || !info.isTextNode) {
       return false;
     }
@@ -325,7 +326,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       if (!showMentionsOnDelete) {
         return false;
       }
-      const info = getSelectionInfo(triggers, punctuation);
+      const info = $getSelectionInfo(triggers, punctuation);
       if (info) {
         const { node, prevNode, offset } = info;
         const mentionNode = $isBeautifulMentionNode(node)
@@ -351,7 +352,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       const simpleKey = key.length === 1;
       const isTrigger = triggers.some((trigger) => key === trigger);
       const wordChar = isWordChar(key, triggers, punctuation);
-      const selectionInfo = getSelectionInfo(triggers, punctuation);
+      const selectionInfo = $getSelectionInfo(triggers, punctuation);
       if (
         !simpleKey ||
         (!wordChar && !isTrigger) ||
@@ -438,7 +439,12 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         INSERT_MENTION_COMMAND,
         ({ trigger, value, focus = true }) => {
           setSelection();
-          const inserted = insertMention(triggers, punctuation, trigger, value);
+          const inserted = $insertMentionAtSelection(
+            triggers,
+            punctuation,
+            trigger,
+            value,
+          );
           if (!focus) {
             archiveSelection();
           }
@@ -450,7 +456,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         REMOVE_MENTIONS_COMMAND,
         ({ trigger, value, focus }) => {
           setSelection();
-          const removed = removeMention(trigger, value);
+          const removed = $removeMention(trigger, value);
           if (removed && !focus) {
             archiveSelection();
           }
@@ -462,7 +468,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         RENAME_MENTIONS_COMMAND,
         ({ trigger, newValue, value, focus }) => {
           setSelection();
-          const renamed = renameMention(trigger, newValue, value);
+          const renamed = $renameMention(trigger, newValue, value);
           if (renamed && !focus) {
             archiveSelection();
           }
@@ -472,7 +478,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ),
       editor.registerCommand(
         OPEN_MENTIONS_MENU_COMMAND,
-        ({ trigger }) => insertMention(triggers, punctuation, trigger),
+        ({ trigger }) =>
+          $insertTriggerAtSelection(triggers, punctuation, trigger),
         COMMAND_PRIORITY_LOW,
       ),
     );

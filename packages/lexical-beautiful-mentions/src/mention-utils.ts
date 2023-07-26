@@ -27,7 +27,7 @@ export function isWordChar(
   return new RegExp(VALID_CHARS(triggers, punctuation)).test(char);
 }
 
-export function getSelectionInfo(triggers: string[], punctuation: string) {
+export function $getSelectionInfo(triggers: string[], punctuation: string) {
   const selection = $getSelection();
   if (!selection || !$isRangeSelection(selection)) {
     return;

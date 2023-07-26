@@ -1,6 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
+  $createTextNode,
   $getSelection,
   $isRangeSelection,
   CLICK_COMMAND,
@@ -25,7 +26,7 @@ import {
   MenuTextMatch,
   TriggerFn,
 } from "./Menu";
-import { insertMention } from "./mention-commands";
+import { $insertTriggerAtSelection } from "./mention-commands";
 import { useIsFocused } from "./useIsFocused";
 
 interface ComboboxPluginProps
@@ -163,6 +164,23 @@ export function useAnchorRef(
   return anchorChild;
 }
 
+export function checkForTriggers(
+  text: string,
+  triggers: string[],
+): MenuTextMatch | null {
+  const last = text.split(/\s/).pop() || text;
+  const offset = text !== last ? text.lastIndexOf(last) : 0;
+  const match = triggers.some((t) => t.startsWith(last) && t !== last);
+  if (match) {
+    return {
+      leadOffset: offset,
+      matchingString: last,
+      replaceableString: last,
+    };
+  }
+  return null;
+}
+
 export function ComboboxPlugin(props: ComboboxPluginProps) {
   const {
     onSelectOption,
@@ -180,7 +198,8 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [match, setMatch] = useState<MenuTextMatch | null>(null);
+  const [triggerMatch, setTriggerMatch] = useState<MenuTextMatch | null>(null);
+  const [mentionMatch, setMentionMatch] = useState<MenuTextMatch | null>(null);
   const [queryString, setQueryString] = useState<string | null>(null);
   const itemRefs = useRef<Record<string, HTMLElement | null>>({});
   const optionsType = props.options.length === 0 ? "triggers" : "mentions";
@@ -252,28 +271,39 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     (index: number) => {
       const option = options[index];
       editor.update(() => {
-        const textNode = match ? $splitNodeContainingQuery(match) : null;
+        const textNode = mentionMatch
+          ? $splitNodeContainingQuery(mentionMatch)
+          : null;
         onSelectOption(option, textNode);
       });
-      setMatch(null);
+      setMentionMatch(null);
       onQueryChange(null);
       setQueryString(null);
       setSelectedIndex(null);
     },
-    [editor, match, onQueryChange, onSelectOption, options],
+    [editor, mentionMatch, onQueryChange, onSelectOption, options],
   );
 
   const handleSelectTrigger = useCallback(
     (index: number) => {
       const option = options[index];
       editor.update(() => {
-        insertMention(triggers, punctuation, option.key);
+        const nodeToReplace = triggerMatch
+          ? $splitNodeContainingQuery(triggerMatch)
+          : null;
+        if (nodeToReplace) {
+          const textNode = $createTextNode(option.key);
+          nodeToReplace.replace(textNode);
+          textNode.select();
+        } else {
+          $insertTriggerAtSelection(triggers, punctuation, option.key);
+        }
       });
-      setMatch(null);
+      setTriggerMatch(null);
       setQueryString(null);
       setSelectedIndex(0);
     },
-    [editor, punctuation, triggers, options],
+    [options, editor, triggerMatch, triggers, punctuation],
   );
 
   const handleClickOption = useCallback(
@@ -318,9 +348,13 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   );
 
   const handleBackspace = useCallback(() => {
-    setSelectedIndex(null);
+    const text = getQueryTextForSearch(editor);
+    const newText = !!text && text.substring(0, text.length - 1);
+    if (!newText) {
+      setSelectedIndex(null);
+    }
     return false;
-  }, []);
+  }, [editor]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -350,6 +384,8 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       setOpen(false);
       setSelectedIndex(null);
       setQueryString(null);
+      setTriggerMatch(null);
+      setMentionMatch(null);
     }
   }, [focused]);
 
@@ -421,27 +457,39 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     const updateListener = () => {
       editor.getEditorState().read(() => {
         const text = getQueryTextForSearch(editor);
-        if (!text) {
+        // reset if no text
+        if (text === null) {
           onReset();
-          setMatch(null);
+          setTriggerMatch(null);
+          setMentionMatch(null);
           onQueryChange(null);
-        } else {
-          const match = triggerFn(text, editor);
-          setMatch(match);
-          onQueryChange(match ? match.matchingString : null);
-          if (!match || !match.matchingString) {
-            setQueryString(text.trim());
-          } else {
-            setQueryString(match.matchingString);
-          }
+          setQueryString(null);
+          return;
         }
+        // check for triggers
+        const triggerMatch = checkForTriggers(text, triggers);
+        setTriggerMatch(triggerMatch);
+        if (triggerMatch) {
+          setQueryString(triggerMatch.matchingString);
+          setMentionMatch(null);
+          return;
+        }
+        // check for mentions
+        const mentionMatch = triggerFn(text, editor);
+        setMentionMatch(mentionMatch);
+        onQueryChange(mentionMatch ? mentionMatch.matchingString : null);
+        if (mentionMatch && mentionMatch.matchingString) {
+          setQueryString(mentionMatch.matchingString);
+          return;
+        }
+        setQueryString(null);
       });
     };
     const removeUpdateListener = editor.registerUpdateListener(updateListener);
     return () => {
       removeUpdateListener();
     };
-  }, [editor, triggerFn, onQueryChange, onReset]);
+  }, [editor, triggerFn, onQueryChange, onReset, triggers]);
 
   if (!open || !anchor) {
     return null;
