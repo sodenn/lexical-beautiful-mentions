@@ -138,11 +138,9 @@ export function useAnchorRef(
       const diff = entry.contentRect.height - anchorHeight.current;
       anchorHeight.current = entry.contentRect.height;
       newAnchorChild.style.paddingTop = `${anchorHeight.current}px`;
-      console.log("newAnchorChild paddingTop", newAnchorChild.style.paddingTop);
       const newMinHeight = parseInt(newAnchorChild.style.minHeight) + diff;
       if (!isNaN(newMinHeight)) {
         newAnchorChild.style.minHeight = `${newMinHeight}px`;
-        console.log("newAnchorChild minHeight", newAnchorChild.style.minHeight);
       }
     });
     const anchorChildObserver = new ResizeObserver(([entry]) => {
@@ -152,7 +150,6 @@ export function useAnchorRef(
           anchorChildMinHeight.current + anchorHeight.current;
         newAnchorChild.style.minHeight = `${newMinHeight}px`;
         newAnchorChild.style.height = `1px`;
-        console.log("newAnchorChild minHeight", newAnchorChild.style.minHeight);
       }
     });
     anchorObserver.observe(anchor);
