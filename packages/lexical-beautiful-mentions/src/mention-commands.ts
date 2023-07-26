@@ -9,9 +9,9 @@ import {
   TextNode,
 } from "lexical";
 import {
+  $getSelectionInfo,
   getNextSibling,
   getPreviousSibling,
-  getSelectionInfo,
 } from "./mention-utils";
 import {
   $createBeautifulMentionNode,
@@ -97,13 +97,30 @@ export const RENAME_MENTIONS_COMMAND: LexicalCommand<RenameMentions> =
 export const OPEN_MENTIONS_MENU_COMMAND: LexicalCommand<OpenMentionsMenu> =
   createCommand("OPEN_MENTIONS_MENU_COMMAND");
 
-export function insertMention(
+export function $insertTriggerAtSelection(
+  triggers: string[],
+  punctuation: string,
+  trigger: string,
+) {
+  return $insertMentionOrTrigger(triggers, punctuation, trigger);
+}
+
+export function $insertMentionAtSelection(
+  triggers: string[],
+  punctuation: string,
+  trigger: string,
+  value: string,
+) {
+  return $insertMentionOrTrigger(triggers, punctuation, trigger, value);
+}
+
+function $insertMentionOrTrigger(
   triggers: string[],
   punctuation: string,
   trigger: string,
   value?: string,
 ) {
-  const selectionInfo = getSelectionInfo(triggers, punctuation);
+  const selectionInfo = $getSelectionInfo(triggers, punctuation);
   if (!selectionInfo) {
     return false;
   }
@@ -161,7 +178,7 @@ export function insertMention(
   return true;
 }
 
-export function removeMention(trigger: string, value?: string) {
+export function $removeMention(trigger: string, value?: string) {
   let removed = false;
   const mentions = $nodesOfType(BeautifulMentionNode);
   for (const mention of mentions) {
@@ -192,7 +209,7 @@ export function removeMention(trigger: string, value?: string) {
   return removed;
 }
 
-export function renameMention(
+export function $renameMention(
   trigger: string,
   newValue: string,
   value?: string,

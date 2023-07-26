@@ -13,7 +13,7 @@ test.describe("Combobox", () => {
     await expect(utils.mentionsMenu).not.toBeVisible();
   });
 
-  test("should not have any item selected by default", async ({ page }) => {
+  test("should not have any trigger selected by default", async ({ page }) => {
     const utils = await testUtils(page, {
       autofocus: "end",
       combobox: true,
@@ -87,12 +87,14 @@ test.describe("Combobox", () => {
       autofocus: "end",
       combobox: true,
     });
-    await utils.editor.type("due");
+    await utils.editor.type("d");
     await expect(utils.triggersMenu.getByRole("menuitem")).toHaveCount(1);
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
       "beautiful-mention-combobox-due:",
     );
+    await utils.triggersMenu.getByText("due:").click();
+    await utils.hasText("due:");
   });
 
   test("should select the first mention after selecting a trigger", async ({
@@ -130,6 +132,27 @@ test.describe("Combobox", () => {
       "aria-activedescendant",
       "",
     );
+  });
+
+  test("should not remove the selection of a multi-character trigger when pressing backspace", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    await utils.editor.type("due");
+    await expect(utils.triggersMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "beautiful-mention-combobox-due:",
+    );
+    await utils.editor.press("Backspace");
+    await expect(utils.triggersMenu).toBeVisible();
+    await expect(utils.triggersMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "beautiful-mention-combobox-due:",
+    );
+    await utils.hasText("du");
   });
 
   test("should render the mentions after selecting a trigger", async ({
