@@ -1,9 +1,9 @@
 import { InitialConfigType } from "@lexical/react/LexicalComposer";
 import { $createParagraphNode, $getRoot } from "lexical";
 import {
+  $convertToMentionNodes,
   BeautifulMentionNode,
   ZeroWidthNode,
-  convertToMentionNodes,
 } from "lexical-beautiful-mentions";
 import ShowcaseTheme from "./theme";
 
@@ -15,7 +15,7 @@ function setEditorState(initialValue: string, triggers: string[]) {
     const root = $getRoot();
     if (root.getFirstChild() === null) {
       const paragraph = $createParagraphNode();
-      paragraph.append(...convertToMentionNodes(initialValue, triggers));
+      paragraph.append(...$convertToMentionNodes(initialValue, triggers));
       root.append(paragraph);
     }
   };
