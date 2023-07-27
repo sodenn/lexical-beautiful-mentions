@@ -29,7 +29,6 @@ describe("useMentionLookupService", () => {
         queryString: "",
         trigger: "due:",
         items: items,
-        searchDelay: 0,
       }),
     );
     await waitFor(() => {
@@ -43,7 +42,6 @@ describe("useMentionLookupService", () => {
         queryString: "tomo",
         trigger: "due:",
         items: items,
-        searchDelay: 0,
       }),
     );
     await waitFor(() => {
@@ -52,24 +50,40 @@ describe("useMentionLookupService", () => {
   });
 
   it("should execute the mentions query function", async () => {
-    const { result } = renderHook(() =>
-      useMentionLookupService({
-        queryString: "tomo",
-        trigger: "due:",
-        items: undefined,
-        onSearch: queryFn,
-        searchDelay: 0,
-      }),
+    type Params = Parameters<typeof useMentionLookupService>;
+    type Options = Params[0];
+
+    const options: Options = {
+      queryString: null,
+      trigger: null,
+      onSearch: queryFn,
+      searchDelay: 100,
+    };
+
+    const { result, rerender } = renderHook(
+      (opt: Options) => useMentionLookupService(opt),
+      {
+        initialProps: options,
+      },
+    );
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.query).toBeNull();
+    expect(result.current.results).toStrictEqual([]);
+
+    rerender({ ...options, trigger: "due:", queryString: "tomor" });
+
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(true);
+      },
+      { timeout: 200 },
     );
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(true);
-    });
-
-    await waitFor(() => {
+      expect(result.current.query).toStrictEqual("tomor");
+      expect(result.current.results).toStrictEqual(["tomorrow"]);
       expect(result.current.loading).toBe(false);
     });
-
-    expect(result.current.results).toStrictEqual(["tomorrow"]);
   });
 });
