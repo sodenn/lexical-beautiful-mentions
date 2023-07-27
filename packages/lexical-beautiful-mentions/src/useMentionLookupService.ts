@@ -4,7 +4,7 @@ import { useDebounce } from "./useDebounce";
 interface MentionsLookupServiceOptions {
   queryString: string | null;
   trigger: string | null;
-  searchDelay: number;
+  searchDelay?: number;
   items?: Record<string, string[]>;
   onSearch?: (
     trigger: string,
