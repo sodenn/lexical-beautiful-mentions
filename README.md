@@ -131,6 +131,56 @@ const CustomMenuItem = forwardRef<
 />
 ```
 
+### Additional metadata
+
+Additional metadata can be used to uniquely identify mentions by adding an `id` or any other unique property to the mention items. When serializing the editor content, the metadata will be included in the mention nodes:
+
+```tsx
+const mentionItems = {
+  "@": [
+    { name: "Anton", id: "1", email: "anton@example.com" },
+    { name: "Boris", id: "2", email: "boris@example.com" },
+    // ...
+  ],
+};
+// serializes to:
+// [
+//   {
+//     "trigger": "@",
+//     "value": "Anton",
+//     "data": {
+//       "id": "1",
+//       "email": "anton@example.com"
+//     },
+//     "type": "beautifulMention",
+//     "version": 1
+//   },
+//   {
+//     "trigger": "@",
+//     "value": "Boris",
+//     "data": {
+//       "id": "2",
+//       "email": "boris@example.com"
+//     },
+//     "type": "beautifulMention",
+//     "version": 1
+//   }
+// ]
+```
+
+All additional metadata are available as props of the `BeautifulMentionsMenuItem` component:
+
+```tsx
+const CustomMenuItem = forwardRef<
+  HTMLLIElement,
+  BeautifulMentionsMenuItemProps
+>(({ id, email, ...props }, ref) => (
+ <li
+  // ...
+ />
+));
+```
+
 ### Programmatically insert, delete, or rename mentions
 
 ```tsx
