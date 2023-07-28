@@ -123,7 +123,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     return {
       trigger: this.__trigger,
       value: this.__value,
-      data,
+      ...(data ? { data } : {}),
       type: "beautifulMention",
       version: 1,
     };
