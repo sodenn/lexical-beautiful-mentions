@@ -210,11 +210,11 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       );
       if (
         !queryString ||
-        triggerOptions.every((o) => !o.key.startsWith(queryString))
+        triggerOptions.every((o) => !o.value.startsWith(queryString))
       ) {
         return triggerOptions;
       }
-      return triggerOptions.filter((o) => o.key.startsWith(queryString));
+      return triggerOptions.filter((o) => o.value.startsWith(queryString));
     }
     return props.options;
   }, [optionsType, props.options, triggers, queryString]);
@@ -224,7 +224,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const scrollIntoView = useCallback(
     (index: number) => {
       const option = options[index];
-      const el = itemRefs.current[option.key];
+      const el = itemRefs.current[option.value];
       if (el) {
         el.scrollIntoView({ block: "nearest" });
       }
@@ -292,11 +292,11 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           ? $splitNodeContainingQuery(triggerMatch)
           : null;
         if (nodeToReplace) {
-          const textNode = $createTextNode(option.key);
+          const textNode = $createTextNode(option.value);
           nodeToReplace.replace(textNode);
           textNode.select();
         } else {
-          $insertTriggerAtSelection(triggers, punctuation, option.key);
+          $insertTriggerAtSelection(triggers, punctuation, option.value);
         }
       });
       setTriggerMatch(null);
@@ -365,7 +365,9 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       const value = queryString === null ? event.key : queryString + event.key;
       if (
         options.some(
-          (o) => o.label.startsWith(value) && value.length <= o.label.length,
+          (o) =>
+            o.displayValue.startsWith(value) &&
+            value.length <= o.displayValue.length,
         )
       ) {
         setSelectedIndex(0);
@@ -504,7 +506,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           role="menu"
           aria-activedescendant={
             selectedIndex !== null
-              ? `beautiful-mention-combobox-${options[selectedIndex].label}`
+              ? `beautiful-mention-combobox-${options[selectedIndex].displayValue}`
               : ""
           }
           aria-label={
@@ -514,21 +516,22 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           {options.map((option, index) => (
             <ComboboxItemComponent
               key={option.key}
-              label={option.key}
+              label={option.value}
               selected={index === selectedIndex}
               role="menuitem"
-              id={`beautiful-mention-combobox-${option.key}`}
+              id={`beautiful-mention-combobox-${option.value}`}
               aria-selected={selectedIndex === index}
-              aria-label={`Choose ${option.label}`}
+              aria-label={`Choose ${option.displayValue}`}
+              {...option.data}
               ref={(el: HTMLElement | null) =>
-                (itemRefs.current[option.key] = el)
+                (itemRefs.current[option.value] = el)
               }
               onClick={() => handleClickOption(index)}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
               onMouseDown={(e) => e.preventDefault()}
             >
-              {option.label}
+              {option.displayValue}
             </ComboboxItemComponent>
           ))}
         </ComboboxComponent>,

@@ -1,5 +1,19 @@
 import { ComponentPropsWithRef, ElementType } from "react";
 
+/**
+ * The mention without the trigger character(s). Either a
+ * string or an object with at least a `value` property.
+ */
+export type BeautifulMentionsItem =
+  | string
+  | {
+      /**
+       * The mention without the trigger character(s).
+       */
+      value: string;
+      [key: string]: string;
+    };
+
 export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   /**
    * If `true`, the menu is open.
@@ -11,17 +25,17 @@ export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   loading?: boolean;
 }
 
-export interface BeautifulMentionsMenuItemProps
-  extends ComponentPropsWithRef<any> {
-  /**
-   * If `true`, the menu item is selected.
-   */
-  selected: boolean;
-  /**
-   * The label of the menu item.
-   */
-  label: string;
-}
+export type BeautifulMentionsMenuItemProps<T = {}> = T &
+  Omit<ComponentPropsWithRef<any>, "selected" | "label"> & {
+    /**
+     * If `true`, the menu item is selected.
+     */
+    selected: boolean;
+    /**
+     * The label of the menu item.
+     */
+    label: string;
+  };
 
 export interface BeautifulMentionsComboboxProps
   extends ComponentPropsWithRef<any> {
@@ -35,7 +49,8 @@ export interface BeautifulMentionsComboboxProps
   loading?: boolean;
 }
 
-export type BeautifulMentionsComboboxItemProps = BeautifulMentionsMenuItemProps;
+export type BeautifulMentionsComboboxItemProps<T = {}> =
+  BeautifulMentionsMenuItemProps<T>;
 
 interface BeautifulMentionsProps {
   /**
@@ -150,7 +165,7 @@ export type BeautifulMentionsSearchProps =
     onSearch: (
       trigger: string,
       queryString?: string | null,
-    ) => Promise<string[]>;
+    ) => Promise<BeautifulMentionsItem[]>;
     /**
      * The delay in milliseconds before the `onSearch` function is called.
      * @default 250
@@ -166,7 +181,7 @@ export type BeautifulMentionsItemsProps =
      * open the mention menu. The values are the list of suggestions that
      * will be shown in the menu.
      */
-    items: Record<string, string[]>;
+    items: Record<string, BeautifulMentionsItem[]>;
     triggers?: never;
     onSearch?: never;
     searchDelay?: never;

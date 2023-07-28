@@ -8,6 +8,7 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { $getRoot, EditorState } from "lexical";
 import {
+  BeautifulMentionsItem,
   BeautifulMentionsPlugin,
   ZeroWidthPlugin,
 } from "lexical-beautiful-mentions";
@@ -25,7 +26,7 @@ import { getDebugTextContent } from "./debug";
 import editorConfig from "./editorConfig";
 import { useIsFocused } from "./useIsFocused";
 
-const mentionItems: Record<string, string[]> = {
+const mentionItems: Record<string, BeautifulMentionsItem[]> = {
   "@": ["Anton", "Boris", "Catherine", "Dmitri", "Elena", "Felix", "Gina"],
   "#": ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"],
   "due:": ["Today", "Tomorrow", "01-01-2023"],
@@ -45,9 +46,10 @@ const queryMentions = async (
   if (asynchronous) {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
-  return items.filter((item) =>
-    item.toLowerCase().includes(queryString.toLowerCase()),
-  );
+  return items.filter((item) => {
+    const value = typeof item === "string" ? item : item.value;
+    return value.toLowerCase().includes(queryString.toLowerCase());
+  });
 };
 
 export default function Editor() {

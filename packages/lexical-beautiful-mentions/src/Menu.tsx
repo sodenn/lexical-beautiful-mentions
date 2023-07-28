@@ -49,12 +49,20 @@ type UseMenuAnchorRefOptions = {
 
 export class MenuOption {
   key: string;
-  label: string;
+  value: string;
+  displayValue: string;
+  data?: { [key: string]: string };
   ref?: MutableRefObject<HTMLElement | null>;
 
-  constructor(key: string, label?: string) {
-    this.key = key;
-    this.label = label ?? key;
+  constructor(
+    value: string,
+    displayValue: string,
+    data?: { [key: string]: string },
+  ) {
+    this.key = !data ? value : JSON.stringify({ ...data, value });
+    this.value = value;
+    this.displayValue = displayValue ?? value;
+    this.data = data;
     this.ref = { current: null };
     this.setRefElement = this.setRefElement.bind(this);
   }
