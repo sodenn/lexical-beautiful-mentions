@@ -138,8 +138,8 @@ Additional metadata can be used to uniquely identify mentions by adding an `id` 
 ```tsx
 const mentionItems = {
   "@": [
-    { name: "Anton", id: "1", email: "anton@example.com" },
-    { name: "Boris", id: "2", email: "boris@example.com" },
+    { value: "Catherine", id: "1", email: "catherine.a@example.com" },
+    { value: "Catherine", id: "2", email: "catherine.b@example.com" },
     // ...
   ],
 };
@@ -147,20 +147,20 @@ const mentionItems = {
 // [
 //   {
 //     "trigger": "@",
-//     "value": "Anton",
+//     "value": "Catherine",
 //     "data": {
 //       "id": "1",
-//       "email": "anton@example.com"
+//       "email": "catherine.a@example.com"
 //     },
 //     "type": "beautifulMention",
 //     "version": 1
 //   },
 //   {
 //     "trigger": "@",
-//     "value": "Boris",
+//     "value": "Catherine",
 //     "data": {
 //       "id": "2",
-//       "email": "boris@example.com"
+//       "email": "catherine.b@example.com"
 //     },
 //     "type": "beautifulMention",
 //     "version": 1
