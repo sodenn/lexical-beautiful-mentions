@@ -27,7 +27,16 @@ import editorConfig from "./editorConfig";
 import { useIsFocused } from "./useIsFocused";
 
 const mentionItems: Record<string, BeautifulMentionsItem[]> = {
-  "@": ["Anton", "Boris", "Catherine", "Dmitri", "Elena", "Felix", "Gina"],
+  "@": [
+    "Anton",
+    "Boris",
+    "Catherine",
+    "Dmitri",
+    "Elena",
+    "Felix",
+    { value: "Gina", id: "1" },
+    { value: "Gina", id: "2" },
+  ],
   "#": ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"],
   "due:": ["Today", "Tomorrow", "01-01-2023"],
   "rec:": ["week", "month", "year"],
@@ -154,7 +163,6 @@ function Plugins() {
                 mentionEnclosure={mentionEnclosure}
                 allowSpaces={allowSpaces}
                 creatable={creatable}
-                insertOnBlur={insertOnBlur}
                 showMentionsOnDelete={showMentionsOnDelete}
                 combobox
                 comboboxAnchor={comboboxAnchor.current}

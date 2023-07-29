@@ -266,6 +266,7 @@ export function Menu<TOption extends MenuOption>({
   options,
   menuRenderFn,
   onSelectOption,
+  onSelectionChange,
   shouldSplitNodeWithQuery = false,
   onMenuVisibilityChange,
 }: {
@@ -276,6 +277,7 @@ export function Menu<TOption extends MenuOption>({
   options: Array<TOption>;
   shouldSplitNodeWithQuery?: boolean;
   menuRenderFn: MenuRenderFn<TOption>;
+  onSelectionChange?: (selectedIndex: number | null) => void;
   onSelectOption: (
     option: TOption,
     textNodeContainingQuery: TextNode | null,
@@ -284,9 +286,17 @@ export function Menu<TOption extends MenuOption>({
   ) => void;
   onMenuVisibilityChange?: (visible: boolean) => void;
 }): JSX.Element | null {
-  const [selectedIndex, setHighlightedIndex] = useState<null | number>(null);
+  const [selectedIndex, setSelectedIndex] = useState<null | number>(null);
   const [menuVisible, setMenuVisible] = useState(false);
   const matchingString = resolution.match && resolution.match.matchingString;
+
+  const setHighlightedIndex = useCallback(
+    (selectedIndex: number | null) => {
+      setSelectedIndex(selectedIndex);
+      onSelectionChange?.(selectedIndex);
+    },
+    [onSelectionChange],
+  );
 
   useEffect(() => {
     setHighlightedIndex(0);

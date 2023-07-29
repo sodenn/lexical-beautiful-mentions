@@ -85,11 +85,6 @@ interface BeautifulMentionsProps {
    */
   mentionEnclosure?: string;
   /**
-   * If `true`, the mention will be inserted when the user blurs the editor.
-   * @default true
-   */
-  insertOnBlur?: boolean;
-  /**
    * If `true`, the mention menu will be shown when the user deletes a mention.
    */
   showMentionsOnDelete?: boolean;
@@ -111,6 +106,11 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    * @default li
    */
   menuItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
+  /**
+   * If `true`, the mention will be inserted when the user blurs the editor.
+   * @default true
+   */
+  insertOnBlur?: boolean;
   combobox?: never;
   comboboxAnchor?: never;
   comboboxAnchorClassName?: never;
@@ -145,6 +145,7 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
   comboboxItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
   menuComponent?: never;
   menuItemComponent?: never;
+  insertOnBlur?: never;
 };
 
 type BeautifulMentionsPluginWithCompProps =
