@@ -88,7 +88,7 @@ function isCharacterKey(event: KeyboardEvent) {
 
 export function useAnchorRef(
   render: boolean,
-  comboboxAnchor?: HTMLElement,
+  comboboxAnchor?: HTMLElement | null,
   comboboxAnchorClassName?: string,
 ) {
   const [editor] = useLexicalComposerContext();
@@ -494,6 +494,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           aria-label={
             optionsType === "triggers" ? "Choose a trigger" : "Choose a mention"
           }
+          aria-hidden={!open}
         >
           {options.map((option, index) => (
             <ComboboxItemComponent
