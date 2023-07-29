@@ -1,5 +1,14 @@
 # lexical-beautiful-mentions
 
+## 0.1.10
+
+### Patch Changes
+
+- 63c72e5: feat(): add additional metadata to mentions
+- f425ce5: fix(Combobox): keep trigger selection when backspace key is pressed
+- 54287e9: refactor(): add prefix to convertToMentionNodes function to indicate the Lexical scope. **BREAKING**: rename `convertToMentionNodes` to `$convertToMentionNodes`.
+- 839502c: refactor(): combobox positioning
+
 ## 0.1.9
 
 ### Patch Changes
