@@ -349,8 +349,8 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
 
   const handleBackspace = useCallback(() => {
     const text = getQueryTextForSearch(editor);
-    const newText = !!text && text.substring(0, text.length - 1);
-    if (newText === false || !newText.trim()) {
+    const newText = text ? text.substring(0, text.length - 1) : undefined;
+    if (!newText || !newText.trim()) {
       setSelectedIndex(null);
     }
     return false;

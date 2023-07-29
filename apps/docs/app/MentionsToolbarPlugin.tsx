@@ -65,9 +65,11 @@ export default function MentionsToolbarPlugin() {
   const handleComboboxChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
       setCombobox(event.target.checked);
-      setInsertOnBlur(false);
+      if (event.target.checked && insertOnBlur) {
+        setInsertOnBlur(false);
+      }
     },
-    [setCombobox, setInsertOnBlur],
+    [setCombobox, setInsertOnBlur, insertOnBlur],
   );
 
   const handleMentionEnclosureChange: CheckboxProps["onChange"] = useCallback(
