@@ -96,8 +96,6 @@ export function useAnchorRef(
     comboboxAnchor || null,
   );
   const [anchorChild, setAnchorChild] = useState<HTMLElement | null>(null);
-  const anchorHeight = useRef<number>(0);
-  const anchorChildMinHeight = useRef<number>(0);
 
   useEffect(() => {
     if (comboboxAnchor) {
@@ -123,40 +121,22 @@ export function useAnchorRef(
       return;
     }
     const { height } = anchor.getBoundingClientRect();
-    anchorHeight.current = height;
     const newAnchorChild = anchorChild || document.createElement("div");
     newAnchorChild.style.position = "absolute";
     newAnchorChild.style.left = "0";
     newAnchorChild.style.right = "0";
-    newAnchorChild.style.paddingTop = `${anchorHeight.current}px`;
+    newAnchorChild.style.paddingTop = `${height}px`;
     newAnchorChild.className = comboboxAnchorClassName || "";
     anchor.prepend(newAnchorChild);
     if (!anchorChild) {
       setAnchorChild(newAnchorChild);
     }
     const anchorObserver = new ResizeObserver(([entry]) => {
-      const diff = entry.contentRect.height - anchorHeight.current;
-      anchorHeight.current = entry.contentRect.height;
-      newAnchorChild.style.paddingTop = `${anchorHeight.current}px`;
-      const newMinHeight = parseInt(newAnchorChild.style.minHeight) + diff;
-      if (!isNaN(newMinHeight)) {
-        newAnchorChild.style.minHeight = `${newMinHeight}px`;
-      }
-    });
-    const anchorChildObserver = new ResizeObserver(([entry]) => {
-      if (entry.contentRect.height > anchorChildMinHeight.current) {
-        anchorChildMinHeight.current = entry.contentRect.height;
-        const newMinHeight =
-          anchorChildMinHeight.current + anchorHeight.current;
-        newAnchorChild.style.minHeight = `${newMinHeight}px`;
-        newAnchorChild.style.height = `1px`;
-      }
+      newAnchorChild.style.paddingTop = `${entry.contentRect.height}px`;
     });
     anchorObserver.observe(anchor);
-    anchorChildObserver.observe(newAnchorChild);
     return () => {
       anchorObserver.disconnect();
-      anchorChildObserver.disconnect();
       anchor.removeChild(newAnchorChild);
     };
   }, [anchor, render, anchorChild, comboboxAnchorClassName]);
@@ -362,12 +342,14 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       if (!isCharacterKey(event)) {
         return false;
       }
-      const value = queryString === null ? event.key : queryString + event.key;
+      const text = getQueryTextForSearch(editor);
+      const value = text === null ? event.key : text + event.key;
+      const valueTrimmed = value.trim();
       if (
         options.some(
           (o) =>
-            o.displayValue.startsWith(value) &&
-            value.length <= o.displayValue.length,
+            o.displayValue.startsWith(valueTrimmed) &&
+            valueTrimmed.length <= o.displayValue.length,
         )
       ) {
         setSelectedIndex(0);
@@ -376,7 +358,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       }
       return false;
     },
-    [options, optionsType, queryString],
+    [editor, options, optionsType],
   );
 
   useEffect(() => {

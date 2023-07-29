@@ -123,8 +123,11 @@ export function getMenuItemLimitProp(
   menuItemLimit: BeautifulMentionsPluginProps["menuItemLimit"],
   trigger: string | null,
 ) {
-  if (typeof menuItemLimit === "number" || typeof menuItemLimit === "boolean") {
+  if (typeof menuItemLimit === "number" || menuItemLimit === false) {
     return menuItemLimit;
+  }
+  if (typeof menuItemLimit === "undefined") {
+    return 5;
   }
   if (trigger === null) {
     return false;
