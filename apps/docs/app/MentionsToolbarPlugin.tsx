@@ -65,8 +65,11 @@ export default function MentionsToolbarPlugin() {
   const handleComboboxChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
       setCombobox(event.target.checked);
+      if (event.target.checked && insertOnBlur) {
+        setInsertOnBlur(false);
+      }
     },
-    [setCombobox],
+    [setCombobox, setInsertOnBlur, insertOnBlur],
   );
 
   const handleMentionEnclosureChange: CheckboxProps["onChange"] = useCallback(
@@ -143,12 +146,14 @@ export default function MentionsToolbarPlugin() {
           checked={!!creatable}
           onChange={handleCreatableChange}
         />
-        <Checkbox
-          label="insertOnBlur"
-          helpText="The mention will be inserted when the editor loses the focus."
-          checked={insertOnBlur}
-          onChange={handleInsertOnBlurChange}
-        />
+        {!combobox && (
+          <Checkbox
+            label="insertOnBlur"
+            helpText="The mention will be inserted when the editor loses the focus."
+            checked={insertOnBlur}
+            onChange={handleInsertOnBlurChange}
+          />
+        )}
         <Checkbox
           label="showMentionsOnDelete"
           helpText="Shows the mention menu when the user deletes a mention."

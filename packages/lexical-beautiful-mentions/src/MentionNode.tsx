@@ -14,19 +14,32 @@ import { BeautifulMentionsTheme } from "./theme";
 
 export type SerializedBeautifulMentionNode = Spread<
   {
-    value: string;
     trigger: string;
+    value: string;
+    data?: { [p: string]: string };
   },
   SerializedLexicalNode
 >;
 
 function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
-  const value = domNode.getAttribute("data-lexical-beautiful-mention-value");
   const trigger = domNode.getAttribute(
     "data-lexical-beautiful-mention-trigger",
   );
-  if (value !== null && trigger != null) {
-    const node = $createBeautifulMentionNode(trigger, value);
+  const value = domNode.getAttribute("data-lexical-beautiful-mention-value");
+  let data: { [p: string]: string } | undefined = undefined;
+  const dataStr = domNode.getAttribute("data-lexical-beautiful-mention-data");
+  if (dataStr) {
+    try {
+      data = JSON.parse(dataStr);
+    } catch (e) {
+      console.warn(
+        "Failed to parse data attribute of beautiful mention node",
+        e,
+      );
+    }
+  }
+  if (trigger != null && value !== null) {
+    const node = $createBeautifulMentionNode(trigger, value, data);
     return { node };
   }
   return null;
@@ -36,21 +49,28 @@ function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
  * This node is used to represent a mention used in the BeautifulMentionPlugin.
  */
 export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
-  __value: string;
   __trigger: string;
+  __value: string;
+  __data?: { [p: string]: string };
 
   static getType() {
     return "beautifulMention";
   }
 
   static clone(node: BeautifulMentionNode) {
-    return new BeautifulMentionNode(node.__trigger, node.__value, node.__key);
+    return new BeautifulMentionNode(
+      node.__trigger,
+      node.__value,
+      node.__data,
+      node.__key,
+    );
   }
 
   static importJSON(serializedNode: SerializedBeautifulMentionNode) {
     return $createBeautifulMentionNode(
       serializedNode.trigger,
       serializedNode.value,
+      serializedNode.data,
     );
   }
 
@@ -62,6 +82,12 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
       this.__trigger,
     );
     element.setAttribute("data-lexical-beautiful-mention-value", this.__value);
+    if (this.__data) {
+      element.setAttribute(
+        "data-lexical-beautiful-mention-data",
+        JSON.stringify(this.__data),
+      );
+    }
     element.textContent = this.getTextContent();
     return { element };
   }
@@ -80,16 +106,24 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     };
   }
 
-  constructor(trigger: string, value: string, key?: NodeKey) {
+  constructor(
+    trigger: string,
+    value: string,
+    data?: { [p: string]: string },
+    key?: NodeKey,
+  ) {
     super(key);
     this.__trigger = trigger;
     this.__value = value;
+    this.__data = data;
   }
 
   exportJSON(): SerializedBeautifulMentionNode {
+    const data = this.__data;
     return {
       trigger: this.__trigger,
       value: this.__value,
+      ...(data ? { data } : {}),
       type: "beautifulMention",
       version: 1,
     };
@@ -122,6 +156,16 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     self.__value = value;
   }
 
+  getData(): { [p: string]: string } | undefined {
+    const self = this.getLatest();
+    return self.__data;
+  }
+
+  setData(data?: { [p: string]: string }) {
+    const self = this.getWritable();
+    self.__data = data;
+  }
+
   decorate(_editor: LexicalEditor, config: EditorConfig) {
     const theme: BeautifulMentionsTheme = config.theme.beautifulMentions || {};
     const entry = Object.entries(theme).find(([trigger]) =>
@@ -151,8 +195,9 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
 export function $createBeautifulMentionNode(
   trigger: string,
   value: string,
+  data?: { [p: string]: string },
 ): BeautifulMentionNode {
-  const mentionNode = new BeautifulMentionNode(trigger, value);
+  const mentionNode = new BeautifulMentionNode(trigger, value, data);
   return $applyNodeReplacement(mentionNode);
 }
 

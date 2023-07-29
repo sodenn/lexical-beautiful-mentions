@@ -96,8 +96,6 @@ export function useAnchorRef(
     comboboxAnchor || null,
   );
   const [anchorChild, setAnchorChild] = useState<HTMLElement | null>(null);
-  const anchorHeight = useRef<number>(0);
-  const anchorChildMinHeight = useRef<number>(0);
 
   useEffect(() => {
     if (comboboxAnchor) {
@@ -123,40 +121,22 @@ export function useAnchorRef(
       return;
     }
     const { height } = anchor.getBoundingClientRect();
-    anchorHeight.current = height;
     const newAnchorChild = anchorChild || document.createElement("div");
     newAnchorChild.style.position = "absolute";
     newAnchorChild.style.left = "0";
     newAnchorChild.style.right = "0";
-    newAnchorChild.style.paddingTop = `${anchorHeight.current}px`;
+    newAnchorChild.style.paddingTop = `${height}px`;
     newAnchorChild.className = comboboxAnchorClassName || "";
     anchor.prepend(newAnchorChild);
     if (!anchorChild) {
       setAnchorChild(newAnchorChild);
     }
     const anchorObserver = new ResizeObserver(([entry]) => {
-      const diff = entry.contentRect.height - anchorHeight.current;
-      anchorHeight.current = entry.contentRect.height;
-      newAnchorChild.style.paddingTop = `${anchorHeight.current}px`;
-      const newMinHeight = parseInt(newAnchorChild.style.minHeight) + diff;
-      if (!isNaN(newMinHeight)) {
-        newAnchorChild.style.minHeight = `${newMinHeight}px`;
-      }
-    });
-    const anchorChildObserver = new ResizeObserver(([entry]) => {
-      if (entry.contentRect.height > anchorChildMinHeight.current) {
-        anchorChildMinHeight.current = entry.contentRect.height;
-        const newMinHeight =
-          anchorChildMinHeight.current + anchorHeight.current;
-        newAnchorChild.style.minHeight = `${newMinHeight}px`;
-        newAnchorChild.style.height = `1px`;
-      }
+      newAnchorChild.style.paddingTop = `${entry.contentRect.height}px`;
     });
     anchorObserver.observe(anchor);
-    anchorChildObserver.observe(newAnchorChild);
     return () => {
       anchorObserver.disconnect();
-      anchorChildObserver.disconnect();
       anchor.removeChild(newAnchorChild);
     };
   }, [anchor, render, anchorChild, comboboxAnchorClassName]);
@@ -210,11 +190,11 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       );
       if (
         !queryString ||
-        triggerOptions.every((o) => !o.key.startsWith(queryString))
+        triggerOptions.every((o) => !o.value.startsWith(queryString))
       ) {
         return triggerOptions;
       }
-      return triggerOptions.filter((o) => o.key.startsWith(queryString));
+      return triggerOptions.filter((o) => o.value.startsWith(queryString));
     }
     return props.options;
   }, [optionsType, props.options, triggers, queryString]);
@@ -224,7 +204,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const scrollIntoView = useCallback(
     (index: number) => {
       const option = options[index];
-      const el = itemRefs.current[option.key];
+      const el = itemRefs.current[option.value];
       if (el) {
         el.scrollIntoView({ block: "nearest" });
       }
@@ -292,11 +272,11 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           ? $splitNodeContainingQuery(triggerMatch)
           : null;
         if (nodeToReplace) {
-          const textNode = $createTextNode(option.key);
+          const textNode = $createTextNode(option.value);
           nodeToReplace.replace(textNode);
           textNode.select();
         } else {
-          $insertTriggerAtSelection(triggers, punctuation, option.key);
+          $insertTriggerAtSelection(triggers, punctuation, option.value);
         }
       });
       setTriggerMatch(null);
@@ -349,8 +329,8 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
 
   const handleBackspace = useCallback(() => {
     const text = getQueryTextForSearch(editor);
-    const newText = !!text && text.substring(0, text.length - 1);
-    if (!newText) {
+    const newText = text ? text.substring(0, text.length - 1) : undefined;
+    if (!newText || !newText.trim()) {
       setSelectedIndex(null);
     }
     return false;
@@ -362,10 +342,14 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       if (!isCharacterKey(event)) {
         return false;
       }
-      const value = queryString === null ? event.key : queryString + event.key;
+      const text = getQueryTextForSearch(editor);
+      const value = text === null ? event.key : text + event.key;
+      const valueTrimmed = value.trim();
       if (
         options.some(
-          (o) => o.label.startsWith(value) && value.length <= o.label.length,
+          (o) =>
+            o.displayValue.startsWith(valueTrimmed) &&
+            valueTrimmed.length <= o.displayValue.length,
         )
       ) {
         setSelectedIndex(0);
@@ -374,7 +358,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       }
       return false;
     },
-    [options, optionsType, queryString],
+    [editor, options, optionsType],
   );
 
   useEffect(() => {
@@ -504,7 +488,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           role="menu"
           aria-activedescendant={
             selectedIndex !== null
-              ? `beautiful-mention-combobox-${options[selectedIndex].label}`
+              ? `beautiful-mention-combobox-${options[selectedIndex].displayValue}`
               : ""
           }
           aria-label={
@@ -514,21 +498,22 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           {options.map((option, index) => (
             <ComboboxItemComponent
               key={option.key}
-              label={option.key}
+              label={option.value}
               selected={index === selectedIndex}
               role="menuitem"
-              id={`beautiful-mention-combobox-${option.key}`}
+              id={`beautiful-mention-combobox-${option.value}`}
               aria-selected={selectedIndex === index}
-              aria-label={`Choose ${option.label}`}
+              aria-label={`Choose ${option.displayValue}`}
+              {...option.data}
               ref={(el: HTMLElement | null) =>
-                (itemRefs.current[option.key] = el)
+                (itemRefs.current[option.value] = el)
               }
               onClick={() => handleClickOption(index)}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
               onMouseDown={(e) => e.preventDefault()}
             >
-              {option.label}
+              {option.displayValue}
             </ComboboxItemComponent>
           ))}
         </ComboboxComponent>,

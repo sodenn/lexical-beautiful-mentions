@@ -1,22 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
+import { BeautifulMentionsItem } from "./BeautifulMentionsPluginProps";
 import { useDebounce } from "./useDebounce";
 
 interface MentionsLookupServiceOptions {
   queryString: string | null;
   trigger: string | null;
   searchDelay?: number;
-  items?: Record<string, string[]>;
+  items?: Record<string, BeautifulMentionsItem[]>;
   onSearch?: (
     trigger: string,
     queryString?: string | null,
-  ) => Promise<string[]>;
+  ) => Promise<BeautifulMentionsItem[]>;
 }
 
 export function useMentionLookupService(options: MentionsLookupServiceOptions) {
   const { queryString, trigger, searchDelay, items, onSearch } = options;
   const debouncedQueryString = useDebounce(queryString, searchDelay);
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<Array<string>>([]);
+  const [results, setResults] = useState<Array<BeautifulMentionsItem>>([]);
   const [query, setQuery] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,9 +37,12 @@ export function useMentionLookupService(options: MentionsLookupServiceOptions) {
       }
       const result = !debouncedQueryString
         ? [...mentions[1]]
-        : mentions[1].filter((item) =>
-            item.toLowerCase().includes(debouncedQueryString.toLowerCase()),
-          );
+        : mentions[1].filter((item) => {
+            const value = typeof item === "string" ? item : item.value;
+            return value
+              .toLowerCase()
+              .includes(debouncedQueryString.toLowerCase());
+          });
       setResults(result);
       setQuery(debouncedQueryString);
       return;

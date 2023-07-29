@@ -144,6 +144,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,
   });
+  const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
+    null,
+  );
   const [oldSelection, setOldSelection] = useState<
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
@@ -151,7 +154,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const menuItemLimit = getMenuItemLimitProp(props.menuItemLimit, trigger);
   const options = useMemo(() => {
     // Add options from the lookup service
-    let opt = results.map((result) => new MenuOption(result));
+    let opt = results.map((result) => {
+      if (typeof result === "string") {
+        return new MenuOption(result, result);
+      } else {
+        const { value, ...data } = result;
+        return new MenuOption(value, value, data);
+      }
+    });
     if (menuItemLimit !== false && menuItemLimit > 0) {
       opt = opt.slice(0, menuItemLimit);
     }
@@ -162,28 +172,29 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.getEditorState().read(() => {
         const mentions = $nodesOfType(BeautifulMentionNode);
         for (const mention of mentions) {
-          const mentionName = mention.getValue();
+          const value = mention.getValue();
+          const data = mention.getData();
           // only add the mention if it's not already in the list
           if (
             mention.getTrigger() === trigger &&
             (query === null || mention.getValue().startsWith(query)) &&
-            opt.every((o) => o.key !== mentionName)
+            opt.every((o) => o.value !== value)
           ) {
-            opt.push(new MenuOption(mentionName, mentionName));
+            opt.push(new MenuOption(value, value, data));
           }
         }
       });
     }
     // Add option to create a new mention
-    if (query && opt.every((o) => o.label !== query)) {
-      const creatableName =
+    if (query && opt.every((o) => o.displayValue !== query)) {
+      const displayValue =
         typeof creatable === "string"
           ? creatable.replace("{{name}}", query)
           : typeof creatable === "undefined" || creatable
           ? `Add "${query}"`
           : undefined;
-      if (creatableName) {
-        opt.push(new MenuOption(query, creatableName));
+      if (displayValue) {
+        opt.push(new MenuOption(query, displayValue));
       }
     }
     return opt;
@@ -215,12 +226,13 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           return;
         }
         const newMention =
-          creatable && selectedOption.key !== selectedOption.label;
+          !!creatable && selectedOption.value !== selectedOption.displayValue;
         const value =
-          newMention && mentionEnclosure && /\s/.test(selectedOption.key)
-            ? mentionEnclosure + selectedOption.key + mentionEnclosure
-            : selectedOption.key;
-        const mentionNode = $createBeautifulMentionNode(trigger, value);
+          newMention && mentionEnclosure && /\s/.test(selectedOption.value)
+            ? mentionEnclosure + selectedOption.value + mentionEnclosure
+            : selectedOption.value;
+        const data = selectedOption.data;
+        const mentionNode = $createBeautifulMentionNode(trigger, value, data);
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
         }
@@ -233,8 +245,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const checkForMentionMatch = useCallback(
     (text: string) => {
       // Don't show the menu if the next character is a word character
-      const info = $getSelectionInfo(triggers, punctuation);
-      if (info?.isTextNode && info.wordCharAfterCursor) {
+      const selectionInfo = $getSelectionInfo(triggers, punctuation);
+      if (selectionInfo?.isTextNode && selectionInfo.wordCharAfterCursor) {
         return null;
       }
 
@@ -269,12 +281,17 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     [checkForSlashTriggerMatch, editor, triggers, allowSpaces, punctuation],
   );
 
-  const insertTextAsMention = useCallback(() => {
-    const info = $getSelectionInfo(triggers, punctuation);
-    if (!info || !info.isTextNode) {
+  const convertTextToMention = useCallback(() => {
+    const option =
+      selectedMenuIndex !== null ? options[selectedMenuIndex] : undefined;
+    if (!option) {
       return false;
     }
-    const node = info.node;
+    const selectionInfo = $getSelectionInfo(triggers, punctuation);
+    if (!trigger || !selectionInfo || !selectionInfo.isTextNode) {
+      return false;
+    }
+    const node = selectionInfo.node;
     const textContent = node.getTextContent();
     const queryMatch = checkForMentions(
       textContent,
@@ -282,26 +299,25 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       punctuation,
       false,
     );
-    if (queryMatch && queryMatch.replaceableString.length > 1) {
-      const trigger = triggers.find((trigger) =>
-        queryMatch.replaceableString.startsWith(trigger),
-      );
-      const end = textContent.search(
-        new RegExp(`${queryMatch.replaceableString}\\s?$`),
-      );
-      if (trigger && end !== -1) {
-        const mentionNode = $createBeautifulMentionNode(
-          trigger,
-          queryMatch.matchingString,
-        );
-        node.setTextContent(textContent.substring(0, end));
-        node.insertAfter(mentionNode);
-        mentionNode.selectNext();
-      }
-      return true;
+    if (queryMatch === null) {
+      return false;
     }
-    return false;
-  }, [triggers, punctuation]);
+    const textEndIndex = textContent.search(
+      new RegExp(`${queryMatch.replaceableString}\\s?$`),
+    );
+    if (textEndIndex === -1) {
+      return false;
+    }
+    const mentionNode = $createBeautifulMentionNode(
+      trigger,
+      option.value,
+      option.data,
+    );
+    node.setTextContent(textContent.substring(0, textEndIndex));
+    node.insertAfter(mentionNode);
+    mentionNode.selectNext();
+    return true;
+  }, [options, punctuation, selectedMenuIndex, trigger, triggers]);
 
   const setSelection = useCallback(() => {
     const selection = $getSelection();
@@ -326,9 +342,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       if (!showMentionsOnDelete) {
         return false;
       }
-      const info = $getSelectionInfo(triggers, punctuation);
-      if (info) {
-        const { node, prevNode, offset } = info;
+      const selectionInfo = $getSelectionInfo(triggers, punctuation);
+      if (selectionInfo) {
+        const { node, prevNode, offset } = selectionInfo;
         const mentionNode = $isBeautifulMentionNode(node)
           ? node
           : $isBeautifulMentionNode(prevNode) && offset === 0
@@ -417,8 +433,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.registerCommand(
         BLUR_COMMAND,
         () => {
-          if (insertOnBlur && creatable) {
-            return insertTextAsMention();
+          if (insertOnBlur) {
+            return convertTextToMention();
           }
           return false;
         },
@@ -428,7 +444,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         KEY_SPACE_COMMAND,
         () => {
           if (!allowSpaces && creatable) {
-            return insertTextAsMention();
+            return convertTextToMention();
           } else {
             return false;
           }
@@ -491,7 +507,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertOnBlur,
     creatable,
     isEditorFocused,
-    insertTextAsMention,
+    convertTextToMention,
     setSelection,
     archiveSelection,
     handleKeyDown,
@@ -526,6 +542,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     <TypeaheadMenuPlugin<MenuOption>
       onQueryChange={setQueryString}
       onSelectOption={handleSelectOption}
+      onSelectionChange={setSelectedMenuIndex}
       triggerFn={checkForMentionMatch}
       options={options}
       anchorClassName={menuAnchorClassName}
@@ -551,8 +568,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     ref={option.setRefElement}
                     role="menuitem"
                     aria-selected={selectedIndex === i}
-                    aria-label={`Choose ${option.label}`}
-                    label={option.label}
+                    aria-label={`Choose ${option.displayValue}`}
+                    label={option.displayValue}
+                    {...option.data}
                     onClick={() => {
                       setHighlightedIndex(i);
                       selectOptionAndCleanUp(option);
@@ -564,7 +582,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                       setHighlightedIndex(i);
                     }}
                   >
-                    {option.label}
+                    {option.displayValue}
                   </MenuItemComponent>
                 ))}
               </MenuComponent>,

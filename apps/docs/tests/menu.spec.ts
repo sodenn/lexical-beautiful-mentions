@@ -59,7 +59,7 @@ test.describe("Mentions Menu", () => {
     });
   });
 
-  test("should insert the entered text as mention when closing the menu with blur", async ({
+  test("should insert the entered text as mention when the editor is blurred", async ({
     page,
   }) => {
     const utils = await testUtils(page, {
@@ -70,6 +70,19 @@ test.describe("Mentions Menu", () => {
     await utils.editor.blur();
     await expect(utils.mentionsMenu).not.toBeVisible();
     await utils.hasText("[@abc]");
+  });
+
+  test("should insert the selected mention when the editor is blurred", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      insertOnBlur: true,
+      creatable: true,
+    });
+    await utils.editor.type("@Gi");
+    await utils.editor.blur();
+    await expect(utils.mentionsMenu).not.toBeVisible();
+    await utils.hasText("[@Gina]");
   });
 
   test("should insert a selected mention by pressing enter", async ({
@@ -108,7 +121,7 @@ test.describe("Mentions Menu", () => {
     await expect(utils.mentionsMenu).not.toBeVisible();
   });
 
-  test("should not insert the entered text as mention when closing the menu with blur", async ({
+  test("should not insert the entered text as mention when the editor is blurred", async ({
     page,
   }) => {
     const utils = await testUtils(page, { insertOnBlur: false });
@@ -121,7 +134,7 @@ test.describe("Mentions Menu", () => {
     await utils.hasText("@abc abc");
   });
 
-  test("should not insert a mention when closing the menu with blur if there is only a trigger without text", async ({
+  test("should not insert a mention when the editor is blurred if there is only a trigger without text", async ({
     page,
   }) => {
     const utils = await testUtils(page);

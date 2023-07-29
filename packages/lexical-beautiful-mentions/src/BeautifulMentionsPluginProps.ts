@@ -1,5 +1,19 @@
 import { ComponentPropsWithRef, ElementType } from "react";
 
+/**
+ * The mention without the trigger character(s). Either a
+ * string or an object with at least a `value` property.
+ */
+export type BeautifulMentionsItem =
+  | string
+  | {
+      /**
+       * The mention without the trigger character(s).
+       */
+      value: string;
+      [key: string]: string;
+    };
+
 export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   /**
    * If `true`, the menu is open.
@@ -11,17 +25,17 @@ export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   loading?: boolean;
 }
 
-export interface BeautifulMentionsMenuItemProps
-  extends ComponentPropsWithRef<any> {
-  /**
-   * If `true`, the menu item is selected.
-   */
-  selected: boolean;
-  /**
-   * The label of the menu item.
-   */
-  label: string;
-}
+export type BeautifulMentionsMenuItemProps<T = {}> = T &
+  Omit<ComponentPropsWithRef<any>, "selected" | "label"> & {
+    /**
+     * If `true`, the menu item is selected.
+     */
+    selected: boolean;
+    /**
+     * The label of the menu item.
+     */
+    label: string;
+  };
 
 export interface BeautifulMentionsComboboxProps
   extends ComponentPropsWithRef<any> {
@@ -35,7 +49,8 @@ export interface BeautifulMentionsComboboxProps
   loading?: boolean;
 }
 
-export type BeautifulMentionsComboboxItemProps = BeautifulMentionsMenuItemProps;
+export type BeautifulMentionsComboboxItemProps<T = {}> =
+  BeautifulMentionsMenuItemProps<T>;
 
 interface BeautifulMentionsProps {
   /**
@@ -70,11 +85,6 @@ interface BeautifulMentionsProps {
    */
   mentionEnclosure?: string;
   /**
-   * If `true`, the mention will be inserted when the user blurs the editor.
-   * @default true
-   */
-  insertOnBlur?: boolean;
-  /**
    * If `true`, the mention menu will be shown when the user deletes a mention.
    */
   showMentionsOnDelete?: boolean;
@@ -96,6 +106,11 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    * @default li
    */
   menuItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
+  /**
+   * If `true`, the mention will be inserted when the user blurs the editor.
+   * @default true
+   */
+  insertOnBlur?: boolean;
   combobox?: never;
   comboboxAnchor?: never;
   comboboxAnchorClassName?: never;
@@ -130,6 +145,7 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
   comboboxItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
   menuComponent?: never;
   menuItemComponent?: never;
+  insertOnBlur?: never;
 };
 
 type BeautifulMentionsPluginWithCompProps =
@@ -150,7 +166,7 @@ export type BeautifulMentionsSearchProps =
     onSearch: (
       trigger: string,
       queryString?: string | null,
-    ) => Promise<string[]>;
+    ) => Promise<BeautifulMentionsItem[]>;
     /**
      * The delay in milliseconds before the `onSearch` function is called.
      * @default 250
@@ -166,7 +182,7 @@ export type BeautifulMentionsItemsProps =
      * open the mention menu. The values are the list of suggestions that
      * will be shown in the menu.
      */
-    items: Record<string, string[]>;
+    items: Record<string, BeautifulMentionsItem[]>;
     triggers?: never;
     onSearch?: never;
     searchDelay?: never;

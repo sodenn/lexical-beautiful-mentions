@@ -75,6 +75,7 @@ function startTransition(callback: () => void) {
 
 export type TypeaheadMenuPluginProps<TOption extends MenuOption> = {
   onQueryChange: (matchingString: string | null) => void;
+  onSelectionChange?: (selectedIndex: number | null) => void;
   onSelectOption: (
     option: TOption,
     textNodeContainingQuery: TextNode | null,
@@ -92,6 +93,7 @@ export type TypeaheadMenuPluginProps<TOption extends MenuOption> = {
 export function TypeaheadMenuPlugin<TOption extends MenuOption>({
   options,
   onQueryChange,
+  onSelectionChange,
   onSelectOption,
   onOpen,
   onClose,
@@ -193,6 +195,7 @@ export function TypeaheadMenuPlugin<TOption extends MenuOption>({
       options={options}
       menuRenderFn={menuRenderFn}
       onSelectOption={onSelectOption}
+      onSelectionChange={onSelectionChange}
       onMenuVisibilityChange={setMenuVisible}
       shouldSplitNodeWithQuery
     />
