@@ -21,4 +21,24 @@ test.describe("mentions handling", () => {
     await utils.editor.press("Tab");
     await utils.hasText(`[@"John Doe"]`);
   });
+
+  test.only("should remove a mention via undo command (Ctrl/Cmd + Z)", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!!isMobile, "desktop only");
+    const utils = await testUtils(page);
+    const undoCommand = process.platform === "darwin" ? "Meta+Z" : "Control+Z";
+    await utils.editor.type("@Catherine");
+    await utils.editor.press("Enter");
+    await utils.hasText("[@Catherine]");
+    await utils.editor.press(undoCommand);
+    await utils.hasText("@Catherine");
+    await utils.editor.press(undoCommand);
+    await utils.hasText("@C");
+    await utils.editor.press(undoCommand);
+    await utils.hasText("@");
+    await utils.editor.press(undoCommand);
+    await utils.hasText("");
+  });
 });
