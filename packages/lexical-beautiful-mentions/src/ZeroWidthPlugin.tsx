@@ -25,17 +25,23 @@ export function ZeroWidthPlugin() {
     return mergeRegister(
       editor.registerUpdateListener(() => {
         // add a zero-width space node at the end if the last node is a decorator node
-        editor.update(() => {
-          const root = $getRoot();
-          const last = root.getLastDescendant();
-          if ($isDecoratorNode(last)) {
-            last.insertAfter($createZeroWidthNode());
-          }
-        });
+        editor.update(
+          () => {
+            const root = $getRoot();
+            const last = root.getLastDescendant();
+            if ($isDecoratorNode(last)) {
+              last.insertAfter($createZeroWidthNode());
+            }
+          },
+          { tag: "history-merge" },
+        );
       }),
       editor.registerCommand(
         KEY_DOWN_COMMAND,
-        () => {
+        (event) => {
+          if (event.ctrlKey || event.metaKey || event.altKey) {
+            return false;
+          }
           // remove the zero-width space if the user starts typing
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
