@@ -217,17 +217,28 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       if (!focused) {
         return false;
       }
-      const index = selectedIndex === null ? -1 : selectedIndex;
-      const newIndex =
-        direction === "down"
-          ? index < options.length - 1
-            ? index + 1
-            : 0
-          : index > 0
-          ? index - 1
-          : options.length - 1;
+      let newIndex: number | null;
+      if (direction === "up") {
+        if (selectedIndex === null) {
+          newIndex = options.length - 1;
+        } else if (selectedIndex === 0) {
+          newIndex = null;
+        } else {
+          newIndex = selectedIndex - 1;
+        }
+      } else {
+        if (selectedIndex === null) {
+          newIndex = 0;
+        } else if (selectedIndex === options.length - 1) {
+          newIndex = null;
+        } else {
+          newIndex = selectedIndex + 1;
+        }
+      }
       setSelectedIndex(newIndex);
-      scrollIntoView(newIndex);
+      if (newIndex) {
+        scrollIntoView(newIndex);
+      }
       event.preventDefault();
       event.stopImmediatePropagation();
       return true;
@@ -487,7 +498,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           optionType={optionsType}
           role="menu"
           aria-activedescendant={
-            selectedIndex !== null
+            selectedIndex !== null && !!options[selectedIndex]
               ? `beautiful-mention-combobox-${options[selectedIndex].displayValue}`
               : ""
           }

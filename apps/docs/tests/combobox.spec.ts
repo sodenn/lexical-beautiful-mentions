@@ -57,7 +57,8 @@ test.describe("Combobox", () => {
       autofocus: "end",
       combobox: true,
     });
-    await utils.editor.press("ArrowUp");
+    await utils.editor.press("ArrowUp"); // select the last trigger
+    await utils.editor.press("ArrowDown"); // remove the selection
     await utils.editor.press("ArrowDown");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
@@ -72,7 +73,8 @@ test.describe("Combobox", () => {
       autofocus: "end",
       combobox: true,
     });
-    await utils.editor.press("ArrowDown");
+    await utils.editor.press("ArrowDown"); // select the first trigger
+    await utils.editor.press("ArrowUp"); // remove the selection
     await utils.editor.press("ArrowUp");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
@@ -233,6 +235,40 @@ test.describe("Combobox", () => {
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
       "",
+    );
+  });
+
+  test("remove the selection after pressing ArrowUp or ArrowDown when the first or last combobox item is selected", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    await utils.editor.press("ArrowDown");
+    await expect(utils.triggersMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "beautiful-mention-combobox-@",
+    );
+    await utils.editor.press("ArrowUp");
+    await expect(utils.triggersMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "",
+    );
+    await utils.editor.press("ArrowUp");
+    await expect(utils.triggersMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "beautiful-mention-combobox-\\w+:",
+    );
+    await utils.editor.press("ArrowDown");
+    await expect(utils.triggersMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "",
+    );
+    await utils.editor.press("ArrowDown");
+    await expect(utils.triggersMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "beautiful-mention-combobox-@",
     );
   });
 });
