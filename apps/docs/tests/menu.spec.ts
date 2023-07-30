@@ -59,7 +59,7 @@ test.describe("Mentions Menu", () => {
     });
   });
 
-  test.only("should insert the entered text as mention when the editor is blurred", async ({
+  test("should insert the entered text as mention when the editor is blurred", async ({
     page,
   }) => {
     const utils = await testUtils(page, {
