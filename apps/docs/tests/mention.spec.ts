@@ -22,7 +22,7 @@ test.describe("mentions handling", () => {
     await utils.hasText(`[@"John Doe"]`);
   });
 
-  test.only("should remove a mention via undo command (Ctrl/Cmd + Z)", async ({
+  test("should remove a mention via undo command (Ctrl/Cmd + Z)", async ({
     page,
     isMobile,
   }) => {
