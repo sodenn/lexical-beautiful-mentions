@@ -129,7 +129,7 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
    * The element that the combobox will be attached to.
    * @default editor root element
    */
-  comboboxAnchor?: HTMLElement;
+  comboboxAnchor?: HTMLElement | null;
   /**
    * The class name to apply to the combobox anchor element.
    */
