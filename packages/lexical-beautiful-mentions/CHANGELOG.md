@@ -1,5 +1,13 @@
 # lexical-beautiful-mentions
 
+## 0.1.11
+
+### Patch Changes
+
+- c5f0035: fix(): allows undo of mentions
+- 4f37da5: feat(Combobox): improve active selection handling
+- ac5679c: feat(): allow comboboxAnchor prop to be nullable
+
 ## 0.1.10
 
 ### Patch Changes
