@@ -129,13 +129,13 @@ export class TestUtils {
   }
 
   async isMenuOrComboboxOpen() {
-    await this.sleep(200);
+    await this.sleep(300);
     const text = await this.page.getByTestId("menu-combobox-open").innerText();
     return text === "true";
   }
 
   async isComboboxItemSelected() {
-    await this.sleep(200);
+    await this.sleep(300);
     const text = await this.page
       .getByTestId("combobox-item-selected")
       .innerText();

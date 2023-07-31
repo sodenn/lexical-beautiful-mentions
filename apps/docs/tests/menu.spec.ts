@@ -81,6 +81,7 @@ test.describe("Mentions Menu", () => {
       creatable: true,
     });
     await utils.editor.type("@Gi");
+    await utils.sleep(200);
     await utils.editor.blur();
     await expect(utils.mentionsMenu).not.toBeVisible();
     await utils.hasText("[@Gina]");
