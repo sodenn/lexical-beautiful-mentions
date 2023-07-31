@@ -34,7 +34,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowDown");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-@",
+      "@",
     );
   });
 
@@ -46,7 +46,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-\\w+:",
+      "\\w+:",
     );
   });
 
@@ -62,7 +62,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowDown");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-@",
+      "@",
     );
   });
 
@@ -78,7 +78,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-\\w+:",
+      "\\w+:",
     );
   });
 
@@ -93,7 +93,7 @@ test.describe("Combobox", () => {
     await expect(utils.triggersMenu.getByRole("menuitem")).toHaveCount(1);
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-due:",
+      "due:",
     );
     await utils.triggersMenu.getByText("due:").click();
     await utils.hasText("due:");
@@ -111,7 +111,7 @@ test.describe("Combobox", () => {
     await expect(utils.mentionsMenu).toBeVisible();
     await expect(utils.mentionsMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-Anton",
+      "Anton",
     );
   });
 
@@ -126,7 +126,7 @@ test.describe("Combobox", () => {
     await utils.editor.type("@");
     await expect(utils.mentionsMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-Anton",
+      "Anton",
     );
     await utils.editor.press("Backspace");
     await expect(utils.triggersMenu).toBeVisible();
@@ -146,13 +146,13 @@ test.describe("Combobox", () => {
     await utils.editor.type("due");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-due:",
+      "due:",
     );
     await utils.editor.press("Backspace");
     await expect(utils.triggersMenu).toBeVisible();
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-due:",
+      "due:",
     );
     await utils.hasText("du");
   });
@@ -228,7 +228,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowDown");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-@",
+      "@",
     );
     await utils.editor.blur();
     await utils.editor.focus();
@@ -248,7 +248,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowDown");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-@",
+      "@",
     );
     await utils.editor.press("ArrowUp");
     await expect(utils.triggersMenu).toHaveAttribute(
@@ -258,7 +258,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-\\w+:",
+      "\\w+:",
     );
     await utils.editor.press("ArrowDown");
     await expect(utils.triggersMenu).toHaveAttribute(
@@ -268,7 +268,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowDown");
     await expect(utils.triggersMenu).toHaveAttribute(
       "aria-activedescendant",
-      "beautiful-mention-combobox-@",
+      "@",
     );
   });
 });

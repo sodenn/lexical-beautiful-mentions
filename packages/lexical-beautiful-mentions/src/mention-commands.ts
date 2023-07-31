@@ -81,7 +81,10 @@ export interface HasMentions {
   value?: string;
 }
 
-export interface OpenMentionsMenu {
+export interface OpenMentionMenu {
+  /**
+   * The trigger to insert when opening the mention menu.
+   */
   trigger: string;
 }
 
@@ -94,8 +97,8 @@ export const REMOVE_MENTIONS_COMMAND: LexicalCommand<RemoveMentions> =
 export const RENAME_MENTIONS_COMMAND: LexicalCommand<RenameMentions> =
   createCommand("RENAME_MENTIONS_COMMAND");
 
-export const OPEN_MENTIONS_MENU_COMMAND: LexicalCommand<OpenMentionsMenu> =
-  createCommand("OPEN_MENTIONS_MENU_COMMAND");
+export const OPEN_MENTION_MENU_COMMAND: LexicalCommand<OpenMentionMenu> =
+  createCommand("OPEN_MENTION_MENU_COMMAND");
 
 export function $insertTriggerAtSelection(
   triggers: string[],
