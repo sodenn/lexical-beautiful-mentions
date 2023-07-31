@@ -15,7 +15,12 @@ interface TestUtilsOptions {
   showMentionsOnDelete?: boolean;
 }
 
-export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
+type PlaywrightArgs = { page: Page; browserName: string };
+
+export async function testUtils(
+  args: PlaywrightArgs,
+  options: TestUtilsOptions = {},
+) {
   const {
     initialValue = "",
     autofocus = "end",
@@ -29,7 +34,8 @@ export async function testUtils(page: Page, options: TestUtilsOptions = {}) {
     showMentionsOnDelete = false,
   } = options;
   const utils = new TestUtils(
-    page,
+    args.page,
+    args.browserName,
     initialValue,
     autofocus,
     asynchronous,
@@ -49,7 +55,8 @@ export class TestUtils {
   public initialValue: string;
 
   constructor(
-    private page: Page,
+    private page: PlaywrightArgs["page"],
+    private browserName: PlaywrightArgs["browserName"],
     initialValue: string,
     private autofocus: Autofocus,
     private asynchronous: boolean,
@@ -120,6 +127,11 @@ export class TestUtils {
     return this.page.getByRole("textbox");
   }
 
+  async editorType(text: string) {
+    await this.editor.type(text);
+    await this.sleep(this.browserName === "webkit" ? 200 : 100);
+  }
+
   get mentionsMenu() {
     return this.page.getByRole("menu", { name: "Choose a mention" });
   }
@@ -129,13 +141,13 @@ export class TestUtils {
   }
 
   async isMenuOrComboboxOpen() {
-    await this.sleep(300);
+    await this.sleep(this.browserName === "webkit" ? 1000 : 0);
     const text = await this.page.getByTestId("menu-combobox-open").innerText();
     return text === "true";
   }
 
   async isComboboxItemSelected() {
-    await this.sleep(300);
+    await this.sleep(this.browserName === "webkit" ? 1000 : 0);
     const text = await this.page
       .getByTestId("combobox-item-selected")
       .innerText();
