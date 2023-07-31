@@ -57,7 +57,7 @@ export class TestUtils {
     private creatable: boolean,
     private insertOnBlur: boolean,
     private commandFocus: boolean,
-    private combobox: boolean,
+    private _combobox: boolean,
     private mentionEnclosure: boolean,
     private showMentionsOnDelete: boolean,
   ) {
@@ -97,7 +97,7 @@ export class TestUtils {
 
   async hasText(text: string) {
     const plaintext = await this.getPlaintext();
-    await expect(plaintext).toBe(text);
+    expect(plaintext).toBe(text);
   }
 
   async getPlaintext() {
@@ -110,9 +110,9 @@ export class TestUtils {
     const regex = /\[[^[\]]+]/g;
     const match = plaintext.match(regex);
     if (match) {
-      await expect(match.length).toBe(count);
+      expect(match.length).toBe(count);
     } else {
-      await expect(match).toBeNull();
+      expect(match).toBeNull();
     }
   }
 
@@ -124,8 +124,22 @@ export class TestUtils {
     return this.page.getByRole("menu", { name: "Choose a mention" });
   }
 
-  get triggersMenu() {
-    return this.page.getByRole("menu", { name: "Choose a trigger" });
+  get combobox() {
+    return this.page.getByRole("menu", { name: "Choose trigger and value" });
+  }
+
+  async isMenuOrComboboxOpen() {
+    await this.sleep(200);
+    const text = await this.page.getByTestId("menu-combobox-open").innerText();
+    return text === "true";
+  }
+
+  async isComboboxItemSelected() {
+    await this.sleep(200);
+    const text = await this.page
+      .getByTestId("combobox-item-selected")
+      .innerText();
+    return text === "true";
   }
 
   sleep(ms: number) {
@@ -141,7 +155,7 @@ export class TestUtils {
     const host = process.env.HOST || "localhost";
     let url = `http://${host}:3000?focus=${this.autofocus}`;
     url += `&async=${this.asynchronous}`;
-    url += `&combobox=${this.combobox}`;
+    url += `&combobox=${this._combobox}`;
     url += `&enclosure=${this.mentionEnclosure}`;
     url += `&mentions=${this.showMentionsOnDelete}`;
     url += `&space=${this.allowSpaces}`;

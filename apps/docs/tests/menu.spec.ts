@@ -228,4 +228,18 @@ test.describe("Mentions Menu", () => {
     await utils.editor.press("Enter");
     await utils.hasText("Hey [@Boris] how are you doing?");
   });
+
+  test("should call the onMenuOpen and onMenuClose callbacks", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    let open = await utils.isMenuOrComboboxOpen();
+    expect(open).toBe(true);
+    await utils.editor.blur();
+    open = await utils.isMenuOrComboboxOpen();
+    expect(open).toBe(false);
+  });
 });

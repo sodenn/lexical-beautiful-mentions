@@ -9,8 +9,7 @@ test.describe("Combobox", () => {
       autofocus: "end",
       combobox: true,
     });
-    await expect(utils.triggersMenu).toBeVisible();
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.combobox).toBeVisible();
   });
 
   test("should not have any trigger selected by default", async ({ page }) => {
@@ -18,10 +17,7 @@ test.describe("Combobox", () => {
       autofocus: "end",
       combobox: true,
     });
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "",
-    );
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
   });
 
   test("should select the first trigger when pressing down", async ({
@@ -32,10 +28,7 @@ test.describe("Combobox", () => {
       combobox: true,
     });
     await utils.editor.press("ArrowDown");
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "@",
-    );
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "@");
   });
 
   test("should select the last trigger when pressing up", async ({ page }) => {
@@ -44,7 +37,7 @@ test.describe("Combobox", () => {
       combobox: true,
     });
     await utils.editor.press("ArrowUp");
-    await expect(utils.triggersMenu).toHaveAttribute(
+    await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
       "\\w+:",
     );
@@ -60,10 +53,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp"); // select the last trigger
     await utils.editor.press("ArrowDown"); // remove the selection
     await utils.editor.press("ArrowDown");
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "@",
-    );
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "@");
   });
 
   test("should select the last trigger when pressing up after selecting the first trigger", async ({
@@ -76,7 +66,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowDown"); // select the first trigger
     await utils.editor.press("ArrowUp"); // remove the selection
     await utils.editor.press("ArrowUp");
-    await expect(utils.triggersMenu).toHaveAttribute(
+    await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
       "\\w+:",
     );
@@ -90,12 +80,12 @@ test.describe("Combobox", () => {
       combobox: true,
     });
     await utils.editor.type("d");
-    await expect(utils.triggersMenu.getByRole("menuitem")).toHaveCount(1);
-    await expect(utils.triggersMenu).toHaveAttribute(
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(1);
+    await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
       "due:",
     );
-    await utils.triggersMenu.getByText("due:").click();
+    await utils.combobox.getByText("due:").click();
     await utils.hasText("due:");
   });
 
@@ -107,9 +97,7 @@ test.describe("Combobox", () => {
       combobox: true,
     });
     await utils.editor.type("@");
-    await expect(utils.triggersMenu).not.toBeVisible();
-    await expect(utils.mentionsMenu).toBeVisible();
-    await expect(utils.mentionsMenu).toHaveAttribute(
+    await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
       "Anton",
     );
@@ -124,16 +112,13 @@ test.describe("Combobox", () => {
     });
     await utils.editor.press("ArrowDown");
     await utils.editor.type("@");
-    await expect(utils.mentionsMenu).toHaveAttribute(
+    await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
       "Anton",
     );
     await utils.editor.press("Backspace");
-    await expect(utils.triggersMenu).toBeVisible();
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "",
-    );
+    await expect(utils.combobox).toBeVisible();
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
   });
 
   test("should not remove the selection of a multi-character trigger when pressing backspace", async ({
@@ -144,13 +129,13 @@ test.describe("Combobox", () => {
       combobox: true,
     });
     await utils.editor.type("due");
-    await expect(utils.triggersMenu).toHaveAttribute(
+    await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
       "due:",
     );
     await utils.editor.press("Backspace");
-    await expect(utils.triggersMenu).toBeVisible();
-    await expect(utils.triggersMenu).toHaveAttribute(
+    await expect(utils.combobox).toBeVisible();
+    await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
       "due:",
     );
@@ -166,8 +151,8 @@ test.describe("Combobox", () => {
     });
     await utils.editor.type("due");
     await utils.editor.press("Tab");
-    await expect(utils.mentionsMenu).toBeVisible();
-    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(3);
+    await expect(utils.combobox).toBeVisible();
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(3);
   });
 
   test("should render the triggers after selecting a mention by pressing enter", async ({
@@ -180,9 +165,8 @@ test.describe("Combobox", () => {
     await utils.editor.type("@");
     await utils.sleep(200);
     await utils.editor.press("Enter");
-    await expect(utils.mentionsMenu).not.toBeVisible();
-    await expect(utils.triggersMenu).toBeVisible();
-    await expect(utils.triggersMenu.getByRole("menuitem")).toHaveCount(5);
+    await expect(utils.combobox).toBeVisible();
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(5);
     await utils.hasText("[@Anton]");
   });
 
@@ -196,9 +180,8 @@ test.describe("Combobox", () => {
     await utils.editor.type("@");
     await utils.sleep(200);
     await utils.editor.press("Tab");
-    await expect(utils.mentionsMenu).not.toBeVisible();
-    await expect(utils.triggersMenu).toBeVisible();
-    await expect(utils.triggersMenu.getByRole("menuitem")).toHaveCount(5);
+    await expect(utils.combobox).toBeVisible();
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(5);
     await utils.hasText("[@Anton]");
   });
 
@@ -211,10 +194,9 @@ test.describe("Combobox", () => {
     });
     await utils.editor.type("@");
     await utils.sleep(200);
-    await utils.mentionsMenu.getByText("Anton").click();
-    await expect(utils.mentionsMenu).not.toBeVisible();
-    await expect(utils.triggersMenu).toBeVisible();
-    await expect(utils.triggersMenu.getByRole("menuitem")).toHaveCount(5);
+    await utils.combobox.getByText("Anton").click();
+    await expect(utils.combobox).toBeVisible();
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(5);
     await utils.hasText("[@Anton]");
   });
 
@@ -226,16 +208,10 @@ test.describe("Combobox", () => {
       combobox: true,
     });
     await utils.editor.press("ArrowDown");
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "@",
-    );
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "@");
     await utils.editor.blur();
     await utils.editor.focus();
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "",
-    );
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
   });
 
   test("remove the selection after pressing ArrowUp or ArrowDown when the first or last combobox item is selected", async ({
@@ -246,29 +222,43 @@ test.describe("Combobox", () => {
       combobox: true,
     });
     await utils.editor.press("ArrowDown");
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "@",
-    );
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "@");
     await utils.editor.press("ArrowUp");
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "",
-    );
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
     await utils.editor.press("ArrowUp");
-    await expect(utils.triggersMenu).toHaveAttribute(
+    await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
       "\\w+:",
     );
     await utils.editor.press("ArrowDown");
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "",
-    );
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
     await utils.editor.press("ArrowDown");
-    await expect(utils.triggersMenu).toHaveAttribute(
-      "aria-activedescendant",
-      "@",
-    );
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "@");
+  });
+
+  test("should call the onComboboxOpen and onComboboxClose callbacks", async ({
+    page,
+  }) => {
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    let open = await utils.isMenuOrComboboxOpen();
+    expect(open).toBe(true);
+    await utils.editor.blur();
+    open = await utils.isMenuOrComboboxOpen();
+    expect(open).toBe(false);
+  });
+
+  test("should call the onComboboxSelect callback", async ({ page }) => {
+    const utils = await testUtils(page, {
+      autofocus: "end",
+      combobox: true,
+    });
+    let selected = await utils.isComboboxItemSelected();
+    expect(selected).toBe(false);
+    await utils.editor.press("ArrowDown");
+    selected = await utils.isComboboxItemSelected();
+    expect(selected).toBe(true);
   });
 });
