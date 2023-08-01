@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { testUtils } from "./test-utils";
 
-test.describe("Mentions Menu", () => {
+test.describe("Mention Menu", () => {
   test("should open the menu before a comma", async ({ page, browserName }) => {
     const utils = await testUtils(
       { page, browserName },
@@ -91,10 +91,12 @@ test.describe("Mentions Menu", () => {
     await utils.hasText("[@abc]");
   });
 
-  test("should insert the selected mention when the editor is blurred", async ({
+  test("should insert the selected mention when the editor is blurred (desktop)", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(!!isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -103,15 +105,44 @@ test.describe("Mentions Menu", () => {
       },
     );
     await utils.editorType("@Gi");
+    await expect(utils.mentionsMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "Gina",
+    );
     await utils.editor.blur();
     await expect(utils.mentionsMenu).not.toBeVisible();
     await utils.hasText("[@Gina]");
   });
 
+  test("should insert the selected mention when the editor is blurred (mobile)", async ({
+    page,
+    browserName,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, "mobile only");
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        insertOnBlur: true,
+        creatable: true,
+      },
+    );
+    await utils.editorType("@Gi");
+    await expect(utils.mentionsMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "",
+    );
+    await utils.editor.blur();
+    await expect(utils.mentionsMenu).not.toBeVisible();
+    await utils.hasText("[@Gi]");
+  });
+
   test("should insert a selected mention by pressing enter", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(!!isMobile, "desktop only");
     const utils = await testUtils({ page, browserName });
     await utils.editorType("@b");
     await expect(utils.mentionsMenu).toBeVisible();
@@ -207,7 +238,7 @@ test.describe("Mentions Menu", () => {
     await expect(page.getByText("Loading...")).not.toBeVisible();
   });
 
-  test("should how existing mentions from the editor as suggestions", async ({
+  test("should list existing mentions from the editor as suggestions", async ({
     page,
     browserName,
   }) => {
@@ -224,11 +255,11 @@ test.describe("Mentions Menu", () => {
     await utils.editorType("abc:");
     await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(1);
     await expect(utils.mentionsMenu.getByText("a")).toBeVisible();
-    await utils.editor.press("Enter");
+    await utils.mentionsMenu.getByText("a").click();
     await utils.hasText("[abc:a] [abc:a]");
   });
 
-  test("should display the mentions menu after deleting a mention", async ({
+  test("should display the mention menu after deleting a mention", async ({
     page,
     browserName,
   }) => {
@@ -242,11 +273,11 @@ test.describe("Mentions Menu", () => {
     await utils.editor.press("Backspace");
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.editorType("B");
-    await utils.editor.press("Enter");
+    await utils.mentionsMenu.getByText("Boris").click();
     await utils.hasText("Hey [@Boris]");
   });
 
-  test("should not display the mentions menu after deleting a mention when the option is disabled", async ({
+  test("should not display the mention menu after deleting a mention when the option is disabled", async ({
     page,
     browserName,
   }) => {
@@ -261,9 +292,10 @@ test.describe("Mentions Menu", () => {
     await expect(utils.mentionsMenu).not.toBeVisible();
   });
 
-  test("should display the mentions menu after deleting a mention in the middle of a sentence", async ({
+  test("should display the mention menu after deleting a mention in the middle of a sentence", async ({
     page,
     browserName,
+    isMobile,
   }) => {
     const utils = await testUtils(
       { page, browserName },
@@ -276,7 +308,9 @@ test.describe("Mentions Menu", () => {
     await utils.editor.press("Backspace");
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.editorType("B");
-    await utils.editor.press("Enter");
+    isMobile
+      ? await utils.mentionsMenu.getByText("Boris").click()
+      : await utils.editor.press("Enter");
     await utils.hasText("Hey [@Boris] how are you doing?");
   });
 

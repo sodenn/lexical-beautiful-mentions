@@ -23,7 +23,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { CAN_USE_DOM } from "./environment";
+import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 
 const useLayoutEffectImpl: typeof useLayoutEffect = CAN_USE_DOM
   ? useLayoutEffect
@@ -292,6 +292,9 @@ export function Menu<TOption extends MenuOption>({
 
   const setHighlightedIndex = useCallback(
     (selectedIndex: number | null) => {
+      if (IS_MOBILE) {
+        return;
+      }
       setSelectedIndex(selectedIndex);
       onSelectionChange?.(selectedIndex);
     },
@@ -300,6 +303,7 @@ export function Menu<TOption extends MenuOption>({
 
   useEffect(() => {
     setHighlightedIndex(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchingString]);
 
   const selectOptionAndCleanUp = useCallback(
@@ -323,6 +327,9 @@ export function Menu<TOption extends MenuOption>({
 
   const updateSelectedIndex = useCallback(
     (index: number) => {
+      if (IS_MOBILE) {
+        return;
+      }
       const rootElem = editor.getRootElement();
       if (rootElem !== null) {
         rootElem.setAttribute(
@@ -332,6 +339,7 @@ export function Menu<TOption extends MenuOption>({
         setHighlightedIndex(index);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [editor],
   );
 
@@ -457,6 +465,7 @@ export function Menu<TOption extends MenuOption>({
       selectedIndex,
       setHighlightedIndex,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectOptionAndCleanUp, selectedIndex, options],
   );
 

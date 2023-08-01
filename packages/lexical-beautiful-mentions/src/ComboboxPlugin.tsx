@@ -4,8 +4,11 @@ import {
   $createTextNode,
   $getSelection,
   $isRangeSelection,
+  BLUR_COMMAND,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
+  COMMAND_PRIORITY_NORMAL,
+  FOCUS_COMMAND,
   KEY_ARROW_DOWN_COMMAND,
   KEY_ARROW_UP_COMMAND,
   KEY_BACKSPACE_COMMAND,
@@ -26,6 +29,7 @@ import {
   MenuTextMatch,
   TriggerFn,
 } from "./Menu";
+import { IS_MOBILE } from "./environment";
 import { $insertTriggerAtSelection } from "./mention-commands";
 import { useIsFocused } from "./useIsFocused";
 
@@ -207,6 +211,12 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const [open, setOpen] = useState(false);
   const anchor = useAnchorRef(open, comboboxAnchor, comboboxAnchorClassName);
 
+  const highlightOption = useCallback((index: number | null) => {
+    if (!IS_MOBILE) {
+      setSelectedIndex(index);
+    }
+  }, []);
+
   const scrollIntoView = useCallback(
     (index: number) => {
       const option = options[index];
@@ -241,7 +251,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           newIndex = selectedIndex + 1;
         }
       }
-      setSelectedIndex(newIndex);
+      highlightOption(newIndex);
       if (newIndex) {
         scrollIntoView(newIndex);
       }
@@ -249,20 +259,20 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       event.stopImmediatePropagation();
       return true;
     },
-    [focused, selectedIndex, options.length, scrollIntoView],
+    [focused, selectedIndex, options.length, scrollIntoView, highlightOption],
   );
 
   const handleMouseEnter = useCallback(
     (index: number) => {
-      setSelectedIndex(index);
+      highlightOption(index);
       scrollIntoView(index);
     },
-    [scrollIntoView],
+    [scrollIntoView, highlightOption],
   );
 
   const handleMouseLeave = useCallback(() => {
-    setSelectedIndex(null);
-  }, []);
+    highlightOption(null);
+  }, [highlightOption]);
 
   const handleSelectValue = useCallback(
     (index: number) => {
@@ -276,9 +286,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       setValueMatch(null);
       onQueryChange(null);
       setQueryString(null);
-      setSelectedIndex(null);
+      highlightOption(null);
     },
-    [editor, valueMatch, onQueryChange, onSelectOption, options],
+    [
+      editor,
+      valueMatch,
+      onQueryChange,
+      onSelectOption,
+      highlightOption,
+      options,
+    ],
   );
 
   const handleSelectTrigger = useCallback(
@@ -298,9 +315,9 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       });
       setTriggerMatch(null);
       setQueryString(null);
-      setSelectedIndex(0);
+      highlightOption(0);
     },
-    [options, editor, triggerMatch, triggers, punctuation],
+    [options, editor, triggerMatch, triggers, highlightOption, punctuation],
   );
 
   const handleClickOption = useCallback(
@@ -348,10 +365,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     const text = getQueryTextForSearch(editor);
     const newText = text ? text.substring(0, text.length - 1) : undefined;
     if (!newText || !newText.trim()) {
-      setSelectedIndex(null);
+      highlightOption(null);
     }
     return false;
-  }, [editor]);
+  }, [editor, highlightOption]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -369,26 +386,30 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
             valueTrimmed.length <= o.displayValue.length,
         )
       ) {
-        setSelectedIndex(0);
+        highlightOption(0);
       } else if (optionsType === "triggers") {
-        setSelectedIndex(null);
+        highlightOption(null);
       }
       return false;
     },
-    [editor, options, optionsType],
+    [editor, options, optionsType, highlightOption],
   );
 
-  useEffect(() => {
-    if (focused) {
-      setOpen(true);
-    } else {
-      setOpen(false);
+  const handleFocus = useCallback(() => {
+    setOpen(true);
+    return false;
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    setOpen(false);
+    if (!queryString) {
       setSelectedIndex(null);
       setQueryString(null);
       setTriggerMatch(null);
       setValueMatch(null);
     }
-  }, [focused]);
+    return false;
+  }, [queryString]);
 
   useEffect(() => {
     return mergeRegister(
@@ -427,6 +448,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand<KeyboardEvent>(
+        FOCUS_COMMAND,
+        handleFocus,
+        COMMAND_PRIORITY_NORMAL,
+      ),
+      editor.registerCommand<KeyboardEvent>(
+        BLUR_COMMAND,
+        handleBlur,
+        COMMAND_PRIORITY_NORMAL,
+      ),
+      editor.registerCommand<KeyboardEvent>(
         CLICK_COMMAND,
         () => {
           if (!open) {
@@ -452,6 +483,8 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     handleKeySelect,
     handleBackspace,
     handleKeyDown,
+    handleFocus,
+    handleBlur,
   ]);
 
   useEffect(() => {
