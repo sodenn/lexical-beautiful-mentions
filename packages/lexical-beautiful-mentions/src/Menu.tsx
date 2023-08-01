@@ -292,9 +292,6 @@ export function Menu<TOption extends MenuOption>({
 
   const setHighlightedIndex = useCallback(
     (selectedIndex: number | null) => {
-      if (IS_MOBILE) {
-        return;
-      }
       setSelectedIndex(selectedIndex);
       onSelectionChange?.(selectedIndex);
     },
@@ -302,7 +299,11 @@ export function Menu<TOption extends MenuOption>({
   );
 
   useEffect(() => {
-    setHighlightedIndex(0);
+    if (IS_MOBILE) {
+      setHighlightedIndex(null);
+    } else {
+      setHighlightedIndex(0);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchingString]);
 
@@ -327,9 +328,6 @@ export function Menu<TOption extends MenuOption>({
 
   const updateSelectedIndex = useCallback(
     (index: number) => {
-      if (IS_MOBILE) {
-        return;
-      }
       const rootElem = editor.getRootElement();
       if (rootElem !== null) {
         rootElem.setAttribute(
@@ -355,7 +353,7 @@ export function Menu<TOption extends MenuOption>({
   useLayoutEffectImpl(() => {
     if (options === null) {
       setHighlightedIndex(null);
-    } else if (selectedIndex === null) {
+    } else if (selectedIndex === null && !IS_MOBILE) {
       updateSelectedIndex(0);
     }
   }, [options, selectedIndex, updateSelectedIndex]);
@@ -366,9 +364,10 @@ export function Menu<TOption extends MenuOption>({
         KEY_ARROW_DOWN_COMMAND,
         (payload) => {
           const event = payload;
-          if (options !== null && options.length && selectedIndex !== null) {
+          if (options !== null && options.length) {
+            const currIndex = selectedIndex ?? -1;
             const newSelectedIndex =
-              selectedIndex !== options.length - 1 ? selectedIndex + 1 : 0;
+              currIndex !== options.length - 1 ? currIndex + 1 : 0;
             updateSelectedIndex(newSelectedIndex);
             const option = options[newSelectedIndex];
             if (option.ref != null && option.ref.current) {
@@ -385,9 +384,10 @@ export function Menu<TOption extends MenuOption>({
         KEY_ARROW_UP_COMMAND,
         (payload) => {
           const event = payload;
-          if (options !== null && options.length && selectedIndex !== null) {
+          if (options !== null && options.length) {
+            const currIndex = selectedIndex ?? options.length;
             const newSelectedIndex =
-              selectedIndex !== 0 ? selectedIndex - 1 : options.length - 1;
+              currIndex !== 0 ? currIndex - 1 : options.length - 1;
             updateSelectedIndex(newSelectedIndex);
             const option = options[newSelectedIndex];
             if (option.ref != null && option.ref.current) {
