@@ -17,7 +17,7 @@ import {
   RangeSelection,
   TextNode,
 } from "lexical";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import { ComboboxPlugin } from "./ComboboxPlugin";
@@ -35,7 +35,7 @@ import {
   $removeMention,
   $renameMention,
   INSERT_MENTION_COMMAND,
-  OPEN_MENTIONS_MENU_COMMAND,
+  OPEN_MENTION_MENU_COMMAND,
   REMOVE_MENTIONS_COMMAND,
   RENAME_MENTIONS_COMMAND,
 } from "./mention-commands";
@@ -124,6 +124,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     menuAnchorClassName,
     showMentionsOnDelete,
     mentionEnclosure,
+    onMenuOpen,
+    onMenuClose,
+    onComboboxOpen,
+    onComboboxClose,
+    onComboboxItemSelect,
     punctuation = DEFAULT_PUNCTUATION,
   } = props;
   const isEditorFocused = useIsFocused();
@@ -493,7 +498,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
-        OPEN_MENTIONS_MENU_COMMAND,
+        OPEN_MENTION_MENU_COMMAND,
         ({ trigger }) =>
           $insertTriggerAtSelection(triggers, punctuation, trigger),
         COMMAND_PRIORITY_LOW,
@@ -513,6 +518,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     handleKeyDown,
     handleDeleteMention,
   ]);
+
+  useEffect(() => {
+    if (open) {
+      onMenuOpen?.();
+    } else {
+      onMenuClose?.();
+    }
+  }, [onMenuOpen, onMenuClose, open]);
 
   if (!CAN_USE_DOM) {
     return null;
@@ -534,6 +547,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         comboboxAnchorClassName={props.comboboxAnchorClassName}
         comboboxComponent={props.comboboxComponent}
         comboboxItemComponent={props.comboboxItemComponent}
+        onComboboxOpen={onComboboxOpen}
+        onComboboxClose={onComboboxClose}
+        onComboboxItemSelect={onComboboxItemSelect}
       />
     );
   }

@@ -11,7 +11,7 @@ function getRandomItem<T>(array: T[]): T {
 
 export default function MentionsToolbarPlugin() {
   const {
-    openMentionsMenu,
+    openMentionMenu,
     renameMentions,
     removeMentions,
     insertMention,
@@ -103,7 +103,7 @@ export default function MentionsToolbarPlugin() {
   return (
     <>
       <div className="my-3 grid grid-cols-2 gap-1 sm:gap-2">
-        <Button onClick={() => openMentionsMenu({ trigger: "@" })}>
+        <Button onClick={() => openMentionMenu({ trigger: "@" })}>
           Open Suggestions
         </Button>
         <Button

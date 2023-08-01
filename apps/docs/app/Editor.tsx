@@ -88,6 +88,8 @@ function Plugins() {
   } = useConfiguration();
   const focused = useIsFocused();
   const comboboxAnchor = useRef<HTMLDivElement>(null);
+  const [menuOrComboboxOpen, setMenuOrComboboxOpen] = useState(false);
+  const [comboboxItemSelected, setComboboxItemSelected] = useState(false);
 
   const handleChange = useCallback((editorState: EditorState) => {
     editorState.read(() => {
@@ -102,6 +104,18 @@ function Plugins() {
       queryMentions(trigger, queryString, asynchronous),
     [asynchronous],
   );
+
+  const handleMenuOrComboboxOpen = useCallback(() => {
+    setMenuOrComboboxOpen(true);
+  }, []);
+
+  const handleMenuOrComboboxClose = useCallback(() => {
+    setMenuOrComboboxOpen(false);
+  }, []);
+
+  const handleComboboxItemSelect = useCallback((label: string | null) => {
+    setComboboxItemSelected(label !== null);
+  }, []);
 
   return (
     <>
@@ -153,6 +167,8 @@ function Plugins() {
                 showMentionsOnDelete={showMentionsOnDelete}
                 menuComponent={Menu}
                 menuItemComponent={MenuItem}
+                onMenuOpen={handleMenuOrComboboxOpen}
+                onMenuClose={handleMenuOrComboboxClose}
               />
             )}
             {combobox && (
@@ -169,6 +185,9 @@ function Plugins() {
                 comboboxAnchorClassName="shadow-lg shadow-gray-900 rounded"
                 comboboxComponent={Combobox}
                 comboboxItemComponent={ComboboxItem}
+                onComboboxOpen={handleMenuOrComboboxOpen}
+                onComboboxClose={handleMenuOrComboboxClose}
+                onComboboxItemSelect={handleComboboxItemSelect}
               />
             )}
           </div>
@@ -177,6 +196,12 @@ function Plugins() {
       <MentionsToolbarPlugin />
       <div className="hidden" data-testid="plaintext">
         {value}
+      </div>
+      <div className="hidden" data-testid="menu-combobox-open">
+        {menuOrComboboxOpen.toString()}
+      </div>
+      <div className="hidden" data-testid="combobox-item-selected">
+        {comboboxItemSelected.toString()}
       </div>
     </>
   );

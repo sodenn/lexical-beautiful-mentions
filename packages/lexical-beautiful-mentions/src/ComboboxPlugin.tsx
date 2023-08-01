@@ -36,6 +36,9 @@ interface ComboboxPluginProps
       | "comboboxAnchorClassName"
       | "comboboxComponent"
       | "comboboxItemComponent"
+      | "onComboboxOpen"
+      | "onComboboxClose"
+      | "onComboboxItemSelect"
     >,
     Required<Pick<BeautifulMentionsPluginProps, "punctuation">> {
   loading: boolean;
@@ -174,15 +177,18 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     onReset,
     comboboxComponent: ComboboxComponent = "div",
     comboboxItemComponent: ComboboxItemComponent = "div",
+    onComboboxOpen,
+    onComboboxClose,
+    onComboboxItemSelect,
   } = props;
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [triggerMatch, setTriggerMatch] = useState<MenuTextMatch | null>(null);
-  const [mentionMatch, setMentionMatch] = useState<MenuTextMatch | null>(null);
+  const [valueMatch, setValueMatch] = useState<MenuTextMatch | null>(null);
   const [queryString, setQueryString] = useState<string | null>(null);
   const itemRefs = useRef<Record<string, HTMLElement | null>>({});
-  const optionsType = props.options.length === 0 ? "triggers" : "mentions";
+  const optionsType = props.options.length === 0 ? "triggers" : "values";
   const options = useMemo(() => {
     if (optionsType === "triggers") {
       const triggerOptions = triggers.map(
@@ -258,21 +264,21 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     setSelectedIndex(null);
   }, []);
 
-  const handleSelectMention = useCallback(
+  const handleSelectValue = useCallback(
     (index: number) => {
       const option = options[index];
       editor.update(() => {
-        const textNode = mentionMatch
-          ? $splitNodeContainingQuery(mentionMatch)
+        const textNode = valueMatch
+          ? $splitNodeContainingQuery(valueMatch)
           : null;
         onSelectOption(option, textNode);
       });
-      setMentionMatch(null);
+      setValueMatch(null);
       onQueryChange(null);
       setQueryString(null);
       setSelectedIndex(null);
     },
-    [editor, mentionMatch, onQueryChange, onSelectOption, options],
+    [editor, valueMatch, onQueryChange, onSelectOption, options],
   );
 
   const handleSelectTrigger = useCallback(
@@ -302,11 +308,11 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       if (optionsType === "triggers") {
         handleSelectTrigger(index);
       }
-      if (optionsType === "mentions") {
-        handleSelectMention(index);
+      if (optionsType === "values") {
+        handleSelectValue(index);
       }
     },
-    [handleSelectMention, handleSelectTrigger, optionsType],
+    [handleSelectValue, handleSelectTrigger, optionsType],
   );
 
   const handleKeySelect = useCallback(
@@ -319,9 +325,9 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         handled = true;
         handleSelectTrigger(selectedIndex);
       }
-      if (optionsType === "mentions") {
+      if (optionsType === "values") {
         handled = true;
-        handleSelectMention(selectedIndex);
+        handleSelectValue(selectedIndex);
       }
       if (handled) {
         event.preventDefault();
@@ -331,7 +337,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     },
     [
       focused,
-      handleSelectMention,
+      handleSelectValue,
       handleSelectTrigger,
       optionsType,
       selectedIndex,
@@ -380,7 +386,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       setSelectedIndex(null);
       setQueryString(null);
       setTriggerMatch(null);
-      setMentionMatch(null);
+      setValueMatch(null);
     }
   }, [focused]);
 
@@ -456,7 +462,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         if (text === null) {
           onReset();
           setTriggerMatch(null);
-          setMentionMatch(null);
+          setValueMatch(null);
           onQueryChange(null);
           setQueryString(null);
           return;
@@ -466,15 +472,15 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         setTriggerMatch(triggerMatch);
         if (triggerMatch) {
           setQueryString(triggerMatch.matchingString);
-          setMentionMatch(null);
+          setValueMatch(null);
           return;
         }
         // check for mentions
-        const mentionMatch = triggerFn(text, editor);
-        setMentionMatch(mentionMatch);
-        onQueryChange(mentionMatch ? mentionMatch.matchingString : null);
-        if (mentionMatch && mentionMatch.matchingString) {
-          setQueryString(mentionMatch.matchingString);
+        const valueMatch = triggerFn(text, editor);
+        setValueMatch(valueMatch);
+        onQueryChange(valueMatch ? valueMatch.matchingString : null);
+        if (valueMatch && valueMatch.matchingString) {
+          setQueryString(valueMatch.matchingString);
           return;
         }
         setQueryString(null);
@@ -485,6 +491,22 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       removeUpdateListener();
     };
   }, [editor, triggerFn, onQueryChange, onReset, triggers]);
+
+  useEffect(() => {
+    if (open) {
+      onComboboxOpen?.();
+    } else {
+      onComboboxClose?.();
+    }
+  }, [onComboboxOpen, onComboboxClose, open]);
+
+  useEffect(() => {
+    if (selectedIndex !== null && !!options[selectedIndex]) {
+      onComboboxItemSelect?.(options[selectedIndex].value);
+    } else {
+      onComboboxItemSelect?.(null);
+    }
+  }, [selectedIndex, options, onComboboxItemSelect]);
 
   if (!open || !anchor) {
     return null;
@@ -499,12 +521,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           role="menu"
           aria-activedescendant={
             selectedIndex !== null && !!options[selectedIndex]
-              ? `beautiful-mention-combobox-${options[selectedIndex].displayValue}`
+              ? options[selectedIndex].displayValue
               : ""
           }
-          aria-label={
-            optionsType === "triggers" ? "Choose a trigger" : "Choose a mention"
-          }
+          aria-label={"Choose trigger and value"}
           aria-hidden={!open}
         >
           {options.map((option, index) => (

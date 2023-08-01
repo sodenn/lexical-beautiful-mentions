@@ -6,8 +6,8 @@ import {
   HasMentions,
   INSERT_MENTION_COMMAND,
   InsertMention,
-  OPEN_MENTIONS_MENU_COMMAND,
-  OpenMentionsMenu,
+  OPEN_MENTION_MENU_COMMAND,
+  OpenMentionMenu,
   REMOVE_MENTIONS_COMMAND,
   RENAME_MENTIONS_COMMAND,
   RemoveMentions,
@@ -49,7 +49,7 @@ export function useBeautifulMentions() {
   );
 
   /**
-   * Returns true if there are mentions that match the given trigger and an optional value.
+   * Returns `true` if there are mentions that match the given trigger and an optional value.
    */
   const hasMentions = useCallback(
     ({ value, trigger }: HasMentions) => {
@@ -68,33 +68,13 @@ export function useBeautifulMentions() {
   );
 
   /**
-   * Opens the mentions menu at the current selection.
+   * Opens the mention menu at the current selection.
    */
-  const openMentionsMenu = useCallback(
-    (options: OpenMentionsMenu) =>
-      editor.dispatchCommand(OPEN_MENTIONS_MENU_COMMAND, options),
+  const openMentionMenu = useCallback(
+    (options: OpenMentionMenu) =>
+      editor.dispatchCommand(OPEN_MENTION_MENU_COMMAND, options),
     [editor],
   );
-
-  /**
-   * Returns true if the mentions menu is open.
-   */
-  const isMentionsMenuOpen = useCallback(() => {
-    const element = document.querySelector(
-      '[role="menu"][aria-label="Choose a mention"][aria-hidden="false"]',
-    );
-    return !!element;
-  }, []);
-
-  /**
-   * Returns true if the triggers menu is open.
-   */
-  const isTriggersMenuOpen = useCallback(() => {
-    const element = document.querySelector(
-      '[role="menu"][aria-label="Choose a trigger"][aria-hidden="false"]',
-    );
-    return !!element;
-  }, []);
 
   /**
    * Returns all mentions used in the editor.
@@ -114,8 +94,6 @@ export function useBeautifulMentions() {
     removeMentions,
     renameMentions,
     hasMentions,
-    openMentionsMenu,
-    isMentionsMenuOpen,
-    isTriggersMenuOpen,
+    openMentionMenu,
   };
 }

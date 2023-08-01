@@ -42,7 +42,7 @@ export interface BeautifulMentionsComboboxProps
   /**
    * The options shown in the combobox can be either triggers or mentions.
    */
-  optionType: "triggers" | "mentions";
+  optionType: "triggers" | "values";
   /**
    * If `true`, the `onSearch` function is currently running.
    */
@@ -111,11 +111,22 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    * @default true
    */
   insertOnBlur?: boolean;
+  /**
+   * Callback fired when the menu requests to be open.
+   */
+  onMenuOpen?: () => void;
+  /**
+   * Callback fired when the menu requests to be closed.
+   */
+  onMenuClose?: () => void;
   combobox?: never;
   comboboxAnchor?: never;
   comboboxAnchorClassName?: never;
   comboboxComponent?: never;
   comboboxItemComponent?: never;
+  onComboboxOpen?: never;
+  onComboboxClose?: never;
+  onComboboxItemSelect?: never;
 };
 
 type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
@@ -143,9 +154,24 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
    * The component to use for a combobox item.
    */
   comboboxItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
+  /**
+   * Callback fired when the combobox requests to be open.
+   */
+  onComboboxOpen?: () => void;
+  /**
+   * Callback fired when the combobox requests to be closed.
+   */
+  onComboboxClose?: () => void;
+  /**
+   * Callback fired when the user selects a combobox item.
+   * @param label The selected trigger or value.
+   */
+  onComboboxItemSelect?: (label: string | null) => void;
   menuComponent?: never;
   menuItemComponent?: never;
   insertOnBlur?: never;
+  onMenuOpen?: never;
+  onMenuClose?: never;
 };
 
 type BeautifulMentionsPluginWithCompProps =
