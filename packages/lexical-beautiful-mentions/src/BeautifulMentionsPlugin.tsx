@@ -28,7 +28,7 @@ import {
 } from "./MentionNode";
 import { MenuOption, MenuTextMatch } from "./Menu";
 import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
-import { CAN_USE_DOM } from "./environment";
+import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 import {
   $insertMentionAtSelection,
   $insertTriggerAtSelection,
@@ -128,7 +128,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     onMenuClose,
     onComboboxOpen,
     onComboboxClose,
-    onComboboxItemSelect,
+    onComboboxFocusChange,
     punctuation = DEFAULT_PUNCTUATION,
   } = props;
   const isEditorFocused = useIsFocused();
@@ -287,8 +287,12 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   );
 
   const convertTextToMention = useCallback(() => {
-    const option =
+    let option =
       selectedMenuIndex !== null ? options[selectedMenuIndex] : undefined;
+    const newMention = options.find((o) => o.value !== o.displayValue);
+    if (newMention && (IS_MOBILE || option === null)) {
+      option = newMention;
+    }
     if (!option) {
       return false;
     }
@@ -549,7 +553,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         comboboxItemComponent={props.comboboxItemComponent}
         onComboboxOpen={onComboboxOpen}
         onComboboxClose={onComboboxClose}
-        onComboboxItemSelect={onComboboxItemSelect}
+        onComboboxFocusChange={onComboboxFocusChange}
       />
     );
   }
@@ -575,6 +579,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                 role="menu"
                 aria-label="Choose a mention"
                 aria-hidden={!open}
+                aria-activedescendant={
+                  selectedIndex !== null && !!options[selectedIndex]
+                    ? options[selectedIndex].displayValue
+                    : ""
+                }
               >
                 {options.map((option, i) => (
                   <MenuItemComponent

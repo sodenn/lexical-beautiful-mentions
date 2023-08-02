@@ -23,7 +23,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { CAN_USE_DOM } from "./environment";
+import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 
 const useLayoutEffectImpl: typeof useLayoutEffect = CAN_USE_DOM
   ? useLayoutEffect
@@ -48,10 +48,26 @@ type UseMenuAnchorRefOptions = {
 };
 
 export class MenuOption {
+  /**
+   * Unique key to iterate over options. Equals to `data` if provided, otherwise
+   * `value` is used.
+   */
   key: string;
+  /**
+   * Value to be inserted into the editor.
+   */
   value: string;
+  /**
+   * Value to be displayed in the menu.
+   */
   displayValue: string;
+  /**
+   * Additional data belonging to the option.
+   */
   data?: { [key: string]: string };
+  /**
+   * Ref to the DOM element of the option.
+   */
   ref?: MutableRefObject<HTMLElement | null>;
 
   constructor(
@@ -299,7 +315,12 @@ export function Menu<TOption extends MenuOption>({
   );
 
   useEffect(() => {
-    setHighlightedIndex(0);
+    if (IS_MOBILE) {
+      setHighlightedIndex(null);
+    } else {
+      setHighlightedIndex(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchingString]);
 
   const selectOptionAndCleanUp = useCallback(
@@ -332,6 +353,7 @@ export function Menu<TOption extends MenuOption>({
         setHighlightedIndex(index);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [editor],
   );
 
@@ -347,7 +369,7 @@ export function Menu<TOption extends MenuOption>({
   useLayoutEffectImpl(() => {
     if (options === null) {
       setHighlightedIndex(null);
-    } else if (selectedIndex === null) {
+    } else if (selectedIndex === null && !IS_MOBILE) {
       updateSelectedIndex(0);
     }
   }, [options, selectedIndex, updateSelectedIndex]);
@@ -358,9 +380,10 @@ export function Menu<TOption extends MenuOption>({
         KEY_ARROW_DOWN_COMMAND,
         (payload) => {
           const event = payload;
-          if (options !== null && options.length && selectedIndex !== null) {
+          if (options !== null && options.length) {
+            const currIndex = selectedIndex ?? -1;
             const newSelectedIndex =
-              selectedIndex !== options.length - 1 ? selectedIndex + 1 : 0;
+              currIndex !== options.length - 1 ? currIndex + 1 : 0;
             updateSelectedIndex(newSelectedIndex);
             const option = options[newSelectedIndex];
             if (option.ref != null && option.ref.current) {
@@ -377,9 +400,10 @@ export function Menu<TOption extends MenuOption>({
         KEY_ARROW_UP_COMMAND,
         (payload) => {
           const event = payload;
-          if (options !== null && options.length && selectedIndex !== null) {
+          if (options !== null && options.length) {
+            const currIndex = selectedIndex ?? options.length;
             const newSelectedIndex =
-              selectedIndex !== 0 ? selectedIndex - 1 : options.length - 1;
+              currIndex !== 0 ? currIndex - 1 : options.length - 1;
             updateSelectedIndex(newSelectedIndex);
             const option = options[newSelectedIndex];
             if (option.ref != null && option.ref.current) {
@@ -457,6 +481,7 @@ export function Menu<TOption extends MenuOption>({
       selectedIndex,
       setHighlightedIndex,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectOptionAndCleanUp, selectedIndex, options],
   );
 

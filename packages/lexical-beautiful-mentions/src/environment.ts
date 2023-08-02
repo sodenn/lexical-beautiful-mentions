@@ -8,3 +8,6 @@ export const IS_IOS: boolean =
   /iPad|iPhone|iPod/.test(navigator.userAgent) &&
   // @ts-ignore
   !window.MSStream;
+
+export const IS_MOBILE =
+  CAN_USE_DOM && window.matchMedia("(pointer: coarse)").matches;

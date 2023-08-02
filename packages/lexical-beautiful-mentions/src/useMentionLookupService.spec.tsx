@@ -86,4 +86,56 @@ describe("useMentionLookupService", () => {
       expect(result.current.loading).toBe(false);
     });
   });
+
+  it("should return an empty array when no matching trigger is found", async () => {
+    const { result } = renderHook(() =>
+      useMentionLookupService({
+        queryString: "j",
+        trigger: "#",
+        items: items,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.results).toStrictEqual([]);
+    });
+  });
+
+  it("should return an empty array when `queryString` is `null`", async () => {
+    const { result } = renderHook(() =>
+      useMentionLookupService({
+        queryString: null,
+        trigger: "due:",
+        items: items,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.results).toStrictEqual([]);
+    });
+  });
+
+  it("should handle trigger change", async () => {
+    const { result, rerender } = renderHook(
+      ({ queryString, trigger }) =>
+        useMentionLookupService({
+          queryString: queryString,
+          trigger: trigger,
+          items: items,
+        }),
+      {
+        initialProps: { queryString: "ja", trigger: "@" },
+      },
+    );
+
+    await waitFor(() => {
+      expect(result.current.results).toStrictEqual(["Jane"]);
+    });
+
+    rerender({ queryString: "ja", trigger: "due:" });
+
+    await waitFor(() => {
+      expect(result.current.results).toEqual([]);
+    });
+  });
 });

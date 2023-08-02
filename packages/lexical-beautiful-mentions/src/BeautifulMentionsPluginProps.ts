@@ -126,7 +126,7 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
   comboboxItemComponent?: never;
   onComboboxOpen?: never;
   onComboboxClose?: never;
-  onComboboxItemSelect?: never;
+  onComboboxFocusChange?: never;
 };
 
 type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
@@ -166,7 +166,7 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
    * Callback fired when the user selects a combobox item.
    * @param label The selected trigger or value.
    */
-  onComboboxItemSelect?: (label: string | null) => void;
+  onComboboxFocusChange?: (label: string | null) => void;
   menuComponent?: never;
   menuItemComponent?: never;
   insertOnBlur?: never;

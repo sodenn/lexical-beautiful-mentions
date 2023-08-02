@@ -33,7 +33,9 @@ test.describe("Combobox", () => {
   test("should select the first trigger when pressing down", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -48,7 +50,9 @@ test.describe("Combobox", () => {
   test("should select the last trigger when pressing up", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -66,7 +70,9 @@ test.describe("Combobox", () => {
   test("should select the first trigger when pressing down after selecting the last trigger", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -83,7 +89,9 @@ test.describe("Combobox", () => {
   test("should select the last trigger when pressing up after selecting the first trigger", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -103,7 +111,9 @@ test.describe("Combobox", () => {
   test("should select the first trigger when starting to type a trigger character", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -124,7 +134,9 @@ test.describe("Combobox", () => {
   test("should select the first mention after selecting a trigger", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -142,7 +154,9 @@ test.describe("Combobox", () => {
   test("should remove the trigger selection when pressing backspace", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -164,7 +178,9 @@ test.describe("Combobox", () => {
   test("should not remove the selection of a multi-character trigger when pressing backspace", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -189,7 +205,9 @@ test.describe("Combobox", () => {
   test("should render the mentions after selecting a trigger", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -206,7 +224,9 @@ test.describe("Combobox", () => {
   test("should render the triggers after selecting a mention by pressing enter", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -224,7 +244,9 @@ test.describe("Combobox", () => {
   test("should render the triggers after selecting a mention by pressing tab", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -260,7 +282,9 @@ test.describe("Combobox", () => {
   test("should remove the selection when the editor is blurred", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -275,10 +299,12 @@ test.describe("Combobox", () => {
     await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
   });
 
-  test("remove the selection after pressing ArrowUp or ArrowDown when the first or last combobox item is selected", async ({
+  test("should remove the selection after pressing ArrowUp or ArrowDown when the first or last combobox item is selected", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {
@@ -322,7 +348,9 @@ test.describe("Combobox", () => {
   test("should call the onComboboxSelect callback", async ({
     page,
     browserName,
+    isMobile,
   }) => {
+    test.skip(isMobile, "desktop only");
     const utils = await testUtils(
       { page, browserName },
       {

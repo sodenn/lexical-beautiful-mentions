@@ -4,8 +4,11 @@ import {
   $createTextNode,
   $getSelection,
   $isRangeSelection,
+  BLUR_COMMAND,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
+  COMMAND_PRIORITY_NORMAL,
+  FOCUS_COMMAND,
   KEY_ARROW_DOWN_COMMAND,
   KEY_ARROW_UP_COMMAND,
   KEY_BACKSPACE_COMMAND,
@@ -17,7 +20,7 @@ import {
   RangeSelection,
   TextNode,
 } from "lexical";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import {
@@ -26,6 +29,7 @@ import {
   MenuTextMatch,
   TriggerFn,
 } from "./Menu";
+import { IS_MOBILE } from "./environment";
 import { $insertTriggerAtSelection } from "./mention-commands";
 import { useIsFocused } from "./useIsFocused";
 
@@ -38,7 +42,7 @@ interface ComboboxPluginProps
       | "comboboxItemComponent"
       | "onComboboxOpen"
       | "onComboboxClose"
-      | "onComboboxItemSelect"
+      | "onComboboxFocusChange"
     >,
     Required<Pick<BeautifulMentionsPluginProps, "punctuation">> {
   loading: boolean;
@@ -179,15 +183,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     comboboxItemComponent: ComboboxItemComponent = "div",
     onComboboxOpen,
     onComboboxClose,
-    onComboboxItemSelect,
+    onComboboxFocusChange,
   } = props;
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [triggerMatch, setTriggerMatch] = useState<MenuTextMatch | null>(null);
   const [valueMatch, setValueMatch] = useState<MenuTextMatch | null>(null);
-  const [queryString, setQueryString] = useState<string | null>(null);
-  const itemRefs = useRef<Record<string, HTMLElement | null>>({});
+  const [triggerQueryString, setTriggerQueryString] = useState<string | null>(
+    null,
+  );
   const optionsType = props.options.length === 0 ? "triggers" : "values";
   const options = useMemo(() => {
     if (optionsType === "triggers") {
@@ -195,22 +200,30 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         (trigger) => new MenuOption(trigger, trigger),
       );
       if (
-        !queryString ||
-        triggerOptions.every((o) => !o.value.startsWith(queryString))
+        !triggerQueryString ||
+        triggerOptions.every((o) => !o.value.startsWith(triggerQueryString))
       ) {
         return triggerOptions;
       }
-      return triggerOptions.filter((o) => o.value.startsWith(queryString));
+      return triggerOptions.filter((o) =>
+        o.value.startsWith(triggerQueryString),
+      );
     }
     return props.options;
-  }, [optionsType, props.options, triggers, queryString]);
+  }, [optionsType, props.options, triggers, triggerQueryString]);
   const [open, setOpen] = useState(false);
   const anchor = useAnchorRef(open, comboboxAnchor, comboboxAnchorClassName);
+
+  const highlightOption = useCallback((index: number | null) => {
+    if (!IS_MOBILE) {
+      setSelectedIndex(index);
+    }
+  }, []);
 
   const scrollIntoView = useCallback(
     (index: number) => {
       const option = options[index];
-      const el = itemRefs.current[option.value];
+      const el = option.ref?.current;
       if (el) {
         el.scrollIntoView({ block: "nearest" });
       }
@@ -241,7 +254,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           newIndex = selectedIndex + 1;
         }
       }
-      setSelectedIndex(newIndex);
+      highlightOption(newIndex);
       if (newIndex) {
         scrollIntoView(newIndex);
       }
@@ -249,20 +262,20 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       event.stopImmediatePropagation();
       return true;
     },
-    [focused, selectedIndex, options.length, scrollIntoView],
+    [focused, selectedIndex, options.length, scrollIntoView, highlightOption],
   );
 
   const handleMouseEnter = useCallback(
     (index: number) => {
-      setSelectedIndex(index);
+      highlightOption(index);
       scrollIntoView(index);
     },
-    [scrollIntoView],
+    [scrollIntoView, highlightOption],
   );
 
   const handleMouseLeave = useCallback(() => {
-    setSelectedIndex(null);
-  }, []);
+    highlightOption(null);
+  }, [highlightOption]);
 
   const handleSelectValue = useCallback(
     (index: number) => {
@@ -275,10 +288,17 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       });
       setValueMatch(null);
       onQueryChange(null);
-      setQueryString(null);
-      setSelectedIndex(null);
+      setTriggerQueryString(null);
+      highlightOption(null);
     },
-    [editor, valueMatch, onQueryChange, onSelectOption, options],
+    [
+      editor,
+      valueMatch,
+      onQueryChange,
+      onSelectOption,
+      highlightOption,
+      options,
+    ],
   );
 
   const handleSelectTrigger = useCallback(
@@ -297,10 +317,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         }
       });
       setTriggerMatch(null);
-      setQueryString(null);
-      setSelectedIndex(0);
+      setTriggerQueryString(null);
+      highlightOption(0);
     },
-    [options, editor, triggerMatch, triggers, punctuation],
+    [options, editor, triggerMatch, triggers, highlightOption, punctuation],
   );
 
   const handleClickOption = useCallback(
@@ -348,10 +368,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     const text = getQueryTextForSearch(editor);
     const newText = text ? text.substring(0, text.length - 1) : undefined;
     if (!newText || !newText.trim()) {
-      setSelectedIndex(null);
+      highlightOption(null);
     }
     return false;
-  }, [editor]);
+  }, [editor, highlightOption]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -369,26 +389,30 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
             valueTrimmed.length <= o.displayValue.length,
         )
       ) {
-        setSelectedIndex(0);
+        highlightOption(0);
       } else if (optionsType === "triggers") {
-        setSelectedIndex(null);
+        highlightOption(null);
       }
       return false;
     },
-    [editor, options, optionsType],
+    [editor, options, optionsType, highlightOption],
   );
 
-  useEffect(() => {
-    if (focused) {
-      setOpen(true);
-    } else {
-      setOpen(false);
+  const handleFocus = useCallback(() => {
+    setOpen(true);
+    return false;
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    setOpen(false);
+    if (!triggerQueryString) {
       setSelectedIndex(null);
-      setQueryString(null);
+      setTriggerQueryString(null);
       setTriggerMatch(null);
       setValueMatch(null);
     }
-  }, [focused]);
+    return false;
+  }, [triggerQueryString]);
 
   useEffect(() => {
     return mergeRegister(
@@ -427,6 +451,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand<KeyboardEvent>(
+        FOCUS_COMMAND,
+        handleFocus,
+        COMMAND_PRIORITY_NORMAL,
+      ),
+      editor.registerCommand<KeyboardEvent>(
+        BLUR_COMMAND,
+        handleBlur,
+        COMMAND_PRIORITY_NORMAL,
+      ),
+      editor.registerCommand<KeyboardEvent>(
         CLICK_COMMAND,
         () => {
           if (!open) {
@@ -452,6 +486,8 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     handleKeySelect,
     handleBackspace,
     handleKeyDown,
+    handleFocus,
+    handleBlur,
   ]);
 
   useEffect(() => {
@@ -464,14 +500,14 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           setTriggerMatch(null);
           setValueMatch(null);
           onQueryChange(null);
-          setQueryString(null);
+          setTriggerQueryString(null);
           return;
         }
         // check for triggers
         const triggerMatch = checkForTriggers(text, triggers);
         setTriggerMatch(triggerMatch);
         if (triggerMatch) {
-          setQueryString(triggerMatch.matchingString);
+          setTriggerQueryString(triggerMatch.matchingString);
           setValueMatch(null);
           return;
         }
@@ -480,18 +516,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         setValueMatch(valueMatch);
         onQueryChange(valueMatch ? valueMatch.matchingString : null);
         if (valueMatch && valueMatch.matchingString) {
-          setQueryString(valueMatch.matchingString);
+          setTriggerQueryString(valueMatch.matchingString);
           return;
         }
-        setQueryString(null);
+        setTriggerQueryString(null);
       });
     };
-    const removeUpdateListener = editor.registerUpdateListener(updateListener);
-    return () => {
-      removeUpdateListener();
-    };
+    return editor.registerUpdateListener(updateListener);
   }, [editor, triggerFn, onQueryChange, onReset, triggers]);
 
+  // call open/close callbacks when open state changes
   useEffect(() => {
     if (open) {
       onComboboxOpen?.();
@@ -500,13 +534,14 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     }
   }, [onComboboxOpen, onComboboxClose, open]);
 
+  // call select callback when focused option changes
   useEffect(() => {
     if (selectedIndex !== null && !!options[selectedIndex]) {
-      onComboboxItemSelect?.(options[selectedIndex].value);
+      onComboboxFocusChange?.(options[selectedIndex].value);
     } else {
-      onComboboxItemSelect?.(null);
+      onComboboxFocusChange?.(null);
     }
-  }, [selectedIndex, options, onComboboxItemSelect]);
+  }, [selectedIndex, options, onComboboxFocusChange]);
 
   if (!open || !anchor) {
     return null;
@@ -537,9 +572,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
               aria-selected={selectedIndex === index}
               aria-label={`Choose ${option.displayValue}`}
               {...option.data}
-              ref={(el: HTMLElement | null) =>
-                (itemRefs.current[option.value] = el)
-              }
+              ref={option.setRefElement}
               onClick={() => handleClickOption(index)}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}

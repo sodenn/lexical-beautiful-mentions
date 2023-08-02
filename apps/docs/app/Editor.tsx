@@ -187,7 +187,7 @@ function Plugins() {
                 comboboxItemComponent={ComboboxItem}
                 onComboboxOpen={handleMenuOrComboboxOpen}
                 onComboboxClose={handleMenuOrComboboxClose}
-                onComboboxItemSelect={handleComboboxItemSelect}
+                onComboboxFocusChange={handleComboboxItemSelect}
               />
             )}
           </div>

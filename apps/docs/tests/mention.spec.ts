@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { testUtils } from "./test-utils";
 
 test.describe("mentions handling", () => {
@@ -19,6 +19,7 @@ test.describe("mentions handling", () => {
   test("should insert a new mention with spaces", async ({
     page,
     browserName,
+    isMobile,
   }) => {
     const utils = await testUtils(
       { page, browserName },
@@ -29,8 +30,58 @@ test.describe("mentions handling", () => {
       },
     );
     await utils.editorType("@John Doe");
-    await utils.editor.press("Tab");
+    isMobile
+      ? await utils.mentionsMenu.getByText("John Doe").click()
+      : await utils.editor.press("Tab");
     await utils.hasText(`[@"John Doe"]`);
+  });
+
+  test("should insert a selected mention by pressing space", async ({
+    page,
+    browserName,
+    isMobile,
+  }) => {
+    test.skip(!!isMobile, "desktop only");
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        creatable: true,
+        mentionEnclosure: true,
+      },
+    );
+    await utils.editorType("@C");
+    await expect(utils.mentionsMenu.getByText("Catherine")).toBeVisible();
+    await expect(utils.mentionsMenu.getByText(`Add user "C"`)).toBeVisible();
+    await expect(utils.mentionsMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "Catherine",
+    );
+    await utils.editor.press("Space");
+    await utils.hasText(`[@Catherine] `);
+  });
+
+  test("should insert a new mention by pressing space", async ({
+    page,
+    browserName,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, "mobile only");
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        creatable: true,
+        mentionEnclosure: true,
+      },
+    );
+    await utils.editorType("@C");
+    await expect(utils.mentionsMenu.getByText("Catherine")).toBeVisible();
+    await expect(utils.mentionsMenu.getByText(`Add user "C"`)).toBeVisible();
+    await expect(utils.mentionsMenu).toHaveAttribute(
+      "aria-activedescendant",
+      "",
+    );
+    await utils.editor.press("Space");
+    await utils.hasText(`[@C] `);
   });
 
   test("should remove a mention via undo command (Ctrl/Cmd + Z)", async ({
