@@ -35,6 +35,10 @@ export type BeautifulMentionsMenuItemProps<T = {}> = T &
      * The label of the menu item.
      */
     label: string;
+    /**
+     * The value of the menu item.
+     */
+    itemValue: string;
   };
 
 export interface BeautifulMentionsComboboxProps

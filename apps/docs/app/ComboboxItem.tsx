@@ -5,7 +5,7 @@ import { cn } from "./cn";
 const ComboboxItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsComboboxItemProps
->(({ selected, ...props }, ref) => (
+>(({ selected, itemValue, label, ...props }, ref) => (
   <li
     ref={ref}
     className={cn(

@@ -565,12 +565,12 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           {options.map((option, index) => (
             <ComboboxItemComponent
               key={option.key}
-              label={option.value}
+              itemValue={option.value}
+              label={option.displayValue}
               selected={index === selectedIndex}
               role="menuitem"
-              id={`beautiful-mention-combobox-${option.value}`}
               aria-selected={selectedIndex === index}
-              aria-label={`Choose ${option.displayValue}`}
+              aria-label={`Choose ${option.value}`}
               {...option.data}
               ref={option.setRefElement}
               onClick={() => handleClickOption(index)}
