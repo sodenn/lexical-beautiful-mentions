@@ -128,7 +128,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     onMenuClose,
     onComboboxOpen,
     onComboboxClose,
-    onComboboxItemSelect,
+    onComboboxFocusChange,
     punctuation = DEFAULT_PUNCTUATION,
   } = props;
   const isEditorFocused = useIsFocused();
@@ -553,7 +553,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         comboboxItemComponent={props.comboboxItemComponent}
         onComboboxOpen={onComboboxOpen}
         onComboboxClose={onComboboxClose}
-        onComboboxItemSelect={onComboboxItemSelect}
+        onComboboxFocusChange={onComboboxFocusChange}
       />
     );
   }

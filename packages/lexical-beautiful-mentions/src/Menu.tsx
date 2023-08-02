@@ -48,10 +48,26 @@ type UseMenuAnchorRefOptions = {
 };
 
 export class MenuOption {
+  /**
+   * Unique key to iterate over options. Equals to `data` if provided, otherwise
+   * `value` is used.
+   */
   key: string;
+  /**
+   * Value to be inserted into the editor.
+   */
   value: string;
+  /**
+   * Value to be displayed in the menu.
+   */
   displayValue: string;
+  /**
+   * Additional data belonging to the option.
+   */
   data?: { [key: string]: string };
+  /**
+   * Ref to the DOM element of the option.
+   */
   ref?: MutableRefObject<HTMLElement | null>;
 
   constructor(

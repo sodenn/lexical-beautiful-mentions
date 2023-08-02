@@ -20,7 +20,7 @@ import {
   RangeSelection,
   TextNode,
 } from "lexical";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import {
@@ -42,7 +42,7 @@ interface ComboboxPluginProps
       | "comboboxItemComponent"
       | "onComboboxOpen"
       | "onComboboxClose"
-      | "onComboboxItemSelect"
+      | "onComboboxFocusChange"
     >,
     Required<Pick<BeautifulMentionsPluginProps, "punctuation">> {
   loading: boolean;
@@ -183,15 +183,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     comboboxItemComponent: ComboboxItemComponent = "div",
     onComboboxOpen,
     onComboboxClose,
-    onComboboxItemSelect,
+    onComboboxFocusChange,
   } = props;
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [triggerMatch, setTriggerMatch] = useState<MenuTextMatch | null>(null);
   const [valueMatch, setValueMatch] = useState<MenuTextMatch | null>(null);
-  const [queryString, setQueryString] = useState<string | null>(null);
-  const itemRefs = useRef<Record<string, HTMLElement | null>>({});
+  const [triggerQueryString, setTriggerQueryString] = useState<string | null>(
+    null,
+  );
   const optionsType = props.options.length === 0 ? "triggers" : "values";
   const options = useMemo(() => {
     if (optionsType === "triggers") {
@@ -199,15 +200,17 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         (trigger) => new MenuOption(trigger, trigger),
       );
       if (
-        !queryString ||
-        triggerOptions.every((o) => !o.value.startsWith(queryString))
+        !triggerQueryString ||
+        triggerOptions.every((o) => !o.value.startsWith(triggerQueryString))
       ) {
         return triggerOptions;
       }
-      return triggerOptions.filter((o) => o.value.startsWith(queryString));
+      return triggerOptions.filter((o) =>
+        o.value.startsWith(triggerQueryString),
+      );
     }
     return props.options;
-  }, [optionsType, props.options, triggers, queryString]);
+  }, [optionsType, props.options, triggers, triggerQueryString]);
   const [open, setOpen] = useState(false);
   const anchor = useAnchorRef(open, comboboxAnchor, comboboxAnchorClassName);
 
@@ -220,7 +223,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const scrollIntoView = useCallback(
     (index: number) => {
       const option = options[index];
-      const el = itemRefs.current[option.value];
+      const el = option.ref?.current;
       if (el) {
         el.scrollIntoView({ block: "nearest" });
       }
@@ -285,7 +288,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       });
       setValueMatch(null);
       onQueryChange(null);
-      setQueryString(null);
+      setTriggerQueryString(null);
       highlightOption(null);
     },
     [
@@ -314,7 +317,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         }
       });
       setTriggerMatch(null);
-      setQueryString(null);
+      setTriggerQueryString(null);
       highlightOption(0);
     },
     [options, editor, triggerMatch, triggers, highlightOption, punctuation],
@@ -402,14 +405,14 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
 
   const handleBlur = useCallback(() => {
     setOpen(false);
-    if (!queryString) {
+    if (!triggerQueryString) {
       setSelectedIndex(null);
-      setQueryString(null);
+      setTriggerQueryString(null);
       setTriggerMatch(null);
       setValueMatch(null);
     }
     return false;
-  }, [queryString]);
+  }, [triggerQueryString]);
 
   useEffect(() => {
     return mergeRegister(
@@ -497,14 +500,14 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           setTriggerMatch(null);
           setValueMatch(null);
           onQueryChange(null);
-          setQueryString(null);
+          setTriggerQueryString(null);
           return;
         }
         // check for triggers
         const triggerMatch = checkForTriggers(text, triggers);
         setTriggerMatch(triggerMatch);
         if (triggerMatch) {
-          setQueryString(triggerMatch.matchingString);
+          setTriggerQueryString(triggerMatch.matchingString);
           setValueMatch(null);
           return;
         }
@@ -513,18 +516,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         setValueMatch(valueMatch);
         onQueryChange(valueMatch ? valueMatch.matchingString : null);
         if (valueMatch && valueMatch.matchingString) {
-          setQueryString(valueMatch.matchingString);
+          setTriggerQueryString(valueMatch.matchingString);
           return;
         }
-        setQueryString(null);
+        setTriggerQueryString(null);
       });
     };
-    const removeUpdateListener = editor.registerUpdateListener(updateListener);
-    return () => {
-      removeUpdateListener();
-    };
+    return editor.registerUpdateListener(updateListener);
   }, [editor, triggerFn, onQueryChange, onReset, triggers]);
 
+  // call open/close callbacks when open state changes
   useEffect(() => {
     if (open) {
       onComboboxOpen?.();
@@ -533,13 +534,14 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     }
   }, [onComboboxOpen, onComboboxClose, open]);
 
+  // call select callback when focused option changes
   useEffect(() => {
     if (selectedIndex !== null && !!options[selectedIndex]) {
-      onComboboxItemSelect?.(options[selectedIndex].value);
+      onComboboxFocusChange?.(options[selectedIndex].value);
     } else {
-      onComboboxItemSelect?.(null);
+      onComboboxFocusChange?.(null);
     }
-  }, [selectedIndex, options, onComboboxItemSelect]);
+  }, [selectedIndex, options, onComboboxFocusChange]);
 
   if (!open || !anchor) {
     return null;
@@ -570,9 +572,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
               aria-selected={selectedIndex === index}
               aria-label={`Choose ${option.displayValue}`}
               {...option.data}
-              ref={(el: HTMLElement | null) =>
-                (itemRefs.current[option.value] = el)
-              }
+              ref={option.setRefElement}
               onClick={() => handleClickOption(index)}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
