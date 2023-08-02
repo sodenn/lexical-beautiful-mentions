@@ -1,5 +1,18 @@
 # lexical-beautiful-mentions
 
+## 0.1.12
+
+### Patch Changes
+
+- 5760567: feat(): more reliable information about the state of the menu / combobox
+
+  **BREAKING**:
+
+  - Renamed `openMentionsMenu` to `openMentionMenu`
+  - Removed the `isMentionsMenuOpen` and `isTriggersMenuOpen` functions from the `useBeautifulMentions` hook in favor of the new `onMenuOpen`, `onMenuClose`, `onComboboxOpen`, `onComboboxClose` and `onComboboxItemSelect` props of the `BeautifulMentionsPlugin` component. This leads to a more reliable information about the state of the menu / combobox, since it is no longer determined by DOM elements.
+
+- ae9dd61: feat(): improve mention selection for mobile usage
+
 ## 0.1.11
 
 ### Patch Changes
