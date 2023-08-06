@@ -1,8 +1,12 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { BLUR_COMMAND, COMMAND_PRIORITY_NORMAL, FOCUS_COMMAND } from "lexical";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { CAN_USE_DOM } from "./environment";
+
+const useLayoutEffectImpl: typeof useLayoutEffect = CAN_USE_DOM
+  ? useLayoutEffect
+  : useEffect;
 
 export const useIsFocused = () => {
   const [editor] = useLexicalComposerContext();
@@ -10,7 +14,7 @@ export const useIsFocused = () => {
     CAN_USE_DOM ? editor.getRootElement() === document.activeElement : false,
   );
 
-  useLayoutEffect(() => {
+  useLayoutEffectImpl(() => {
     return mergeRegister(
       editor.registerCommand(
         FOCUS_COMMAND,
