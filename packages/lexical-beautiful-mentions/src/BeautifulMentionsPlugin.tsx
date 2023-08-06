@@ -593,7 +593,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     ref={option.setRefElement}
                     role="menuitem"
                     aria-selected={selectedIndex === i}
-                    aria-label={`Choose ${option.displayValue}`}
+                    aria-label={`Choose ${option.value}`}
+                    itemValue={option.value}
                     label={option.displayValue}
                     {...option.data}
                     onClick={() => {
