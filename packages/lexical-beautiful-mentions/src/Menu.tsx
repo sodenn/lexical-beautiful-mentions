@@ -491,7 +491,7 @@ export function Menu<TOption extends MenuOption>({
     resolution.match ? resolution.match.matchingString : "",
   );
 
-  useLayoutEffect(() => {
+  useLayoutEffectImpl(() => {
     if (onMenuVisibilityChange && menu !== null && !menuVisible) {
       onMenuVisibilityChange(true);
       setMenuVisible(true);
