@@ -49,8 +49,6 @@ const mentionItems = {
   "due:": ["Today", "Tomorrow", "01-01-2023"],
 };
 
-// ...
-
 return (
   <LexicalComposer>
     {/** ... */}
@@ -64,7 +62,7 @@ return (
 
 ### Customizable mention style
 
-<img src="resources/screenshot1.png" width="200"/><br>
+<img src="https://raw.githubusercontent.com/sodenn/lexical-beautiful-mentions/main/resources/screenshot1.png" width="200"/><br>
 ```tsx
 import { BeautifulMentionsTheme } from "lexical-beautiful-mentions";
 // ...
@@ -98,7 +96,7 @@ return (
 
 ### Add custom menu and menu item component
 
-<img src="resources/screenshot2.png" width="500"/><br>
+<img src="https://raw.githubusercontent.com/sodenn/lexical-beautiful-mentions/main/resources/screenshot2.png" width="500"/><br>
 ```tsx
 const CustomMenu = forwardRef<
   HTMLElement, 
@@ -114,7 +112,7 @@ const CustomMenu = forwardRef<
 const CustomMenuItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsMenuItemProps
->(({ selected, ...props }, ref) => (
+>(({ selected, label, itemValue, ...props }, ref) => (
   <li
     className={`m-0 flex ... ${selected ? "bg-gray-100 ..." : "bg-white ..."}`}
     {...props}
