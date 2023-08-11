@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.13
+
+### Patch Changes
+
+- 5345e5a: feat(): provide the value of the MenuItem/ComboboxItem as prop
+- 9874434: fix(): conditionally useEffect on the server and useLayoutEffect in the browser
+
 ## 0.1.12
 
 ### Patch Changes
