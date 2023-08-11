@@ -23,7 +23,7 @@
     "eslint-config-custom": "*",
     "prettier": "3.0.1",
     "prettier-plugin-organize-imports": "3.2.3",
-    "prettier-plugin-tailwindcss": "0.4.1",
+    "prettier-plugin-tailwindcss": "0.5.2",
     "turbo": "1.10.12",
     "typescript": "5.1.6"
   },
