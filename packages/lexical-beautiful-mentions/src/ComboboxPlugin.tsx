@@ -204,9 +204,9 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     loading,
     triggerFn,
     onQueryChange,
+    onReset,
     comboboxAnchor,
     comboboxAnchorClassName,
-    onReset,
     comboboxComponent: ComboboxComponent = "div",
     comboboxItemComponent: ComboboxItemComponent = "div",
     onComboboxOpen,
@@ -250,11 +250,11 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       ...additionalOptions,
     ];
   }, [
+    comboboxAdditionalItems,
     optionsType,
     props.options,
     triggers,
     triggerQueryString,
-    onComboboxItemSelect,
   ]);
   const [open, setOpen] = useState(props.comboboxOpen || false);
   const anchor = useAnchorRef(open, comboboxAnchor, comboboxAnchorClassName);
@@ -613,45 +613,37 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     return null;
   }
 
-  return (
-    <>
-      {ReactDOM.createPortal(
-        <ComboboxComponent
-          loading={loading}
-          optionType={optionsType}
-          role="menu"
-          aria-activedescendant={
-            selectedIndex !== null && !!options[selectedIndex]
-              ? options[selectedIndex].displayValue
-              : ""
-          }
-          aria-label={"Choose trigger and value"}
-          aria-hidden={!open}
+  return ReactDOM.createPortal(
+    <ComboboxComponent
+      loading={loading}
+      optionType={optionsType}
+      role="menu"
+      aria-activedescendant={
+        selectedIndex !== null && !!options[selectedIndex]
+          ? options[selectedIndex].displayValue
+          : ""
+      }
+      aria-label={"Choose trigger and value"}
+      aria-hidden={!open}
+    >
+      {options.map((option, index) => (
+        <ComboboxItemComponent
+          key={option.key}
+          selected={index === selectedIndex}
+          role="menuitem"
+          aria-selected={selectedIndex === index}
+          aria-label={`Choose ${option.value}`}
+          item={option.toComboboxItem()}
+          ref={option.setRefElement}
+          onClick={() => handleClickOption(index)}
+          onMouseEnter={() => handleMouseEnter(index)}
+          onMouseLeave={handleMouseLeave}
+          onMouseDown={(e) => e.preventDefault()}
         >
-          {options.map((option, index) => (
-            <ComboboxItemComponent
-              key={option.key}
-              selected={index === selectedIndex}
-              role="menuitem"
-              aria-selected={selectedIndex === index}
-              aria-label={`Choose ${option.value}`}
-              option={{
-                ...option.data,
-                value: option.value,
-                displayValue: option.displayValue,
-              }}
-              ref={option.setRefElement}
-              onClick={() => handleClickOption(index)}
-              onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
-              onMouseDown={(e) => e.preventDefault()}
-            >
-              {option.displayValue}
-            </ComboboxItemComponent>
-          ))}
-        </ComboboxComponent>,
-        anchor,
-      )}
-    </>
+          {option.displayValue}
+        </ComboboxItemComponent>
+      ))}
+    </ComboboxComponent>,
+    anchor,
   );
 }

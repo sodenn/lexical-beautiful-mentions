@@ -40,21 +40,23 @@ export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   loading?: boolean;
 }
 
-export type BeautifulMentionsMenuItemProps<T = {}> = T &
-  Omit<ComponentPropsWithRef<any>, "selected" | "label"> & {
-    /**
-     * If `true`, the menu item is selected.
-     */
-    selected: boolean;
-    /**
-     * The label of the menu item.
-     */
-    label: string;
-    /**
-     * The value of the menu item.
-     */
-    itemValue: string;
-  };
+export type BeautifulMentionsMenuItemProps = Omit<
+  ComponentPropsWithRef<any>,
+  "selected" | "label"
+> & {
+  /**
+   * If `true`, the menu item is selected.
+   */
+  selected: boolean;
+  /**
+   * The label of the menu item.
+   */
+  label: string;
+  /**
+   * The value of the menu item.
+   */
+  itemValue: string;
+};
 
 export interface BeautifulMentionsComboboxProps
   extends ComponentPropsWithRef<any> {
@@ -68,18 +70,20 @@ export interface BeautifulMentionsComboboxProps
   loading?: boolean;
 }
 
-export type BeautifulMentionsComboboxItemProps<T = {}> = T &
-  Omit<ComponentPropsWithRef<any>, "selected" | "option"> & {
-    /**
-     * If `true`, the combobox item is selected.
-     */
-    selected: boolean;
-    /**
-     * Contains the value, display value and additional data defined in
-     * {@link BeautifulMentionsItem} or {@link BeautifulMentionsComboboxItem}.
-     */
-    option: unknown;
-  };
+export type BeautifulMentionsComboboxItemProps = Omit<
+  ComponentPropsWithRef<any>,
+  "selected" | "option"
+> & {
+  /**
+   * If `true`, the combobox item is selected.
+   */
+  selected: boolean;
+  /**
+   * Contains the value, display value and additional data defined in
+   * {@link BeautifulMentionsItem} or {@link BeautifulMentionsComboboxItem}.
+   */
+  item: BeautifulMentionsComboboxItem;
+};
 
 interface BeautifulMentionsProps {
   /**

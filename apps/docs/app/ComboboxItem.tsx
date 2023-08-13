@@ -5,9 +5,9 @@ import { cn } from "./cn";
 const ComboboxItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsComboboxItemProps
->(({ selected, option, dividerTop, ...props }, ref) => (
+>(({ selected, item, ...props }, ref) => (
   <>
-    {dividerTop && (
+    {item.data.dividerTop && (
       <div className="py-1">
         <div className="flex border-b border-slate-500" />
       </div>

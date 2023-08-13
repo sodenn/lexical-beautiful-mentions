@@ -191,14 +191,14 @@ function Plugins() {
                 onComboboxFocusChange={handleComboboxItemSelect}
                 comboboxAdditionalItems={[
                   {
-                    value: "Hello",
-                    displayValue: "World",
+                    value: "additionalItem",
+                    displayValue: "Additional Item",
                     data: { dividerTop: true },
                   },
                 ]}
-                onComboboxItemSelect={(option) => {
-                  console.log(option);
+                onComboboxItemSelect={(item) => {
                   setMenuOrComboboxOpen(false);
+                  console.log(JSON.stringify(item));
                 }}
               />
             )}
