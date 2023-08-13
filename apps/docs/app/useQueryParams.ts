@@ -2,17 +2,17 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
 interface QueryParams {
-  value: string;
-  focus: string;
-  cf: string;
-  fit: string;
-  async: string;
-  space: string;
-  new: string;
-  blur: string;
-  combobox: string;
-  mentions: string;
-  enclosure: string;
+  value: string; // initial value
+  focus: string; // autoFocus
+  cf: string; // focus after insert
+  async: string; // onSearch
+  space: string; // allowSpaces
+  new: string; // creatable
+  blur: string; // insertOnBlur
+  combobox: string; // combobox
+  mentions: string; // showMentionsOnDelete
+  enclosure: string; // mentionEnclosure
+  cbai: string; // comboboxAdditionalItems
 }
 
 export default function useQueryParams() {

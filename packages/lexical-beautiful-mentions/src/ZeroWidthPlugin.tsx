@@ -33,12 +33,16 @@ export function ZeroWidthPlugin() {
               last.insertAfter($createZeroWidthNode());
             }
           },
+          // merge with previous history entry to allow undoing
           { tag: "history-merge" },
         );
       }),
       editor.registerCommand(
         KEY_DOWN_COMMAND,
         (event) => {
+          // prevent the unnecessary removal of the zero-width space, since this
+          // would lead to the insertion of another zero-width space and thus break
+          // undo with Ctrl+z
           if (event.ctrlKey || event.metaKey || event.altKey) {
             return false;
           }

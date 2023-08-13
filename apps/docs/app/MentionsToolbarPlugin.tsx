@@ -20,6 +20,7 @@ export default function MentionsToolbarPlugin() {
   const {
     asynchronous,
     combobox,
+    comboboxAdditionalItems,
     mentionEnclosure,
     showMentionsOnDelete,
     allowSpaces,
@@ -28,6 +29,7 @@ export default function MentionsToolbarPlugin() {
     commandFocus,
     setAsynchronous,
     setCombobox,
+    setComboboxAdditionalItems,
     setMentionEnclosure,
     setAllowSpaces,
     setCreatable,
@@ -71,6 +73,14 @@ export default function MentionsToolbarPlugin() {
     },
     [setCombobox, setInsertOnBlur, insertOnBlur],
   );
+
+  const handleComboboxAdditionalItemsChange: CheckboxProps["onChange"] =
+    useCallback(
+      (event) => {
+        setComboboxAdditionalItems(event.target.checked);
+      },
+      [setComboboxAdditionalItems],
+    );
 
   const handleMentionEnclosureChange: CheckboxProps["onChange"] = useCallback(
     (event) => {
@@ -179,6 +189,14 @@ export default function MentionsToolbarPlugin() {
           checked={!!mentionEnclosure}
           onChange={handleMentionEnclosureChange}
         />
+        {combobox && (
+          <Checkbox
+            label="Additional Items"
+            helpText="Add additional items to the combobox."
+            checked={comboboxAdditionalItems}
+            onChange={handleComboboxAdditionalItemsChange}
+          />
+        )}
       </div>
     </>
   );

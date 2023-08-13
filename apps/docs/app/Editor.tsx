@@ -84,6 +84,7 @@ function Plugins() {
     combobox,
     mentionEnclosure,
     showMentionsOnDelete,
+    comboboxAdditionalItems,
   } = useConfiguration();
   const comboboxAnchor = useRef<HTMLDivElement>(null);
   const [menuOrComboboxOpen, setMenuOrComboboxOpen] = useState(false);
@@ -189,13 +190,17 @@ function Plugins() {
                 onComboboxOpen={handleMenuOrComboboxOpen}
                 onComboboxClose={handleMenuOrComboboxClose}
                 onComboboxFocusChange={handleComboboxItemSelect}
-                comboboxAdditionalItems={[
-                  {
-                    value: "additionalItem",
-                    displayValue: "Additional Item",
-                    data: { dividerTop: true },
-                  },
-                ]}
+                comboboxAdditionalItems={
+                  comboboxAdditionalItems
+                    ? [
+                        {
+                          value: "additionalItem",
+                          displayValue: "Additional Item",
+                          data: { dividerTop: true },
+                        },
+                      ]
+                    : []
+                }
                 onComboboxItemSelect={(item) => {
                   if (item.value === "additionalItem") {
                     setMenuOrComboboxOpen(false);
