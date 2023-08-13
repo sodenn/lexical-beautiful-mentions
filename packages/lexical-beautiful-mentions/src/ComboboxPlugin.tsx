@@ -36,6 +36,8 @@ import { useIsFocused } from "./useIsFocused";
 interface ComboboxPluginProps
   extends Pick<
       BeautifulMentionsPluginProps,
+      | "onComboboxItemSelect"
+      | "comboboxAdditionalItems"
       | "comboboxAnchor"
       | "comboboxAnchorClassName"
       | "comboboxComponent"
@@ -56,6 +58,19 @@ interface ComboboxPluginProps
   triggers: string[];
   onReset: () => void;
   creatable: boolean | string;
+}
+
+class ComboboxOption extends MenuOption {
+  skip: boolean;
+  constructor(
+    value: string,
+    displayValue: string,
+    data: { [key: string]: string | boolean | number } = {},
+    skip = false,
+  ) {
+    super(value, displayValue, data);
+    this.skip = skip;
+  }
 }
 
 function getQueryTextForSearch(editor: LexicalEditor): string | null {
@@ -184,6 +199,8 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     onComboboxOpen,
     onComboboxClose,
     onComboboxFocusChange,
+    comboboxAdditionalItems = [],
+    onComboboxItemSelect,
   } = props;
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
@@ -195,22 +212,37 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   );
   const optionsType = props.options.length === 0 ? "triggers" : "values";
   const options = useMemo(() => {
+    const additionalOptions = comboboxAdditionalItems.map(
+      (opt) => new ComboboxOption(opt.value, opt.displayValue, opt.data, true),
+    );
     if (optionsType === "triggers") {
       const triggerOptions = triggers.map(
-        (trigger) => new MenuOption(trigger, trigger),
+        (trigger) => new ComboboxOption(trigger, trigger),
       );
       if (
         !triggerQueryString ||
         triggerOptions.every((o) => !o.value.startsWith(triggerQueryString))
       ) {
-        return triggerOptions;
+        return [...triggerOptions, ...additionalOptions];
       }
-      return triggerOptions.filter((o) =>
-        o.value.startsWith(triggerQueryString),
-      );
+      return [
+        ...triggerOptions.filter((o) => o.value.startsWith(triggerQueryString)),
+        ...additionalOptions,
+      ];
     }
-    return props.options;
-  }, [optionsType, props.options, triggers, triggerQueryString]);
+    return [
+      ...props.options.map(
+        (opt) => new ComboboxOption(opt.value, opt.displayValue),
+      ),
+      ...additionalOptions,
+    ];
+  }, [
+    optionsType,
+    props.options,
+    triggers,
+    triggerQueryString,
+    onComboboxItemSelect,
+  ]);
   const [open, setOpen] = useState(false);
   const anchor = useAnchorRef(open, comboboxAnchor, comboboxAnchorClassName);
 
@@ -280,6 +312,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const handleSelectValue = useCallback(
     (index: number) => {
       const option = options[index];
+      onComboboxItemSelect?.(option);
+      if (option.skip) {
+        return;
+      }
       editor.update(() => {
         const textNode = valueMatch
           ? $splitNodeContainingQuery(valueMatch)
@@ -292,18 +328,23 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       highlightOption(null);
     },
     [
-      editor,
-      valueMatch,
-      onQueryChange,
-      onSelectOption,
-      highlightOption,
       options,
+      editor,
+      onQueryChange,
+      highlightOption,
+      onComboboxItemSelect,
+      valueMatch,
+      onSelectOption,
     ],
   );
 
   const handleSelectTrigger = useCallback(
     (index: number) => {
       const option = options[index];
+      onComboboxItemSelect?.(option);
+      if (option.skip) {
+        return;
+      }
       editor.update(() => {
         const nodeToReplace = triggerMatch
           ? $splitNodeContainingQuery(triggerMatch)
@@ -320,7 +361,15 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       setTriggerQueryString(null);
       highlightOption(0);
     },
-    [options, editor, triggerMatch, triggers, highlightOption, punctuation],
+    [
+      options,
+      editor,
+      highlightOption,
+      onComboboxItemSelect,
+      triggerMatch,
+      triggers,
+      punctuation,
+    ],
   );
 
   const handleClickOption = useCallback(
@@ -332,7 +381,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         handleSelectValue(index);
       }
     },
-    [handleSelectValue, handleSelectTrigger, optionsType],
+    [optionsType, handleSelectTrigger, handleSelectValue],
   );
 
   const handleKeySelect = useCallback(
@@ -565,13 +614,15 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           {options.map((option, index) => (
             <ComboboxItemComponent
               key={option.key}
-              itemValue={option.value}
-              label={option.displayValue}
               selected={index === selectedIndex}
               role="menuitem"
               aria-selected={selectedIndex === index}
               aria-label={`Choose ${option.value}`}
-              {...option.data}
+              option={{
+                ...option.data,
+                value: option.value,
+                displayValue: option.displayValue,
+              }}
               ref={option.setRefElement}
               onClick={() => handleClickOption(index)}
               onMouseEnter={() => handleMouseEnter(index)}

@@ -12,7 +12,7 @@ const editorConfig: CreateEditorArgs = {
 export function exportJSON(
   trigger: string,
   value: string,
-  data?: { [p: string]: string },
+  data?: { [p: string]: string | boolean | number },
 ) {
   let node: BeautifulMentionNode | undefined = undefined;
   const editor = createEditor(editorConfig);

@@ -16,7 +16,7 @@ export type SerializedBeautifulMentionNode = Spread<
   {
     trigger: string;
     value: string;
-    data?: { [p: string]: string };
+    data?: { [p: string]: string | boolean | number };
   },
   SerializedLexicalNode
 >;
@@ -26,7 +26,7 @@ function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
     "data-lexical-beautiful-mention-trigger",
   );
   const value = domNode.getAttribute("data-lexical-beautiful-mention-value");
-  let data: { [p: string]: string } | undefined = undefined;
+  let data: { [p: string]: string | boolean | number } | undefined = undefined;
   const dataStr = domNode.getAttribute("data-lexical-beautiful-mention-data");
   if (dataStr) {
     try {
@@ -51,7 +51,7 @@ function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
 export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   __trigger: string;
   __value: string;
-  __data?: { [p: string]: string };
+  __data?: { [p: string]: string | boolean | number };
 
   static getType() {
     return "beautifulMention";
@@ -109,7 +109,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   constructor(
     trigger: string,
     value: string,
-    data?: { [p: string]: string },
+    data?: { [p: string]: string | boolean | number },
     key?: NodeKey,
   ) {
     super(key);
@@ -156,12 +156,12 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     self.__value = value;
   }
 
-  getData(): { [p: string]: string } | undefined {
+  getData(): { [p: string]: string | boolean | number } | undefined {
     const self = this.getLatest();
     return self.__data;
   }
 
-  setData(data?: { [p: string]: string }) {
+  setData(data?: { [p: string]: string | boolean | number }) {
     const self = this.getWritable();
     self.__data = data;
   }
@@ -195,7 +195,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
 export function $createBeautifulMentionNode(
   trigger: string,
   value: string,
-  data?: { [p: string]: string },
+  data?: { [p: string]: string | boolean | number },
 ): BeautifulMentionNode {
   const mentionNode = new BeautifulMentionNode(trigger, value, data);
   return $applyNodeReplacement(mentionNode);

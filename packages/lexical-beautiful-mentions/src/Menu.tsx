@@ -64,7 +64,7 @@ export class MenuOption {
   /**
    * Additional data belonging to the option.
    */
-  data?: { [key: string]: string };
+  data?: { [key: string]: string | boolean | number };
   /**
    * Ref to the DOM element of the option.
    */
@@ -73,7 +73,7 @@ export class MenuOption {
   constructor(
     value: string,
     displayValue: string,
-    data?: { [key: string]: string },
+    data?: { [key: string]: string | boolean | number },
   ) {
     this.key = !data ? value : JSON.stringify({ ...data, value });
     this.value = value;

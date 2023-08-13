@@ -94,8 +94,8 @@ function Plugins() {
   const handleChange = useCallback((editorState: EditorState) => {
     editorState.read(() => {
       const root = $getRoot();
-      const content = getDebugTextContent(root);
-      setValue(content);
+      const value = getDebugTextContent(root);
+      setValue(value);
     });
   }, []);
 
@@ -188,6 +188,16 @@ function Plugins() {
                 onComboboxOpen={handleMenuOrComboboxOpen}
                 onComboboxClose={handleMenuOrComboboxClose}
                 onComboboxFocusChange={handleComboboxItemSelect}
+                comboboxAdditionalItems={[
+                  {
+                    value: "Hello",
+                    displayValue: "World",
+                    data: { dividerTop: true },
+                  },
+                ]}
+                onComboboxItemSelect={(option) => {
+                  console.log(option);
+                }}
               />
             )}
           </div>
