@@ -24,7 +24,6 @@ import { Placeholder } from "./Placeholder";
 import { cn } from "./cn";
 import { getDebugTextContent } from "./debug";
 import editorConfig from "./editorConfig";
-import { useIsFocused } from "./useIsFocused";
 
 const mentionItems: Record<string, BeautifulMentionsItem[]> = {
   "@": [
@@ -86,7 +85,6 @@ function Plugins() {
     mentionEnclosure,
     showMentionsOnDelete,
   } = useConfiguration();
-  const focused = useIsFocused();
   const comboboxAnchor = useRef<HTMLDivElement>(null);
   const [menuOrComboboxOpen, setMenuOrComboboxOpen] = useState(false);
   const [comboboxItemSelected, setComboboxItemSelected] = useState(false);
@@ -124,8 +122,8 @@ function Plugins() {
         className={cn(
           "relative bg-slate-300 text-left dark:bg-slate-600",
           !combobox && "rounded",
-          combobox && !focused && "rounded",
-          combobox && focused && "rounded-t",
+          combobox && !menuOrComboboxOpen && "rounded",
+          combobox && menuOrComboboxOpen && "rounded-t",
         )}
       >
         <div className={cn(combobox && "p-1")}>
@@ -175,7 +173,9 @@ function Plugins() {
               <BeautifulMentionsPlugin
                 onSearch={handleSearch}
                 searchDelay={asynchronous ? 250 : 0}
-                triggers={Object.keys(mentionItems)}
+                triggers={Object.keys(mentionItems).filter(
+                  (k) => k !== "\\w+:",
+                )}
                 mentionEnclosure={mentionEnclosure}
                 allowSpaces={allowSpaces}
                 creatable={creatable}
@@ -197,7 +197,9 @@ function Plugins() {
                   },
                 ]}
                 onComboboxItemSelect={(item) => {
-                  setMenuOrComboboxOpen(false);
+                  if (item.value === "additionalItem") {
+                    setMenuOrComboboxOpen(false);
+                  }
                   console.log(JSON.stringify(item));
                 }}
               />

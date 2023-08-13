@@ -4,7 +4,6 @@ import {
   $createTextNode,
   $getSelection,
   $isRangeSelection,
-  BLUR_COMMAND,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   COMMAND_PRIORITY_NORMAL,
@@ -32,7 +31,7 @@ import {
   MenuTextMatch,
   TriggerFn,
 } from "./Menu";
-import { IS_MOBILE } from "./environment";
+import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 import { $insertTriggerAtSelection } from "./mention-commands";
 import { useIsFocused } from "./useIsFocused";
 
@@ -465,10 +464,9 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     return false;
   }, []);
 
-  const handleBlur = useCallback(() => {
+  const handleClickOutside = useCallback(() => {
     setOpen(false);
     if (!triggerQueryString) {
-      setSelectedIndex(null);
       setTriggerQueryString(null);
       setTriggerMatch(null);
       setValueMatch(null);
@@ -518,11 +516,6 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         COMMAND_PRIORITY_NORMAL,
       ),
       editor.registerCommand<KeyboardEvent>(
-        BLUR_COMMAND,
-        handleBlur,
-        COMMAND_PRIORITY_NORMAL,
-      ),
-      editor.registerCommand<KeyboardEvent>(
         CLICK_COMMAND,
         () => {
           if (!open) {
@@ -549,7 +542,6 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     handleBackspace,
     handleKeyDown,
     handleFocus,
-    handleBlur,
   ]);
 
   useEffect(() => {
@@ -596,6 +588,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     if (open) {
       onComboboxOpen?.();
     } else {
+      setSelectedIndex(null);
       onComboboxClose?.();
     }
   }, [onComboboxOpen, onComboboxClose, open]);
@@ -608,6 +601,28 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       onComboboxFocusChange?.(null);
     }
   }, [selectedIndex, options, onComboboxFocusChange]);
+
+  // close combobox when clicking outside
+  useEffect(() => {
+    if (!CAN_USE_DOM) {
+      return;
+    }
+    const root = editor.getRootElement();
+    const handleMousedown = (event: MouseEvent) => {
+      if (
+        anchor &&
+        !anchor.contains(event.target as Node) &&
+        root &&
+        !root.contains(event.target as Node)
+      ) {
+        handleClickOutside();
+      }
+    };
+    document.addEventListener("mousedown", handleMousedown);
+    return () => {
+      document.removeEventListener("mousedown", handleMousedown);
+    };
+  }, [anchor, editor, handleClickOutside]);
 
   if (!open || !anchor) {
     return null;
