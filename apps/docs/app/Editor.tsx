@@ -181,6 +181,7 @@ function Plugins() {
                 creatable={creatable}
                 showMentionsOnDelete={showMentionsOnDelete}
                 combobox
+                comboboxOpen={menuOrComboboxOpen}
                 comboboxAnchor={comboboxAnchor.current}
                 comboboxAnchorClassName="shadow-lg shadow-gray-900 rounded"
                 comboboxComponent={Combobox}
@@ -197,6 +198,7 @@ function Plugins() {
                 ]}
                 onComboboxItemSelect={(option) => {
                   console.log(option);
+                  setMenuOrComboboxOpen(false);
                 }}
               />
             )}

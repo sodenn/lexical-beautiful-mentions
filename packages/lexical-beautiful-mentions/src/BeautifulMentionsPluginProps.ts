@@ -1,6 +1,6 @@
 import { ComponentPropsWithRef, ElementType } from "react";
 
-interface BeautifulMentionsComboboxItem {
+export interface BeautifulMentionsComboboxItem {
   /**
    * Value to be inserted into the editor.
    */
@@ -149,6 +149,7 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    */
   onMenuClose?: () => void;
   combobox?: never;
+  comboboxOpen?: never;
   comboboxAnchor?: never;
   comboboxAnchorClassName?: never;
   comboboxComponent?: never;
@@ -167,6 +168,10 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
    * mentions.
    */
   combobox: true;
+  /**
+   * If `true`, the combobox is open.
+   */
+  comboboxOpen?: boolean;
   /**
    * The element that the combobox will be attached to.
    * @default editor root element

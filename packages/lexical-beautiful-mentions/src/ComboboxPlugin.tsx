@@ -22,7 +22,10 @@ import {
 } from "lexical";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
-import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
+import {
+  BeautifulMentionsComboboxItem,
+  BeautifulMentionsPluginProps,
+} from "./BeautifulMentionsPluginProps";
 import {
   $splitNodeContainingQuery,
   MenuOption,
@@ -36,6 +39,7 @@ import { useIsFocused } from "./useIsFocused";
 interface ComboboxPluginProps
   extends Pick<
       BeautifulMentionsPluginProps,
+      | "comboboxOpen"
       | "onComboboxItemSelect"
       | "comboboxAdditionalItems"
       | "comboboxAnchor"
@@ -61,15 +65,24 @@ interface ComboboxPluginProps
 }
 
 class ComboboxOption extends MenuOption {
-  skip: boolean;
+  additionalItem: boolean;
+
   constructor(
     value: string,
     displayValue: string,
     data: { [key: string]: string | boolean | number } = {},
-    skip = false,
+    additionalItem = false,
   ) {
     super(value, displayValue, data);
-    this.skip = skip;
+    this.additionalItem = additionalItem;
+  }
+
+  toComboboxItem(): BeautifulMentionsComboboxItem {
+    return {
+      value: this.value,
+      displayValue: this.displayValue,
+      data: this.data,
+    };
   }
 }
 
@@ -243,7 +256,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     triggerQueryString,
     onComboboxItemSelect,
   ]);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(props.comboboxOpen || false);
   const anchor = useAnchorRef(open, comboboxAnchor, comboboxAnchorClassName);
 
   const highlightOption = useCallback((index: number | null) => {
@@ -312,8 +325,8 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const handleSelectValue = useCallback(
     (index: number) => {
       const option = options[index];
-      onComboboxItemSelect?.(option);
-      if (option.skip) {
+      onComboboxItemSelect?.(option.toComboboxItem());
+      if (option.additionalItem) {
         return;
       }
       editor.update(() => {
@@ -341,8 +354,8 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const handleSelectTrigger = useCallback(
     (index: number) => {
       const option = options[index];
-      onComboboxItemSelect?.(option);
-      if (option.skip) {
+      onComboboxItemSelect?.(option.toComboboxItem());
+      if (option.additionalItem) {
         return;
       }
       editor.update(() => {
@@ -573,6 +586,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     };
     return editor.registerUpdateListener(updateListener);
   }, [editor, triggerFn, onQueryChange, onReset, triggers]);
+
+  useEffect(() => {
+    setOpen(props.comboboxOpen || false);
+  }, [props.comboboxOpen]);
 
   // call open/close callbacks when open state changes
   useEffect(() => {

@@ -543,6 +543,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         triggers={triggers}
         punctuation={punctuation}
         creatable={creatable}
+        comboboxOpen={props.comboboxOpen}
         comboboxAnchor={props.comboboxAnchor}
         comboboxAnchorClassName={props.comboboxAnchorClassName}
         comboboxComponent={props.comboboxComponent}
