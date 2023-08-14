@@ -322,9 +322,9 @@ test.describe("Mention Menu", () => {
       { page, browserName },
       {
         autofocus: "end",
-        combobox: true,
       },
     );
+    await utils.editorType("@");
     let open = await utils.isMenuOrComboboxOpen();
     expect(open).toBe(true);
     await utils.editor.blur();

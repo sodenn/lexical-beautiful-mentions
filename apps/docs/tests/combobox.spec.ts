@@ -63,7 +63,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp");
     await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
-      "\\w+:",
+      "rec:",
     );
   });
 
@@ -275,7 +275,7 @@ test.describe("Combobox", () => {
     await utils.editorType("@");
     await utils.combobox.getByText("Anton").click();
     await expect(utils.combobox).toBeVisible();
-    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(5);
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(4);
     await utils.hasText("[@Anton]");
   });
 
@@ -340,7 +340,9 @@ test.describe("Combobox", () => {
     );
     let open = await utils.isMenuOrComboboxOpen();
     expect(open).toBe(true);
-    await utils.editor.blur();
+    await page
+      .getByRole("heading", { name: "lexical-beautiful-mentions" })
+      .click();
     open = await utils.isMenuOrComboboxOpen();
     expect(open).toBe(false);
   });
