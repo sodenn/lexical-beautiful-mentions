@@ -390,6 +390,7 @@ test.describe("Combobox", () => {
     let open = await utils.isMenuOrComboboxOpen();
     expect(open).toBe(false);
     await utils.editor.blur();
+    await utils.sleep(200);
     await utils.editor.focus();
     open = await utils.isMenuOrComboboxOpen();
     expect(open).toBe(true);
