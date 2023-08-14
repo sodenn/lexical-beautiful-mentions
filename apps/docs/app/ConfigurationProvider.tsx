@@ -6,6 +6,7 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from "react";
 import { defaultInitialValue } from "./editorConfig";
@@ -21,6 +22,7 @@ interface Configuration
   asynchronous: boolean;
   commandFocus: boolean;
   combobox: boolean;
+  comboboxAdditionalItems: boolean;
   mentionEnclosure?: string;
   showMentionsOnDelete: boolean;
   setAllowSpaces: (allowSpaces: boolean) => void;
@@ -29,6 +31,7 @@ interface Configuration
   setMentionEnclosure: (mentionEnclosure: boolean) => void;
   setAsynchronous: (asynchronous: boolean) => void;
   setCombobox: (combobox: boolean) => void;
+  setComboboxAdditionalItems: (comboboxAdditionalItems: boolean) => void;
   setShowMentionsOnDelete: (showMentionsOnDelete: boolean) => void;
 }
 
@@ -55,6 +58,9 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   );
   const [combobox, _setCombobox] = useState(
     getQueryParam("combobox") === "true",
+  );
+  const [comboboxAdditionalItems, _setComboboxAdditionalItems] = useState(
+    getQueryParam("cbai") === "true",
   );
   const [mentionEnclosure, _setMentionEnclosure] = useState(
     getQueryParam("enclosure") === "true",
@@ -87,6 +93,14 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     (combobox: boolean) => {
       _setCombobox(combobox);
       updateQueryParam("combobox", combobox);
+    },
+    [updateQueryParam],
+  );
+
+  const setComboboxAdditionalItems = useCallback(
+    (comboboxAdditionalItems: boolean) => {
+      _setComboboxAdditionalItems(comboboxAdditionalItems);
+      updateQueryParam("cbai", comboboxAdditionalItems);
     },
     [updateQueryParam],
   );
@@ -131,28 +145,53 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     [updateQueryParam],
   );
 
+  const value = useMemo(
+    () => ({
+      initialValue,
+      autoFocus,
+      asynchronous,
+      combobox,
+      comboboxAdditionalItems,
+      setComboboxAdditionalItems,
+      mentionEnclosure: mentionEnclosure ? '"' : undefined,
+      showMentionsOnDelete,
+      allowSpaces,
+      creatable: creatable ? creatableMap : false,
+      insertOnBlur,
+      setAsynchronous,
+      setAllowSpaces,
+      setCreatable,
+      setInsertOnBlur,
+      setCombobox,
+      setMentionEnclosure,
+      setShowMentionsOnDelete,
+      commandFocus,
+    }),
+    [
+      allowSpaces,
+      asynchronous,
+      autoFocus,
+      combobox,
+      comboboxAdditionalItems,
+      commandFocus,
+      creatable,
+      initialValue,
+      insertOnBlur,
+      mentionEnclosure,
+      setAllowSpaces,
+      setAsynchronous,
+      setCombobox,
+      setComboboxAdditionalItems,
+      setCreatable,
+      setInsertOnBlur,
+      setMentionEnclosure,
+      setShowMentionsOnDelete,
+      showMentionsOnDelete,
+    ],
+  );
+
   return (
-    <ConfigurationCtx.Provider
-      value={{
-        initialValue,
-        autoFocus,
-        asynchronous,
-        combobox,
-        mentionEnclosure: mentionEnclosure ? '"' : undefined,
-        showMentionsOnDelete,
-        allowSpaces,
-        creatable: creatable ? creatableMap : false,
-        insertOnBlur,
-        setAsynchronous,
-        setAllowSpaces,
-        setCreatable,
-        setInsertOnBlur,
-        setCombobox,
-        setMentionEnclosure,
-        setShowMentionsOnDelete,
-        commandFocus,
-      }}
-    >
+    <ConfigurationCtx.Provider value={value}>
       {children}
     </ConfigurationCtx.Provider>
   );

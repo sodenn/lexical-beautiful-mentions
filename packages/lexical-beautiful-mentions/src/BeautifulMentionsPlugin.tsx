@@ -120,15 +120,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertOnBlur = true,
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
-    combobox,
     menuAnchorClassName,
     showMentionsOnDelete,
     mentionEnclosure,
     onMenuOpen,
     onMenuClose,
-    onComboboxOpen,
-    onComboboxClose,
-    onComboboxFocusChange,
     punctuation = DEFAULT_PUNCTUATION,
   } = props;
   const isEditorFocused = useIsFocused();
@@ -535,7 +531,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return null;
   }
 
-  if (combobox) {
+  if (props.combobox) {
     return (
       <ComboboxPlugin
         options={options}
@@ -547,13 +543,16 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         triggers={triggers}
         punctuation={punctuation}
         creatable={creatable}
+        comboboxOpen={props.comboboxOpen}
         comboboxAnchor={props.comboboxAnchor}
         comboboxAnchorClassName={props.comboboxAnchorClassName}
         comboboxComponent={props.comboboxComponent}
         comboboxItemComponent={props.comboboxItemComponent}
-        onComboboxOpen={onComboboxOpen}
-        onComboboxClose={onComboboxClose}
-        onComboboxFocusChange={onComboboxFocusChange}
+        comboboxAdditionalItems={props.comboboxAdditionalItems}
+        onComboboxOpen={props.onComboboxOpen}
+        onComboboxClose={props.onComboboxClose}
+        onComboboxFocusChange={props.onComboboxFocusChange}
+        onComboboxItemSelect={props.onComboboxItemSelect}
       />
     );
   }

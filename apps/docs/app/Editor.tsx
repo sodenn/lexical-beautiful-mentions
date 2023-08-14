@@ -24,7 +24,6 @@ import { Placeholder } from "./Placeholder";
 import { cn } from "./cn";
 import { getDebugTextContent } from "./debug";
 import editorConfig from "./editorConfig";
-import { useIsFocused } from "./useIsFocused";
 
 const mentionItems: Record<string, BeautifulMentionsItem[]> = {
   "@": [
@@ -85,8 +84,8 @@ function Plugins() {
     combobox,
     mentionEnclosure,
     showMentionsOnDelete,
+    comboboxAdditionalItems,
   } = useConfiguration();
-  const focused = useIsFocused();
   const comboboxAnchor = useRef<HTMLDivElement>(null);
   const [menuOrComboboxOpen, setMenuOrComboboxOpen] = useState(false);
   const [comboboxItemSelected, setComboboxItemSelected] = useState(false);
@@ -94,8 +93,8 @@ function Plugins() {
   const handleChange = useCallback((editorState: EditorState) => {
     editorState.read(() => {
       const root = $getRoot();
-      const content = getDebugTextContent(root);
-      setValue(content);
+      const value = getDebugTextContent(root);
+      setValue(value);
     });
   }, []);
 
@@ -124,8 +123,8 @@ function Plugins() {
         className={cn(
           "relative bg-slate-300 text-left dark:bg-slate-600",
           !combobox && "rounded",
-          combobox && !focused && "rounded",
-          combobox && focused && "rounded-t",
+          combobox && !menuOrComboboxOpen && "rounded",
+          combobox && menuOrComboboxOpen && "rounded-t",
         )}
       >
         <div className={cn(combobox && "p-1")}>
@@ -175,12 +174,15 @@ function Plugins() {
               <BeautifulMentionsPlugin
                 onSearch={handleSearch}
                 searchDelay={asynchronous ? 250 : 0}
-                triggers={Object.keys(mentionItems)}
+                triggers={Object.keys(mentionItems).filter(
+                  (k) => k !== "\\w+:",
+                )}
                 mentionEnclosure={mentionEnclosure}
                 allowSpaces={allowSpaces}
                 creatable={creatable}
                 showMentionsOnDelete={showMentionsOnDelete}
                 combobox
+                comboboxOpen={menuOrComboboxOpen}
                 comboboxAnchor={comboboxAnchor.current}
                 comboboxAnchorClassName="shadow-lg shadow-gray-900 rounded"
                 comboboxComponent={Combobox}
@@ -188,6 +190,23 @@ function Plugins() {
                 onComboboxOpen={handleMenuOrComboboxOpen}
                 onComboboxClose={handleMenuOrComboboxClose}
                 onComboboxFocusChange={handleComboboxItemSelect}
+                comboboxAdditionalItems={
+                  comboboxAdditionalItems
+                    ? [
+                        {
+                          value: "additionalItem",
+                          displayValue: "Additional Item",
+                          data: { dividerTop: true },
+                        },
+                      ]
+                    : []
+                }
+                onComboboxItemSelect={(item) => {
+                  if (item.value === "additionalItem") {
+                    setMenuOrComboboxOpen(false);
+                  }
+                  console.log(JSON.stringify(item));
+                }}
               />
             )}
           </div>

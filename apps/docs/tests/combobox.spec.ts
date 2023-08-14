@@ -63,7 +63,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp");
     await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
-      "\\w+:",
+      "rec:",
     );
   });
 
@@ -104,7 +104,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp");
     await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
-      "\\w+:",
+      "rec:",
     );
   });
 
@@ -237,7 +237,7 @@ test.describe("Combobox", () => {
     await utils.editorType("@");
     await utils.editor.press("Enter");
     await expect(utils.combobox).toBeVisible();
-    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(5);
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(4);
     await utils.hasText("[@Anton]");
   });
 
@@ -257,7 +257,7 @@ test.describe("Combobox", () => {
     await utils.editorType("@");
     await utils.editor.press("Tab");
     await expect(utils.combobox).toBeVisible();
-    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(5);
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(4);
     await utils.hasText("[@Anton]");
   });
 
@@ -275,11 +275,11 @@ test.describe("Combobox", () => {
     await utils.editorType("@");
     await utils.combobox.getByText("Anton").click();
     await expect(utils.combobox).toBeVisible();
-    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(5);
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(4);
     await utils.hasText("[@Anton]");
   });
 
-  test("should remove the selection when the editor is blurred", async ({
+  test("should remove the selection when the combobox is closed", async ({
     page,
     browserName,
     isMobile,
@@ -294,7 +294,9 @@ test.describe("Combobox", () => {
     );
     await utils.editor.press("ArrowDown");
     await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "@");
-    await utils.editor.blur();
+    await page
+      .getByRole("heading", { name: "lexical-beautiful-mentions" })
+      .click();
     await utils.editor.focus();
     await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
   });
@@ -319,7 +321,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp");
     await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
-      "\\w+:",
+      "rec:",
     );
     await utils.editor.press("ArrowDown");
     await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
@@ -340,7 +342,9 @@ test.describe("Combobox", () => {
     );
     let open = await utils.isMenuOrComboboxOpen();
     expect(open).toBe(true);
-    await utils.editor.blur();
+    await page
+      .getByRole("heading", { name: "lexical-beautiful-mentions" })
+      .click();
     open = await utils.isMenuOrComboboxOpen();
     expect(open).toBe(false);
   });
@@ -363,5 +367,37 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowDown");
     selected = await utils.isComboboxItemSelected();
     expect(selected).toBe(true);
+  });
+
+  test("should display additional combobox items", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "end",
+        combobox: true,
+        comboboxAdditionalItems: true,
+      },
+    );
+    await expect(
+      utils.combobox.getByRole("menuitem", { name: "Choose additionalItem" }),
+    ).toBeVisible();
+    await utils.combobox
+      .getByRole("menuitem", { name: "Choose additionalItem" })
+      .click();
+    let open = await utils.isMenuOrComboboxOpen();
+    expect(open).toBe(false);
+    // position the mouse outside the combobox
+    await page
+      .getByRole("heading", { name: "lexical-beautiful-mentions" })
+      .click();
+    await utils.editor.blur();
+    await utils.sleep(200);
+    await utils.editor.focus();
+    open = await utils.isMenuOrComboboxOpen();
+    expect(open).toBe(true);
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
   });
 });

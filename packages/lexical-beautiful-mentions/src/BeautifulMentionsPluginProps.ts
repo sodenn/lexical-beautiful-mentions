@@ -1,5 +1,20 @@
 import { ComponentPropsWithRef, ElementType } from "react";
 
+export interface BeautifulMentionsComboboxItem {
+  /**
+   * Value to be inserted into the editor.
+   */
+  value: string;
+  /**
+   * Value to be displayed in the menu.
+   */
+  displayValue: string;
+  /**
+   * Additional data belonging to the option.
+   */
+  data?: { [key: string]: string | boolean | number };
+}
+
 /**
  * The mention without the trigger character(s). Either a
  * string or an object with at least a `value` property.
@@ -11,7 +26,7 @@ export type BeautifulMentionsItem =
        * The mention without the trigger character(s).
        */
       value: string;
-      [key: string]: string;
+      [key: string]: string | boolean | number;
     };
 
 export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
@@ -25,21 +40,23 @@ export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   loading?: boolean;
 }
 
-export type BeautifulMentionsMenuItemProps<T = {}> = T &
-  Omit<ComponentPropsWithRef<any>, "selected" | "label"> & {
-    /**
-     * If `true`, the menu item is selected.
-     */
-    selected: boolean;
-    /**
-     * The label of the menu item.
-     */
-    label: string;
-    /**
-     * The value of the menu item.
-     */
-    itemValue: string;
-  };
+export type BeautifulMentionsMenuItemProps = Omit<
+  ComponentPropsWithRef<any>,
+  "selected" | "label"
+> & {
+  /**
+   * If `true`, the menu item is selected.
+   */
+  selected: boolean;
+  /**
+   * The label of the menu item.
+   */
+  label: string;
+  /**
+   * The value of the menu item.
+   */
+  itemValue: string;
+};
 
 export interface BeautifulMentionsComboboxProps
   extends ComponentPropsWithRef<any> {
@@ -53,8 +70,20 @@ export interface BeautifulMentionsComboboxProps
   loading?: boolean;
 }
 
-export type BeautifulMentionsComboboxItemProps<T = {}> =
-  BeautifulMentionsMenuItemProps<T>;
+export type BeautifulMentionsComboboxItemProps = Omit<
+  ComponentPropsWithRef<any>,
+  "selected" | "option"
+> & {
+  /**
+   * If `true`, the combobox item is selected.
+   */
+  selected: boolean;
+  /**
+   * Contains the value, display value and additional data defined in
+   * {@link BeautifulMentionsItem} or {@link BeautifulMentionsComboboxItem}.
+   */
+  item: BeautifulMentionsComboboxItem;
+};
 
 interface BeautifulMentionsProps {
   /**
@@ -109,7 +138,7 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    * The component to use for a menu item.
    * @default li
    */
-  menuItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
+  menuItemComponent?: ElementType<BeautifulMentionsMenuItemProps>;
   /**
    * If `true`, the mention will be inserted when the user blurs the editor.
    * @default true
@@ -124,10 +153,13 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    */
   onMenuClose?: () => void;
   combobox?: never;
+  comboboxOpen?: never;
   comboboxAnchor?: never;
   comboboxAnchorClassName?: never;
   comboboxComponent?: never;
   comboboxItemComponent?: never;
+  comboboxAdditionalItems?: never;
+  onComboboxItemSelect?: never;
   onComboboxOpen?: never;
   onComboboxClose?: never;
   onComboboxFocusChange?: never;
@@ -140,6 +172,10 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
    * mentions.
    */
   combobox: true;
+  /**
+   * If `true`, the combobox is open.
+   */
+  comboboxOpen?: boolean;
   /**
    * The element that the combobox will be attached to.
    * @default editor root element
@@ -158,6 +194,14 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
    * The component to use for a combobox item.
    */
   comboboxItemComponent?: ElementType<BeautifulMentionsComboboxItemProps>;
+  /**
+   * Additional items to show in the combobox.
+   */
+  comboboxAdditionalItems?: BeautifulMentionsComboboxItem[];
+  /**
+   * Callback fired when the user selects a combobox item.
+   */
+  onComboboxItemSelect?: (item: BeautifulMentionsComboboxItem) => void;
   /**
    * Callback fired when the combobox requests to be open.
    */

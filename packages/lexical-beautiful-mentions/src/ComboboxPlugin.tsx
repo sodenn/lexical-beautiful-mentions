@@ -4,7 +4,6 @@ import {
   $createTextNode,
   $getSelection,
   $isRangeSelection,
-  BLUR_COMMAND,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   COMMAND_PRIORITY_NORMAL,
@@ -22,20 +21,26 @@ import {
 } from "lexical";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
-import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
+import {
+  BeautifulMentionsComboboxItem,
+  BeautifulMentionsPluginProps,
+} from "./BeautifulMentionsPluginProps";
 import {
   $splitNodeContainingQuery,
   MenuOption,
   MenuTextMatch,
   TriggerFn,
 } from "./Menu";
-import { IS_MOBILE } from "./environment";
+import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 import { $insertTriggerAtSelection } from "./mention-commands";
 import { useIsFocused } from "./useIsFocused";
 
 interface ComboboxPluginProps
   extends Pick<
       BeautifulMentionsPluginProps,
+      | "comboboxOpen"
+      | "onComboboxItemSelect"
+      | "comboboxAdditionalItems"
       | "comboboxAnchor"
       | "comboboxAnchorClassName"
       | "comboboxComponent"
@@ -56,6 +61,28 @@ interface ComboboxPluginProps
   triggers: string[];
   onReset: () => void;
   creatable: boolean | string;
+}
+
+class ComboboxOption extends MenuOption {
+  additionalItem: boolean;
+
+  constructor(
+    value: string,
+    displayValue: string,
+    data: { [key: string]: string | boolean | number } = {},
+    additionalItem = false,
+  ) {
+    super(value, displayValue, data);
+    this.additionalItem = additionalItem;
+  }
+
+  toComboboxItem(): BeautifulMentionsComboboxItem {
+    return {
+      value: this.value,
+      displayValue: this.displayValue,
+      data: this.data,
+    };
+  }
 }
 
 function getQueryTextForSearch(editor: LexicalEditor): string | null {
@@ -176,14 +203,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     loading,
     triggerFn,
     onQueryChange,
+    onReset,
     comboboxAnchor,
     comboboxAnchorClassName,
-    onReset,
     comboboxComponent: ComboboxComponent = "div",
     comboboxItemComponent: ComboboxItemComponent = "div",
     onComboboxOpen,
     onComboboxClose,
     onComboboxFocusChange,
+    comboboxAdditionalItems = [],
+    onComboboxItemSelect,
   } = props;
   const focused = useIsFocused();
   const [editor] = useLexicalComposerContext();
@@ -195,23 +224,38 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   );
   const optionsType = props.options.length === 0 ? "triggers" : "values";
   const options = useMemo(() => {
+    const additionalOptions = comboboxAdditionalItems.map(
+      (opt) => new ComboboxOption(opt.value, opt.displayValue, opt.data, true),
+    );
     if (optionsType === "triggers") {
       const triggerOptions = triggers.map(
-        (trigger) => new MenuOption(trigger, trigger),
+        (trigger) => new ComboboxOption(trigger, trigger),
       );
       if (
         !triggerQueryString ||
         triggerOptions.every((o) => !o.value.startsWith(triggerQueryString))
       ) {
-        return triggerOptions;
+        return [...triggerOptions, ...additionalOptions];
       }
-      return triggerOptions.filter((o) =>
-        o.value.startsWith(triggerQueryString),
-      );
+      return [
+        ...triggerOptions.filter((o) => o.value.startsWith(triggerQueryString)),
+        ...additionalOptions,
+      ];
     }
-    return props.options;
-  }, [optionsType, props.options, triggers, triggerQueryString]);
-  const [open, setOpen] = useState(false);
+    return [
+      ...props.options.map(
+        (opt) => new ComboboxOption(opt.value, opt.displayValue),
+      ),
+      ...additionalOptions,
+    ];
+  }, [
+    comboboxAdditionalItems,
+    optionsType,
+    props.options,
+    triggers,
+    triggerQueryString,
+  ]);
+  const [open, setOpen] = useState(props.comboboxOpen || false);
   const anchor = useAnchorRef(open, comboboxAnchor, comboboxAnchorClassName);
 
   const highlightOption = useCallback((index: number | null) => {
@@ -280,6 +324,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const handleSelectValue = useCallback(
     (index: number) => {
       const option = options[index];
+      onComboboxItemSelect?.(option.toComboboxItem());
+      if (option.additionalItem) {
+        return;
+      }
       editor.update(() => {
         const textNode = valueMatch
           ? $splitNodeContainingQuery(valueMatch)
@@ -292,18 +340,23 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       highlightOption(null);
     },
     [
-      editor,
-      valueMatch,
-      onQueryChange,
-      onSelectOption,
-      highlightOption,
       options,
+      editor,
+      onQueryChange,
+      highlightOption,
+      onComboboxItemSelect,
+      valueMatch,
+      onSelectOption,
     ],
   );
 
   const handleSelectTrigger = useCallback(
     (index: number) => {
       const option = options[index];
+      onComboboxItemSelect?.(option.toComboboxItem());
+      if (option.additionalItem) {
+        return;
+      }
       editor.update(() => {
         const nodeToReplace = triggerMatch
           ? $splitNodeContainingQuery(triggerMatch)
@@ -320,7 +373,15 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       setTriggerQueryString(null);
       highlightOption(0);
     },
-    [options, editor, triggerMatch, triggers, highlightOption, punctuation],
+    [
+      options,
+      editor,
+      highlightOption,
+      onComboboxItemSelect,
+      triggerMatch,
+      triggers,
+      punctuation,
+    ],
   );
 
   const handleClickOption = useCallback(
@@ -332,7 +393,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         handleSelectValue(index);
       }
     },
-    [handleSelectValue, handleSelectTrigger, optionsType],
+    [optionsType, handleSelectTrigger, handleSelectValue],
   );
 
   const handleKeySelect = useCallback(
@@ -403,10 +464,9 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     return false;
   }, []);
 
-  const handleBlur = useCallback(() => {
+  const handleClickOutside = useCallback(() => {
     setOpen(false);
     if (!triggerQueryString) {
-      setSelectedIndex(null);
       setTriggerQueryString(null);
       setTriggerMatch(null);
       setValueMatch(null);
@@ -456,11 +516,6 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         COMMAND_PRIORITY_NORMAL,
       ),
       editor.registerCommand<KeyboardEvent>(
-        BLUR_COMMAND,
-        handleBlur,
-        COMMAND_PRIORITY_NORMAL,
-      ),
-      editor.registerCommand<KeyboardEvent>(
         CLICK_COMMAND,
         () => {
           if (!open) {
@@ -487,7 +542,6 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     handleBackspace,
     handleKeyDown,
     handleFocus,
-    handleBlur,
   ]);
 
   useEffect(() => {
@@ -525,11 +579,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     return editor.registerUpdateListener(updateListener);
   }, [editor, triggerFn, onQueryChange, onReset, triggers]);
 
+  useEffect(() => {
+    setOpen(props.comboboxOpen || false);
+  }, [props.comboboxOpen]);
+
   // call open/close callbacks when open state changes
   useEffect(() => {
     if (open) {
       onComboboxOpen?.();
     } else {
+      setSelectedIndex(null);
       onComboboxClose?.();
     }
   }, [onComboboxOpen, onComboboxClose, open]);
@@ -543,47 +602,63 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     }
   }, [selectedIndex, options, onComboboxFocusChange]);
 
+  // close combobox when clicking outside
+  useEffect(() => {
+    if (!CAN_USE_DOM) {
+      return;
+    }
+    const root = editor.getRootElement();
+    const handleMousedown = (event: MouseEvent) => {
+      if (
+        anchor &&
+        !anchor.contains(event.target as Node) &&
+        root &&
+        !root.contains(event.target as Node)
+      ) {
+        handleClickOutside();
+      }
+    };
+    document.addEventListener("mousedown", handleMousedown);
+    return () => {
+      document.removeEventListener("mousedown", handleMousedown);
+    };
+  }, [anchor, editor, handleClickOutside]);
+
   if (!open || !anchor) {
     return null;
   }
 
-  return (
-    <>
-      {ReactDOM.createPortal(
-        <ComboboxComponent
-          loading={loading}
-          optionType={optionsType}
-          role="menu"
-          aria-activedescendant={
-            selectedIndex !== null && !!options[selectedIndex]
-              ? options[selectedIndex].displayValue
-              : ""
-          }
-          aria-label={"Choose trigger and value"}
-          aria-hidden={!open}
+  return ReactDOM.createPortal(
+    <ComboboxComponent
+      loading={loading}
+      optionType={optionsType}
+      role="menu"
+      aria-activedescendant={
+        selectedIndex !== null && !!options[selectedIndex]
+          ? options[selectedIndex].displayValue
+          : ""
+      }
+      aria-label={"Choose trigger and value"}
+      aria-hidden={!open}
+    >
+      {options.map((option, index) => (
+        <ComboboxItemComponent
+          key={option.key}
+          selected={index === selectedIndex}
+          role="menuitem"
+          aria-selected={selectedIndex === index}
+          aria-label={`Choose ${option.value}`}
+          item={option.toComboboxItem()}
+          ref={option.setRefElement}
+          onClick={() => handleClickOption(index)}
+          onMouseEnter={() => handleMouseEnter(index)}
+          onMouseLeave={handleMouseLeave}
+          onMouseDown={(e) => e.preventDefault()}
         >
-          {options.map((option, index) => (
-            <ComboboxItemComponent
-              key={option.key}
-              itemValue={option.value}
-              label={option.displayValue}
-              selected={index === selectedIndex}
-              role="menuitem"
-              aria-selected={selectedIndex === index}
-              aria-label={`Choose ${option.value}`}
-              {...option.data}
-              ref={option.setRefElement}
-              onClick={() => handleClickOption(index)}
-              onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
-              onMouseDown={(e) => e.preventDefault()}
-            >
-              {option.displayValue}
-            </ComboboxItemComponent>
-          ))}
-        </ComboboxComponent>,
-        anchor,
-      )}
-    </>
+          {option.displayValue}
+        </ComboboxItemComponent>
+      ))}
+    </ComboboxComponent>,
+    anchor,
   );
 }

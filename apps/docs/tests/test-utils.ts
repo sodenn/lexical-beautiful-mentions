@@ -13,6 +13,7 @@ interface TestUtilsOptions {
   combobox?: boolean;
   mentionEnclosure?: boolean;
   showMentionsOnDelete?: boolean;
+  comboboxAdditionalItems?: boolean;
 }
 
 type PlaywrightArgs = { page: Page; browserName: string };
@@ -32,6 +33,7 @@ export async function testUtils(
     combobox = false,
     mentionEnclosure = false,
     showMentionsOnDelete = false,
+    comboboxAdditionalItems = false,
   } = options;
   const utils = new TestUtils(
     args.page,
@@ -46,6 +48,7 @@ export async function testUtils(
     combobox,
     mentionEnclosure,
     showMentionsOnDelete,
+    comboboxAdditionalItems,
   );
   await utils.init();
   return utils;
@@ -67,6 +70,7 @@ export class TestUtils {
     private _combobox: boolean,
     private mentionEnclosure: boolean,
     private showMentionsOnDelete: boolean,
+    private comboboxAdditionalItems: boolean,
   ) {
     this.setInitialValue(initialValue);
   }
@@ -175,6 +179,7 @@ export class TestUtils {
     url += `&blur=${this.insertOnBlur}`;
     url += `&cf=${this.commandFocus}`;
     url += `&value=${this.initialValue}`;
+    url += `&cbai=${this.comboboxAdditionalItems}`;
     await this.page.goto(url);
     await this.sleep(100);
   }
