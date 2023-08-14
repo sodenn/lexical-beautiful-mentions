@@ -369,7 +369,7 @@ test.describe("Combobox", () => {
     expect(selected).toBe(true);
   });
 
-  test.only("should display additional combobox items", async ({
+  test("should display additional combobox items", async ({
     page,
     browserName,
   }) => {
