@@ -104,7 +104,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp");
     await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
-      "\\w+:",
+      "rec:",
     );
   });
 
@@ -237,7 +237,7 @@ test.describe("Combobox", () => {
     await utils.editorType("@");
     await utils.editor.press("Enter");
     await expect(utils.combobox).toBeVisible();
-    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(5);
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(4);
     await utils.hasText("[@Anton]");
   });
 
@@ -257,7 +257,7 @@ test.describe("Combobox", () => {
     await utils.editorType("@");
     await utils.editor.press("Tab");
     await expect(utils.combobox).toBeVisible();
-    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(5);
+    await expect(utils.combobox.getByRole("menuitem")).toHaveCount(4);
     await utils.hasText("[@Anton]");
   });
 
@@ -279,7 +279,7 @@ test.describe("Combobox", () => {
     await utils.hasText("[@Anton]");
   });
 
-  test("should remove the selection when the editor is blurred", async ({
+  test("should remove the selection when the combobox is closed", async ({
     page,
     browserName,
     isMobile,
@@ -294,7 +294,9 @@ test.describe("Combobox", () => {
     );
     await utils.editor.press("ArrowDown");
     await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "@");
-    await utils.editor.blur();
+    await page
+      .getByRole("heading", { name: "lexical-beautiful-mentions" })
+      .click();
     await utils.editor.focus();
     await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
   });
@@ -319,7 +321,7 @@ test.describe("Combobox", () => {
     await utils.editor.press("ArrowUp");
     await expect(utils.combobox).toHaveAttribute(
       "aria-activedescendant",
-      "\\w+:",
+      "rec:",
     );
     await utils.editor.press("ArrowDown");
     await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
