@@ -1,5 +1,17 @@
 {
-  "extends": "tsconfig/react-library.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2015", "dom"],
+    "module": "ESNext",
+    "target": "es6",
+    "declaration": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true,
+  },
   "include": ["./src"],
-  "exclude": ["lib", "node_modules", "**/*.spec.ts", "**/*.spec.tsx"]
+  "exclude": ["lib", "node_modules"]
 }
