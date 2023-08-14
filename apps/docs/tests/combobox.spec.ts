@@ -369,7 +369,7 @@ test.describe("Combobox", () => {
     expect(selected).toBe(true);
   });
 
-  test("should display additional combobox items", async ({
+  test.only("should display additional combobox items", async ({
     page,
     browserName,
   }) => {
@@ -386,6 +386,10 @@ test.describe("Combobox", () => {
     ).toBeVisible();
     await utils.combobox
       .getByRole("menuitem", { name: "Choose additionalItem" })
+      .click();
+    // position the mouse outside the combobox
+    await page
+      .getByRole("heading", { name: "lexical-beautiful-mentions" })
       .click();
     let open = await utils.isMenuOrComboboxOpen();
     expect(open).toBe(false);
