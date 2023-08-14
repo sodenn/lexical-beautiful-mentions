@@ -368,4 +368,31 @@ test.describe("Combobox", () => {
     selected = await utils.isComboboxItemSelected();
     expect(selected).toBe(true);
   });
+
+  test.only("should display additional combobox items", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "end",
+        combobox: true,
+        comboboxAdditionalItems: true,
+      },
+    );
+    await expect(
+      utils.combobox.getByRole("menuitem", { name: "Choose additionalItem" }),
+    ).toBeVisible();
+    await utils.combobox
+      .getByRole("menuitem", { name: "Choose additionalItem" })
+      .click();
+    let open = await utils.isMenuOrComboboxOpen();
+    expect(open).toBe(false);
+    await utils.editor.blur();
+    await utils.editor.focus();
+    open = await utils.isMenuOrComboboxOpen();
+    expect(open).toBe(true);
+    await expect(utils.combobox).toHaveAttribute("aria-activedescendant", "");
+  });
 });
