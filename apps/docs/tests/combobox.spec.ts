@@ -387,12 +387,12 @@ test.describe("Combobox", () => {
     await utils.combobox
       .getByRole("menuitem", { name: "Choose additionalItem" })
       .click();
+    let open = await utils.isMenuOrComboboxOpen();
+    expect(open).toBe(false);
     // position the mouse outside the combobox
     await page
       .getByRole("heading", { name: "lexical-beautiful-mentions" })
       .click();
-    let open = await utils.isMenuOrComboboxOpen();
-    expect(open).toBe(false);
     await utils.editor.blur();
     await utils.sleep(200);
     await utils.editor.focus();
