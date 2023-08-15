@@ -4,7 +4,7 @@
   "private": true,
   "workspaces": [
     "docs",
-    "packages/*"
+    "plugin"
   ],
   "scripts": {
     "build": "turbo run build",

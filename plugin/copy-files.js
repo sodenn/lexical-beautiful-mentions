@@ -11,9 +11,9 @@ async function exists(path) {
 }
 
 const packagePath = process.cwd();
-const rootPath = path.join(packagePath, "../..");
-const libPath = path.join(packagePath, "./lib");
-const srcPath = path.join(packagePath, "./src");
+const rootPath = path.join(packagePath, "..");
+const libPath = path.join(packagePath, "lib");
+const srcPath = path.join(packagePath, "src");
 
 /**
  * Puts a package.json into every immediate child directory of rootDir.
