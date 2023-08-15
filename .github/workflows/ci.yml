@@ -41,12 +41,12 @@ jobs:
       run: npx playwright install webkit
     - name: Run Playwright tests
       run: npx playwright test --project="${{ matrix.project }}"
-      working-directory: apps/docs
+      working-directory: docs
     - uses: actions/upload-artifact@v3
       if: always()
       with:
         name: playwright-report-${{ matrix.project }}
-        path: apps/docs/playwright-report/
+        path: docs/playwright-report/
         retention-days: 3
   hygiene:
     runs-on: ubuntu-latest
