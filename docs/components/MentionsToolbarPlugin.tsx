@@ -1,6 +1,8 @@
 import { useConfiguration } from "@/components/ConfigurationProvider";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { Separator } from "@/components/ui/Separator";
 import { CheckboxProps } from "@radix-ui/react-checkbox";
 import { useBeautifulMentions } from "lexical-beautiful-mentions";
 import { useCallback, useId } from "react";
@@ -82,8 +84,8 @@ export function MentionsToolbarPlugin() {
   }, [commandFocus, getMentions, removeMentions]);
 
   return (
-    <>
-      <div className="my-3 grid grid-cols-2 gap-1 sm:gap-2">
+    <Card className="mt-2 flex flex-col gap-3 p-2">
+      <div className="grid grid-cols-2 gap-1 sm:gap-2">
         <Button onClick={() => openMentionMenu({ trigger: "@" })}>
           Open Suggestions
         </Button>
@@ -111,7 +113,7 @@ export function MentionsToolbarPlugin() {
           Insert Mention
         </Button>
       </div>
-      <div className="my-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <div className="text-muted-foreground sm:col-span-2">Flags</div>
         <ToolbarCheckbox
           label="allowSpaces"
@@ -145,7 +147,7 @@ export function MentionsToolbarPlugin() {
           helperText="Use a combobox instead of a menu."
           onCheckedChange={setCombobox}
         />
-        <hr className="my-1 h-px border-0 bg-gray-300 dark:bg-gray-600 sm:col-span-2" />
+        <Separator className="my-1 sm:col-span-2" />
         <ToolbarCheckbox
           label="asynchronous"
           checked={asynchronous}
@@ -167,6 +169,6 @@ export function MentionsToolbarPlugin() {
           />
         )}
       </div>
-    </>
+    </Card>
   );
 }
