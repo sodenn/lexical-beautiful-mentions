@@ -6,6 +6,9 @@ import {
 import { forwardRef } from "react";
 import Fade from "./Fade";
 
+/**
+ * Combobox component for the BeautifulMentionsPlugin.
+ */
 export const Combobox = forwardRef<any, BeautifulMentionsComboboxProps>(
   ({ optionType, loading, ...other }, ref) => {
     if (loading) {
@@ -28,7 +31,7 @@ export const Combobox = forwardRef<any, BeautifulMentionsComboboxProps>(
             scrollbarWidth: "none",
             msOverflowStyle: "none",
           }}
-          className="m-0 h-full list-none overflow-scroll overflow-y-scroll rounded-b bg-popover p-0 text-popover-foreground"
+          className="m-0 mt-1 h-full list-none overflow-scroll overflow-y-scroll rounded-b bg-popover p-0 text-popover-foreground"
           {...other}
         />
       </Fade>
@@ -37,23 +40,24 @@ export const Combobox = forwardRef<any, BeautifulMentionsComboboxProps>(
 );
 Combobox.displayName = "Combobox";
 
+/**
+ * ComboboxItem component for the BeautifulMentionsPlugin.
+ */
 export const ComboboxItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsComboboxItemProps
 >(({ selected, item, ...props }, ref) => (
   <>
     {item.data.dividerTop && (
-      <div className="py-1">
-        <div className="flex border-b border-slate-500" />
+      <div className="p-1">
+        <div className="flex border-b border-muted" />
       </div>
     )}
     <li
       ref={ref}
       className={cn(
-        "mx-1.5 flex min-w-[150px] shrink-0 cursor-pointer flex-row content-center whitespace-nowrap rounded border-0 px-2.5 py-1.5 leading-4 text-slate-950 outline-none last:mb-1 last:scroll-mb-1 dark:text-slate-300",
-        selected
-          ? "bg-gray-200 dark:bg-gray-700"
-          : "bg-slate-300 dark:bg-slate-600",
+        "relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-sm outline-none transition-colors",
+        selected && "bg-accent text-accent-foreground",
       )}
       {...props}
     />

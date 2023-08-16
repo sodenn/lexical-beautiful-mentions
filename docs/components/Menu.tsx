@@ -6,6 +6,9 @@ import {
 import { forwardRef } from "react";
 import Fade from "./Fade";
 
+/**
+ * Menu component for the BeautifulMentionsPlugin.
+ */
 export const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
   ({ open, loading, ...other }, ref) => {
     if (loading) {
@@ -37,6 +40,9 @@ export const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
 );
 Menu.displayName = "Menu";
 
+/**
+ * MenuItem component for the BeautifulMentionsPlugin.
+ */
 export const MenuItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsMenuItemProps

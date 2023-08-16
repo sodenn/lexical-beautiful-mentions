@@ -164,7 +164,8 @@ function Plugins() {
             <ContentEditable
               style={{ tabSize: 1 }}
               className={cn(
-                "min-h-10 z-1 relative w-full flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+                "z-1 relative w-full flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+                !combobox && "min-h-[5rem]",
                 focused &&
                   !combobox &&
                   "outline-none ring-2 ring-ring ring-offset-2",
