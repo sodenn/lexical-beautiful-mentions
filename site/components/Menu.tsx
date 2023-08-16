@@ -4,7 +4,6 @@ import {
   BeautifulMentionsMenuProps,
 } from "lexical-beautiful-mentions";
 import { forwardRef } from "react";
-import Fade from "./Fade";
 
 /**
  * Menu component for the BeautifulMentionsPlugin.
@@ -13,28 +12,24 @@ export const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
   ({ open, loading, ...other }, ref) => {
     if (loading) {
       return (
-        <Fade>
-          <div
-            ref={ref}
-            className="m-0 mt-6 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-2.5 text-sm text-popover-foreground"
-          >
-            Loading...
-          </div>
-        </Fade>
+        <div
+          ref={ref}
+          className="m-0 mt-6 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-2.5 text-sm text-popover-foreground shadow-md animate-in slide-in-from-top-2"
+        >
+          Loading...
+        </div>
       );
     }
     return (
-      <Fade in={open}>
-        <ul
-          ref={ref}
-          style={{
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          }}
-          className="m-0 mt-6 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground"
-          {...other}
-        />
-      </Fade>
+      <ul
+        ref={ref}
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+        className="m-0 mt-6 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in slide-in-from-top-2"
+        {...other}
+      />
     );
   },
 );

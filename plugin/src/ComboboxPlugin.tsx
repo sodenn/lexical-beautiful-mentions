@@ -160,7 +160,6 @@ export function useAnchorRef(
     newAnchorChild.style.left = "0";
     newAnchorChild.style.right = "0";
     newAnchorChild.style.paddingTop = `${height}px`;
-    newAnchorChild.className = comboboxAnchorClassName || "";
     anchor.prepend(newAnchorChild);
     if (!anchorChild) {
       setAnchorChild(newAnchorChild);
@@ -169,6 +168,9 @@ export function useAnchorRef(
       newAnchorChild.style.paddingTop = `${entry.contentRect.height}px`;
     });
     anchorObserver.observe(anchor);
+    setTimeout(() => {
+      newAnchorChild.className = comboboxAnchorClassName || "";
+    });
     return () => {
       anchorObserver.disconnect();
       anchor.removeChild(newAnchorChild);

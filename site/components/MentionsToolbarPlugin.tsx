@@ -35,7 +35,9 @@ function ToolbarCheckbox({
           className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           {label}
-          <p className="pt-1 text-sm text-muted-foreground">{helperText}</p>
+          <p className="pt-1 text-sm font-normal text-muted-foreground">
+            {helperText}
+          </p>
         </label>
       </div>
     </div>
@@ -86,10 +88,11 @@ export function MentionsToolbarPlugin() {
   return (
     <Card className="mt-2 flex flex-col gap-3 p-2">
       <div className="grid grid-cols-2 gap-1 sm:gap-2">
-        <Button onClick={() => openMentionMenu({ trigger: "@" })}>
+        <Button size="sm" onClick={() => openMentionMenu({ trigger: "@" })}>
           Open Suggestions
         </Button>
         <Button
+          size="sm"
           onClick={() =>
             renameMentions({
               trigger: "due:",
@@ -100,8 +103,11 @@ export function MentionsToolbarPlugin() {
         >
           Rename Mention
         </Button>
-        <Button onClick={handleRemoveMentions}>Remove Mention</Button>
+        <Button size="sm" onClick={handleRemoveMentions}>
+          Remove Mention
+        </Button>
         <Button
+          size="sm"
           onClick={() =>
             insertMention({
               trigger: "#",

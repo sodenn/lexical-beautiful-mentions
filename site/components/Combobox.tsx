@@ -4,7 +4,6 @@ import {
   BeautifulMentionsComboboxProps,
 } from "lexical-beautiful-mentions";
 import { forwardRef } from "react";
-import Fade from "./Fade";
 
 /**
  * Combobox component for the BeautifulMentionsPlugin.
@@ -13,28 +12,24 @@ export const Combobox = forwardRef<any, BeautifulMentionsComboboxProps>(
   ({ optionType, loading, ...other }, ref) => {
     if (loading) {
       return (
-        <Fade>
-          <div
-            ref={ref}
-            className="h-full overflow-hidden rounded-b bg-popover p-3 text-sm text-popover-foreground"
-          >
-            <div className="">Loading...</div>
-          </div>
-        </Fade>
+        <div
+          ref={ref}
+          className="h-full overflow-hidden rounded-b bg-popover p-3 text-sm text-popover-foreground"
+        >
+          <div className="">Loading...</div>
+        </div>
       );
     }
     return (
-      <Fade in={true}>
-        <ul
-          ref={ref}
-          style={{
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          }}
-          className="m-0 mt-1 h-full list-none overflow-scroll overflow-y-scroll rounded-b bg-popover p-0 text-popover-foreground"
-          {...other}
-        />
-      </Fade>
+      <ul
+        ref={ref}
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+        className="m-0 mt-[1px] h-full list-none overflow-scroll overflow-y-scroll rounded-b bg-popover p-[1px] text-popover-foreground"
+        {...other}
+      />
     );
   },
 );

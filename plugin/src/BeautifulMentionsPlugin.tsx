@@ -574,7 +574,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           ? ReactDOM.createPortal(
               <MenuComponent
                 loading={loading}
-                open={open}
                 role="menu"
                 aria-label="Choose a mention"
                 aria-hidden={!open}

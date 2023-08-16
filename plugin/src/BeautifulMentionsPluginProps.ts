@@ -31,10 +31,6 @@ export type BeautifulMentionsItem =
 
 export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   /**
-   * If `true`, the menu is open.
-   */
-  open: boolean;
-  /**
    * If `true`, the `onSearch` function is currently running.
    */
   loading?: boolean;
