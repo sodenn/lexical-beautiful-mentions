@@ -153,7 +153,7 @@ function Plugins() {
       <div
         ref={comboboxAnchor}
         className={cn(
-          "relative flex items-start text-left",
+          "relative text-left",
           !combobox && "rounded",
           combobox && !menuOrComboboxOpen && "rounded",
           combobox && menuOrComboboxOpen && "rounded-t",
