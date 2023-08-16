@@ -1,6 +1,6 @@
 "use client"; // prettier-ignore
 import { defaultInitialValue } from "@/lib/editor-config";
-import useQueryParams from "@/lib/useQueryParams";
+import useQueryParams, { QueryParam } from "@/lib/useQueryParams";
 import { sanitize } from "dompurify";
 import { BeautifulMentionsPluginProps } from "lexical-beautiful-mentions";
 import {
@@ -45,7 +45,7 @@ const creatableMap = {
 };
 
 const ConfigurationProvider = ({ children }: PropsWithChildren) => {
-  const { updateQueryParam, hasQueryParams, getQueryParam } = useQueryParams();
+  const { setQueryParams, hasQueryParams, getQueryParam } = useQueryParams();
   const [asynchronous, _setAsynchronous] = useState(
     getQueryParam("async") === "true",
   );
@@ -84,65 +84,85 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const setAsynchronous = useCallback(
     (asynchronous: boolean) => {
       _setAsynchronous(asynchronous);
-      updateQueryParam("async", asynchronous);
+      setQueryParams([{ name: "async", value: asynchronous.toString() }]);
     },
-    [updateQueryParam],
+    [setQueryParams],
   );
 
   const setCombobox = useCallback(
     (combobox: boolean) => {
       _setCombobox(combobox);
-      updateQueryParam("combobox", combobox);
+      const newParams: QueryParam[] = [
+        { name: "combobox", value: combobox.toString() },
+      ];
+      if (combobox && insertOnBlur) {
+        _setInsertOnBlur(false);
+        newParams.push({ name: "blur", value: "false" });
+      }
+      if (!combobox && comboboxAdditionalItems) {
+        _setComboboxAdditionalItems(false);
+        newParams.push({
+          name: "cbai",
+          value: "false",
+        });
+      }
+      setQueryParams(newParams);
     },
-    [updateQueryParam],
+    [comboboxAdditionalItems, insertOnBlur, setQueryParams],
   );
 
   const setComboboxAdditionalItems = useCallback(
     (comboboxAdditionalItems: boolean) => {
       _setComboboxAdditionalItems(comboboxAdditionalItems);
-      updateQueryParam("cbai", comboboxAdditionalItems);
+      setQueryParams([
+        { name: "cbai", value: comboboxAdditionalItems.toString() },
+      ]);
     },
-    [updateQueryParam],
+    [setQueryParams],
   );
 
   const setMentionEnclosure = useCallback(
     (mentionEnclosure: boolean) => {
       _setMentionEnclosure(mentionEnclosure);
-      updateQueryParam("enclosure", mentionEnclosure);
+      setQueryParams([
+        { name: "enclosure", value: mentionEnclosure.toString() },
+      ]);
     },
-    [updateQueryParam],
+    [setQueryParams],
   );
 
   const setShowMentionsOnDelete = useCallback(
     (showMentionsOnDelete: boolean) => {
       _setShowMentionsOnDelete(showMentionsOnDelete);
-      updateQueryParam("mentions", showMentionsOnDelete);
+      setQueryParams([
+        { name: "mentions", value: showMentionsOnDelete.toString() },
+      ]);
     },
-    [updateQueryParam],
+    [setQueryParams],
   );
 
   const setAllowSpaces = useCallback(
     (allowSpaces: boolean) => {
       _setAllowSpaces(allowSpaces);
-      updateQueryParam("space", allowSpaces);
+      setQueryParams([{ name: "space", value: allowSpaces.toString() }]);
     },
-    [updateQueryParam],
+    [setQueryParams],
   );
 
   const setCreatable = useCallback(
     (creatable: boolean) => {
       _setCreatable(creatable);
-      updateQueryParam("new", creatable);
+      setQueryParams([{ name: "new", value: creatable.toString() }]);
     },
-    [updateQueryParam],
+    [setQueryParams],
   );
 
   const setInsertOnBlur = useCallback(
     (insertOnBlur: boolean) => {
       _setInsertOnBlur(insertOnBlur);
-      updateQueryParam("blur", insertOnBlur);
+      setQueryParams([{ name: "blur", value: insertOnBlur.toString() }]);
     },
-    [updateQueryParam],
+    [setQueryParams],
   );
 
   const value = useMemo(

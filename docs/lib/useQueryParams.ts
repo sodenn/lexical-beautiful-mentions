@@ -15,46 +15,33 @@ interface QueryParams {
   cbai: string; // comboboxAdditionalItems
 }
 
+export interface QueryParam {
+  name: keyof QueryParams;
+  value?: string;
+}
+
 export default function useQueryParams() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const setQueryParam = useCallback(
-    (name: keyof QueryParams, value = "true") => {
+  const setQueryParams = useCallback(
+    (params: QueryParam[]) => {
       const newSearchParams = new URLSearchParams(
         Object.fromEntries(searchParams),
       );
-      newSearchParams.set(name, value);
+      params.forEach(({ name, value }) => {
+        if (value === "false") {
+          newSearchParams.delete(name);
+        } else {
+          newSearchParams.set(name, value);
+        }
+      });
       const search = newSearchParams.toString();
       const query = search ? `?${search}` : "";
       router.push(`${pathname}${query}`);
     },
     [pathname, router, searchParams],
-  );
-
-  const removeQueryParam = useCallback(
-    (name: keyof QueryParams) => {
-      const newSearchParams = new URLSearchParams(
-        Object.fromEntries(searchParams),
-      );
-      newSearchParams.delete(name);
-      const search = newSearchParams.toString();
-      const query = search ? `?${search}` : "";
-      router.push(`${pathname}${query}`);
-    },
-    [pathname, router, searchParams],
-  );
-
-  const updateQueryParam = useCallback(
-    (name: keyof QueryParams, setParam: boolean) => {
-      if (setParam) {
-        setQueryParam(name);
-      } else {
-        removeQueryParam(name);
-      }
-    },
-    [removeQueryParam, setQueryParam],
   );
 
   const hasQueryParams = useCallback(
@@ -68,10 +55,8 @@ export default function useQueryParams() {
   );
 
   return {
-    setQueryParam,
-    removeQueryParam,
+    setQueryParams,
     hasQueryParams,
     getQueryParam,
-    updateQueryParam,
   };
 }

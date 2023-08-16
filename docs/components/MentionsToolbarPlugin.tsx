@@ -81,16 +81,6 @@ export function MentionsToolbarPlugin() {
     });
   }, [commandFocus, getMentions, removeMentions]);
 
-  const handleComboboxChange: CheckboxProps["onCheckedChange"] = useCallback(
-    (checked) => {
-      setCombobox(checked === true);
-      if (checked === true && insertOnBlur) {
-        setInsertOnBlur(false);
-      }
-    },
-    [setCombobox, setInsertOnBlur, insertOnBlur],
-  );
-
   return (
     <>
       <div className="my-3 grid grid-cols-2 gap-1 sm:gap-2">
@@ -153,7 +143,7 @@ export function MentionsToolbarPlugin() {
           label="combobox"
           checked={combobox}
           helperText="Use a combobox instead of a menu."
-          onCheckedChange={handleComboboxChange}
+          onCheckedChange={setCombobox}
         />
         <hr className="my-1 h-px border-0 bg-gray-300 dark:bg-gray-600 sm:col-span-2" />
         <ToolbarCheckbox
