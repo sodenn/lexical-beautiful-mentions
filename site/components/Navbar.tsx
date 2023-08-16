@@ -10,7 +10,7 @@ export function Navbar() {
           </h1>
           <div>
             <a
-              className="text-slate-900 underline dark:text-white"
+              className="text-primary underline"
               href="https://github.com/sodenn/lexical-beautiful-mentions"
               target="_blank"
             >
