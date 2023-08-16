@@ -20,7 +20,7 @@ npm-debug.log*
 .turbo
 
 # build
-lib
+plugin/lib
 
 # IDE
 .idea

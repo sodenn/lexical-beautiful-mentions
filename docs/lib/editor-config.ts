@@ -5,7 +5,7 @@ import {
   BeautifulMentionNode,
   ZeroWidthNode,
 } from "lexical-beautiful-mentions";
-import ShowcaseTheme from "./theme";
+import theme from "./editor-theme";
 
 export const defaultInitialValue =
   "Hey @John, the task is #urgent and due:tomorrow";
@@ -26,7 +26,7 @@ const editorConfig = (
   initialValue: string,
 ): InitialConfigType => ({
   namespace: "",
-  theme: ShowcaseTheme,
+  theme,
   onError(error: any) {
     throw error;
   },

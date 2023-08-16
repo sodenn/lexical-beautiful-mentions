@@ -593,10 +593,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     }
   }, [onComboboxOpen, onComboboxClose, open]);
 
-  // call select callback when focused option changes
+  // call focus change callback when selected index changes
   useEffect(() => {
     if (selectedIndex !== null && !!options[selectedIndex]) {
-      onComboboxFocusChange?.(options[selectedIndex].value);
+      onComboboxFocusChange?.(options[selectedIndex].toComboboxItem());
     } else {
       onComboboxFocusChange?.(null);
     }

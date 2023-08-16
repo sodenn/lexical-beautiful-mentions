@@ -1,0 +1,53 @@
+import { cn } from "@/lib/utils";
+import {
+  BeautifulMentionsMenuItemProps,
+  BeautifulMentionsMenuProps,
+} from "lexical-beautiful-mentions";
+import { forwardRef } from "react";
+import Fade from "./Fade";
+
+export const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
+  ({ open, loading, ...other }, ref) => {
+    if (loading) {
+      return (
+        <Fade>
+          <div
+            ref={ref}
+            className="m-0 mt-6 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-2.5 text-sm text-popover-foreground"
+          >
+            Loading...
+          </div>
+        </Fade>
+      );
+    }
+    return (
+      <Fade in={open}>
+        <ul
+          ref={ref}
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+          className="m-0 mt-6 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground"
+          {...other}
+        />
+      </Fade>
+    );
+  },
+);
+Menu.displayName = "Menu";
+
+export const MenuItem = forwardRef<
+  HTMLLIElement,
+  BeautifulMentionsMenuItemProps
+>(({ selected, itemValue, label, ...props }, ref) => (
+  <li
+    ref={ref}
+    className={cn(
+      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
+      selected && "bg-accent text-accent-foreground",
+    )}
+    {...props}
+  />
+));
+MenuItem.displayName = "MenuItem";

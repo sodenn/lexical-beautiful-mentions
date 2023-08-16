@@ -1,4 +1,6 @@
 "use client"; // prettier-ignore
+import { defaultInitialValue } from "@/lib/editor-config";
+import useQueryParams from "@/lib/useQueryParams";
 import { sanitize } from "dompurify";
 import { BeautifulMentionsPluginProps } from "lexical-beautiful-mentions";
 import {
@@ -9,8 +11,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { defaultInitialValue } from "./editorConfig";
-import useQueryParams from "./useQueryParams";
 
 interface Configuration
   extends Pick<
