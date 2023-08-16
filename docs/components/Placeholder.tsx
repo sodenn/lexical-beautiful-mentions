@@ -1,16 +1,9 @@
-import { useConfiguration } from "@/components/ConfigurationProvider";
-import { cn } from "@/lib/utils";
-
+/**
+ * Placeholder for the editor.
+ */
 export function Placeholder() {
-  const { combobox } = useConfiguration();
   return (
-    <div
-      className={cn(
-        "pointer-events-none absolute inline-block select-none overflow-hidden overflow-ellipsis text-muted-foreground",
-        combobox && "left-[14px] top-[18px]",
-        !combobox && "left-3 top-4",
-      )}
-    >
+    <div className="pointer-events-none absolute left-3 top-[9px] inline-block select-none overflow-hidden overflow-ellipsis text-muted-foreground">
       Enter some plain text...
     </div>
   );
