@@ -155,7 +155,7 @@ test.describe("Insert mention", () => {
     await expect(utils.editor).toBeFocused();
   });
 
-  test.only("should insert a new mention without focus the editor", async ({
+  test("should insert a new mention without focus the editor", async ({
     page,
     browserName,
   }) => {
@@ -187,7 +187,7 @@ test.describe("Insert mention", () => {
     );
   });
 
-  test.only("should insert multiple mention one after the other", async ({
+  test("should insert multiple mention one after the other", async ({
     page,
     browserName,
   }) => {

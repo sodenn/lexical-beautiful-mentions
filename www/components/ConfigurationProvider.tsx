@@ -68,7 +68,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const [showMentionsOnDelete, _setShowMentionsOnDelete] = useState(
     getQueryParam("mentions") === "true",
   );
-  const commandFocus = getQueryParam("cf") !== "false";
+  const commandFocus = getQueryParam("cf") === "true";
   const focusParam = getQueryParam("focus");
   const valueParam = getQueryParam("value");
   const hasValue = hasQueryParams("value");

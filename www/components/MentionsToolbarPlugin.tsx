@@ -90,14 +90,14 @@ export function MentionsToolbarPlugin() {
       <div className="grid grid-cols-2 gap-1 sm:gap-2">
         <Button
           size="sm"
-          onMouseDown={(e) => e.preventDefault()}
+          onMouseDown={commandFocus ? (e) => e.preventDefault() : undefined}
           onClick={() => openMentionMenu({ trigger: "@" })}
         >
           Open Suggestions
         </Button>
         <Button
           size="sm"
-          onMouseDown={(e) => e.preventDefault()}
+          onMouseDown={commandFocus ? (e) => e.preventDefault() : undefined}
           onClick={() =>
             renameMentions({
               trigger: "due:",
@@ -110,14 +110,14 @@ export function MentionsToolbarPlugin() {
         </Button>
         <Button
           size="sm"
-          onMouseDown={(e) => e.preventDefault()}
+          onMouseDown={commandFocus ? (e) => e.preventDefault() : undefined}
           onClick={handleRemoveMentions}
         >
           Remove Mention
         </Button>
         <Button
           size="sm"
-          onMouseDown={(e) => e.preventDefault()}
+          onMouseDown={commandFocus ? (e) => e.preventDefault() : undefined}
           onClick={() =>
             insertMention({
               trigger: "#",
