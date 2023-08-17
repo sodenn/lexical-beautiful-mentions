@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Navbar />
-          <main className="container flex flex-col items-center pb-3 pt-5">
+          <main className="container flex flex-col items-center px-4 pb-3 pt-5 sm:mx-auto">
             {children}
           </main>
         </ThemeProvider>

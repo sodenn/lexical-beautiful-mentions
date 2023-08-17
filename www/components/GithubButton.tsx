@@ -18,10 +18,10 @@ export function GithubButton() {
       target="_blank"
       rel="noreferrer"
       href="https://github.com/sodenn/lexical-beautiful-mentions"
-      className={cn(buttonVariants({ variant: "outline" }))}
+      className={cn(buttonVariants({ variant: "outline" }), "w-10 px-0")}
     >
-      <GitHubIcon className="mr-2 h-4 w-4" />
-      GitHub
+      <GitHubIcon className="h-4 w-4" />
+      <span className="sr-only">GitHub</span>
     </Link>
   );
 }
