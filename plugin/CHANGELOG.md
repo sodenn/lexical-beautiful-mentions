@@ -1,5 +1,22 @@
 # lexical-beautiful-mentions
 
+## 0.1.14
+
+### Patch Changes
+
+- 2ff69af: fix(): do not close combobox when editor focus is lost
+- 2ff69af: feat(Combobox): allow to add additional combobox items
+- 4ce0123: - refactor(): remove `open` prop from Menu component
+
+  - refactor(): called `onComboboxFocusChange` with a `BeautifulMentionsComboboxItem` instead of a string
+
+  **BREAKING**
+
+  - `open` prop has been removed from `BeautifulMentionsMenuProps`
+  - `onComboboxFocusChange` now receives a `BeautifulMentionsComboboxItem` instead of a string
+
+- 2ff69af: feat(Combobox): control the combobox open state
+
 ## 0.1.13
 
 ### Patch Changes
