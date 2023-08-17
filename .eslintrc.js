@@ -45,7 +45,7 @@ module.exports = {
   },
   settings: {
     next: {
-      rootDir: ["site/"],
+      rootDir: ["www/"],
     },
   },
 };
