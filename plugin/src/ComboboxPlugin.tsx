@@ -246,7 +246,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     }
     return [
       ...props.options.map(
-        (opt) => new ComboboxOption(opt.value, opt.displayValue),
+        (opt) => new ComboboxOption(opt.value, opt.displayValue, opt.data),
       ),
       ...additionalOptions,
     ];

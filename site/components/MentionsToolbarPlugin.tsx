@@ -88,11 +88,16 @@ export function MentionsToolbarPlugin() {
   return (
     <Card className="mt-2 flex flex-col gap-3 p-2">
       <div className="grid grid-cols-2 gap-1 sm:gap-2">
-        <Button size="sm" onClick={() => openMentionMenu({ trigger: "@" })}>
+        <Button
+          size="sm"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => openMentionMenu({ trigger: "@" })}
+        >
           Open Suggestions
         </Button>
         <Button
           size="sm"
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() =>
             renameMentions({
               trigger: "due:",
@@ -103,11 +108,16 @@ export function MentionsToolbarPlugin() {
         >
           Rename Mention
         </Button>
-        <Button size="sm" onClick={handleRemoveMentions}>
+        <Button
+          size="sm"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={handleRemoveMentions}
+        >
           Remove Mention
         </Button>
         <Button
           size="sm"
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() =>
             insertMention({
               trigger: "#",
