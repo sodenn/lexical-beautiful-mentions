@@ -570,11 +570,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         anchorElementRef,
         { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
       ) =>
-        anchorElementRef.current
+        anchorElementRef.current && (options.length > 0 || loading)
           ? ReactDOM.createPortal(
               <MenuComponent
                 loading={loading}
-                open={open}
                 role="menu"
                 aria-label="Choose a mention"
                 aria-hidden={!open}

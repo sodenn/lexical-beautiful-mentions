@@ -37,7 +37,7 @@ You also need to install the `lexical` and `@lexical/react`, which is a peer dep
 Import the `BeautifulMentionsPlugin` plugin:
 
 ```tsx
-import { BeautifulMentionsPlugin } from "lexical-beautiful-mentions";
+import { BeautifulMentionsPlugin, BeautifulMentionNode } from "lexical-beautiful-mentions";
 ```
 
 Add the plugin to the lexical editor:
@@ -49,8 +49,13 @@ const mentionItems = {
   "due:": ["Today", "Tomorrow", "01-01-2023"],
 };
 
+const editorConfig = {
+  // ...
+  nodes: [BeautifulMentionNode] // 👈 register the mention node
+};
+
 return (
-  <LexicalComposer>
+  <LexicalComposer initialConfig={editorConfig}>
     {/** ... */}
     <BeautifulMentionsPlugin
       items={mentionItems}
@@ -141,7 +146,7 @@ const mentionItems = {
     // ...
   ],
 };
-// serializes to:
+// serializes to the following lexical nodes:
 // [
 //   {
 //     "trigger": "@",

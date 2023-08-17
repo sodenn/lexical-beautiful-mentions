@@ -160,7 +160,6 @@ export function useAnchorRef(
     newAnchorChild.style.left = "0";
     newAnchorChild.style.right = "0";
     newAnchorChild.style.paddingTop = `${height}px`;
-    newAnchorChild.className = comboboxAnchorClassName || "";
     anchor.prepend(newAnchorChild);
     if (!anchorChild) {
       setAnchorChild(newAnchorChild);
@@ -169,6 +168,9 @@ export function useAnchorRef(
       newAnchorChild.style.paddingTop = `${entry.contentRect.height}px`;
     });
     anchorObserver.observe(anchor);
+    setTimeout(() => {
+      newAnchorChild.className = comboboxAnchorClassName || "";
+    });
     return () => {
       anchorObserver.disconnect();
       anchor.removeChild(newAnchorChild);
@@ -244,7 +246,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     }
     return [
       ...props.options.map(
-        (opt) => new ComboboxOption(opt.value, opt.displayValue),
+        (opt) => new ComboboxOption(opt.value, opt.displayValue, opt.data),
       ),
       ...additionalOptions,
     ];
@@ -593,10 +595,10 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     }
   }, [onComboboxOpen, onComboboxClose, open]);
 
-  // call select callback when focused option changes
+  // call focus change callback when selected index changes
   useEffect(() => {
     if (selectedIndex !== null && !!options[selectedIndex]) {
-      onComboboxFocusChange?.(options[selectedIndex].value);
+      onComboboxFocusChange?.(options[selectedIndex].toComboboxItem());
     } else {
       onComboboxFocusChange?.(null);
     }

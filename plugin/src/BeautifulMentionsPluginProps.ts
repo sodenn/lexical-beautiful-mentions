@@ -31,10 +31,6 @@ export type BeautifulMentionsItem =
 
 export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   /**
-   * If `true`, the menu is open.
-   */
-  open: boolean;
-  /**
    * If `true`, the `onSearch` function is currently running.
    */
   loading?: boolean;
@@ -211,10 +207,10 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
    */
   onComboboxClose?: () => void;
   /**
-   * Callback fired when the user selects a combobox item.
-   * @param label The selected trigger or value.
+   * Callback fired when the focus of the currently selected combobox
+   * item changes.
    */
-  onComboboxFocusChange?: (label: string | null) => void;
+  onComboboxFocusChange?: (item: BeautifulMentionsComboboxItem | null) => void;
   menuComponent?: never;
   menuItemComponent?: never;
   insertOnBlur?: never;
