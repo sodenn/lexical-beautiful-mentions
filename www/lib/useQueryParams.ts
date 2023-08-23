@@ -13,6 +13,7 @@ interface QueryParams {
   mentions: string; // showMentionsOnDelete
   enclosure: string; // mentionEnclosure
   cbai: string; // comboboxAdditionalItems
+  cstmn: string; // custom mention node
 }
 
 export interface QueryParam {

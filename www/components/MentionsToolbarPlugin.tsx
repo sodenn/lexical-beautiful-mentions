@@ -62,6 +62,7 @@ export function MentionsToolbarPlugin() {
     creatable,
     insertOnBlur,
     commandFocus,
+    customMentionNode,
     setAsynchronous,
     setCombobox,
     setComboboxAdditionalItems,
@@ -70,6 +71,7 @@ export function MentionsToolbarPlugin() {
     setCreatable,
     setInsertOnBlur,
     setShowMentionsOnDelete,
+    setCustomMentionNode,
   } = useConfiguration();
 
   const handleRemoveMentions = useCallback(() => {
@@ -184,6 +186,12 @@ export function MentionsToolbarPlugin() {
             onCheckedChange={setComboboxAdditionalItems}
           />
         )}
+        <ToolbarCheckbox
+          label="Custom mentions"
+          checked={!!customMentionNode}
+          helperText="Use a custom mention node. In this example, each mention has a tooltip."
+          onCheckedChange={setCustomMentionNode}
+        />
       </div>
     </Card>
   );

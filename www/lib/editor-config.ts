@@ -4,6 +4,7 @@ import { InitialConfigType } from "@lexical/react/LexicalComposer";
 import { $createParagraphNode, $getRoot } from "lexical";
 import {
   $convertToMentionNodes,
+  BeautifulMentionNode,
   ZeroWidthNode,
   createBeautifulMentionNode,
 } from "lexical-beautiful-mentions";
@@ -25,6 +26,7 @@ function setEditorState(initialValue: string, triggers: string[]) {
 const editorConfig = (
   triggers: string[],
   initialValue: string,
+  customMentionNode: boolean,
 ): InitialConfigType => ({
   namespace: "",
   theme,
@@ -32,7 +34,12 @@ const editorConfig = (
     throw error;
   },
   editorState: setEditorState(initialValue, triggers),
-  nodes: [...createBeautifulMentionNode(CustomMentionComponent), ZeroWidthNode],
+  nodes: [
+    ...(customMentionNode
+      ? createBeautifulMentionNode(CustomMentionComponent)
+      : [BeautifulMentionNode]),
+    ZeroWidthNode,
+  ],
 });
 
 export default editorConfig;

@@ -14,6 +14,7 @@ interface TestUtilsOptions {
   mentionEnclosure?: boolean;
   showMentionsOnDelete?: boolean;
   comboboxAdditionalItems?: boolean;
+  customMentionNode?: boolean;
 }
 
 type PlaywrightArgs = { page: Page; browserName: string };
@@ -34,6 +35,7 @@ export async function testUtils(
     mentionEnclosure = false,
     showMentionsOnDelete = false,
     comboboxAdditionalItems = false,
+    customMentionNode = false,
   } = options;
   const utils = new TestUtils(
     args.page,
@@ -49,6 +51,7 @@ export async function testUtils(
     mentionEnclosure,
     showMentionsOnDelete,
     comboboxAdditionalItems,
+    customMentionNode
   );
   await utils.init();
   return utils;
@@ -71,6 +74,7 @@ export class TestUtils {
     private mentionEnclosure: boolean,
     private showMentionsOnDelete: boolean,
     private comboboxAdditionalItems: boolean,
+    private customMentionNode: boolean
   ) {
     this.setInitialValue(initialValue);
   }
@@ -180,6 +184,7 @@ export class TestUtils {
     url += `&cf=${this.commandFocus}`;
     url += `&value=${this.initialValue}`;
     url += `&cbai=${this.comboboxAdditionalItems}`;
+    url += `&cstmn=${this.customMentionNode}`;
     await this.page.goto(url);
     await this.sleep(100);
   }
