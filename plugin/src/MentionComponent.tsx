@@ -22,7 +22,8 @@ import {
   RangeSelection,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ElementType, useCallback, useMemo, useState } from "react";
+import { BeautifulMentionComponentProps as CustomBeautifulMentionComponentProps } from "./BeautifulMentionsPluginProps";
 import { $isBeautifulMentionNode } from "./MentionNode";
 import { IS_IOS } from "./environment";
 import { getNextSibling, getPreviousSibling } from "./mention-utils";
@@ -32,6 +33,8 @@ interface BeautifulMentionComponentProps {
   nodeKey: NodeKey;
   trigger: string;
   value: string;
+  data?: { [p: string]: string | boolean | number };
+  component?: ElementType<CustomBeautifulMentionComponentProps> | null;
   className?: string;
   classNameFocused?: string;
   themeValues?: BeautifulMentionsThemeValues;
@@ -40,8 +43,16 @@ interface BeautifulMentionComponentProps {
 export default function BeautifulMentionComponent(
   props: BeautifulMentionComponentProps,
 ) {
-  const { trigger, value, className, classNameFocused, themeValues, nodeKey } =
-    props;
+  const {
+    value,
+    trigger,
+    data,
+    className,
+    classNameFocused,
+    themeValues,
+    nodeKey,
+    component: Component,
+  } = props;
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
@@ -49,7 +60,7 @@ export default function BeautifulMentionComponent(
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
   const isFocused = $isNodeSelection(selection) && isSelected;
-  const ref = React.useRef<HTMLSpanElement>(null);
+  const ref = React.useRef<any>(null);
   const mention = trigger + value;
 
   const finalClasses = useMemo(() => {
@@ -228,6 +239,21 @@ export default function BeautifulMentionComponent(
     onDelete,
     onSelectionChange,
   ]);
+
+  if (Component) {
+    return (
+      <Component
+        ref={ref}
+        trigger={trigger}
+        value={value}
+        data={data}
+        className={finalClasses}
+        data-beautiful-mention={mention}
+      >
+        {mention}
+      </Component>
+    );
+  }
 
   if (themeValues) {
     return (
