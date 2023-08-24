@@ -10,6 +10,7 @@ import {
 } from "lexical";
 import {
   $getSelectionInfo,
+  $selectEnd,
   getNextSibling,
   getPreviousSibling,
 } from "./mention-utils";
@@ -181,7 +182,7 @@ function $insertMentionOrTrigger(
   return true;
 }
 
-export function $removeMention(trigger: string, value?: string) {
+export function $removeMention(trigger: string, value?: string, focus = true) {
   let removed = false;
   const mentions = $nodesOfType(BeautifulMentionNode);
   for (const mention of mentions) {
@@ -207,6 +208,9 @@ export function $removeMention(trigger: string, value?: string) {
       ) {
         prev.setTextContent(prev.getTextContent().trimEnd());
       }
+      if (removed && focus) {
+        focusEditor(prev, next);
+      }
     }
   }
   return removed;
@@ -216,6 +220,7 @@ export function $renameMention(
   trigger: string,
   newValue: string,
   value?: string,
+  focus = true,
 ) {
   let renamed = false;
   const mentions = $nodesOfType(BeautifulMentionNode);
@@ -226,6 +231,21 @@ export function $renameMention(
       renamed = true;
       mention.setValue(newValue);
     }
+    if (renamed && focus) {
+      const prev = getPreviousSibling(mention);
+      const next = getNextSibling(mention);
+      focusEditor(prev, next);
+    }
   }
   return renamed;
+}
+
+function focusEditor(prev: LexicalNode | null, next: LexicalNode | null) {
+  if (next && $isTextNode(next)) {
+    next.select(0, 0);
+  } else if (prev && $isTextNode(prev)) {
+    prev.select();
+  } else {
+    $selectEnd();
+  }
 }

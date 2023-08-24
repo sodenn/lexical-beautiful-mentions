@@ -2,7 +2,6 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { useBasicTypeaheadTriggerMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
-  $createRangeSelection,
   $createTextNode,
   $getSelection,
   $nodesOfType,
@@ -41,6 +40,7 @@ import {
 } from "./mention-commands";
 import {
   $getSelectionInfo,
+  $selectEnd,
   DEFAULT_PUNCTUATION,
   LENGTH_LIMIT,
   TRIGGERS,
@@ -326,8 +326,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
   const setSelection = useCallback(() => {
     const selection = $getSelection();
-    if (!selection) {
-      $setSelection(oldSelection || $createRangeSelection());
+    if (!selection && oldSelection) {
+      $setSelection(oldSelection);
+    } else if (!selection) {
+      $selectEnd();
     }
     if (oldSelection) {
       setOldSelection(null);
@@ -476,8 +478,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.registerCommand(
         REMOVE_MENTIONS_COMMAND,
         ({ trigger, value, focus }) => {
-          setSelection();
-          const removed = $removeMention(trigger, value);
+          const removed = $removeMention(trigger, value, focus);
           if (removed && !focus) {
             archiveSelection();
           }
@@ -488,8 +489,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.registerCommand(
         RENAME_MENTIONS_COMMAND,
         ({ trigger, newValue, value, focus }) => {
-          setSelection();
-          const renamed = $renameMention(trigger, newValue, value);
+          const renamed = $renameMention(trigger, newValue, value, focus);
           if (renamed && !focus) {
             archiveSelection();
           }
@@ -499,8 +499,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ),
       editor.registerCommand(
         OPEN_MENTION_MENU_COMMAND,
-        ({ trigger }) =>
-          $insertTriggerAtSelection(triggers, punctuation, trigger),
+        ({ trigger }) => {
+          setSelection();
+          return $insertTriggerAtSelection(triggers, punctuation, trigger);
+        },
         COMMAND_PRIORITY_LOW,
       ),
     );

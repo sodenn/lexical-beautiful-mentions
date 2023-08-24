@@ -1,8 +1,14 @@
 import {
+  $createRangeSelection,
+  $getRoot,
   $getSelection,
+  $isDecoratorNode,
+  $isElementNode,
   $isRangeSelection,
   $isTextNode,
+  $setSelection,
   LexicalNode,
+  RootNode,
 } from "lexical";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 
@@ -136,4 +142,33 @@ export function getMenuItemLimitProp(
     return menuItemLimit[trigger];
   }
   return 5;
+}
+
+function getLastNode(root: RootNode) {
+  const descendant = root.getLastDescendant();
+  if ($isElementNode(descendant) || $isTextNode(descendant)) {
+    return descendant;
+  }
+  if ($isDecoratorNode(descendant)) {
+    return descendant.getParent();
+  }
+  return root;
+}
+
+export function $selectEnd() {
+  const root = $getRoot();
+  const lastNode = getLastNode(root);
+  const key = lastNode && lastNode.getKey();
+  const offset = $isElementNode(lastNode)
+    ? lastNode.getChildrenSize()
+    : $isTextNode(lastNode)
+    ? lastNode.getTextContent().length
+    : 0;
+  const type = $isElementNode(lastNode) ? "element" : "text";
+  if (key) {
+    const newSelection = $createRangeSelection();
+    newSelection.anchor.set(key, offset, type);
+    newSelection.focus.set(key, offset, type);
+    $setSelection(newSelection);
+  }
 }
