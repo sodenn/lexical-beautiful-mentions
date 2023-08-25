@@ -184,13 +184,15 @@ function $insertMentionOrTrigger(
 
 export function $removeMention(trigger: string, value?: string, focus = true) {
   let removed = false;
+  let prev: LexicalNode | null = null;
+  let next: LexicalNode | null = null;
   const mentions = $nodesOfType(BeautifulMentionNode);
   for (const mention of mentions) {
     const sameTrigger = mention.getTrigger() === trigger;
     const sameValue = mention.getValue() === value;
     if (sameTrigger && (sameValue || !value)) {
-      const prev = getPreviousSibling(mention);
-      const next = getNextSibling(mention);
+      prev = getPreviousSibling(mention);
+      next = getNextSibling(mention);
       mention.remove();
       removed = true;
       // Prevent double spaces
@@ -208,10 +210,10 @@ export function $removeMention(trigger: string, value?: string, focus = true) {
       ) {
         prev.setTextContent(prev.getTextContent().trimEnd());
       }
-      if (removed && focus) {
-        focusEditor(prev, next);
-      }
     }
+  }
+  if (removed && focus) {
+    focusEditor(prev, next);
   }
   return removed;
 }
@@ -222,22 +224,27 @@ export function $renameMention(
   value?: string,
   focus = true,
 ) {
-  let renamed = false;
   const mentions = $nodesOfType(BeautifulMentionNode);
+  let renamedMention: BeautifulMentionNode | null = null;
   for (const mention of mentions) {
     const sameTrigger = mention.getTrigger() === trigger;
     const sameValue = mention.getValue() === value;
     if (sameTrigger && (sameValue || !value)) {
-      renamed = true;
+      renamedMention = mention;
       mention.setValue(newValue);
     }
-    if (renamed && focus) {
-      const prev = getPreviousSibling(mention);
-      const next = getNextSibling(mention);
-      focusEditor(prev, next);
+  }
+  if (renamedMention && focus) {
+    const prev = getPreviousSibling(renamedMention);
+    const next = getNextSibling(renamedMention);
+    focusEditor(prev, next);
+    if (next && $isTextNode(next)) {
+      next.select(0, 0);
+    } else {
+      $selectEnd();
     }
   }
-  return renamed;
+  return renamedMention !== null;
 }
 
 function focusEditor(prev: LexicalNode | null, next: LexicalNode | null) {
