@@ -10,6 +10,7 @@ import {
 } from "lexical";
 import {
   $getSelectionInfo,
+  $selectEnd,
   getNextSibling,
   getPreviousSibling,
 } from "./mention-utils";
@@ -181,15 +182,17 @@ function $insertMentionOrTrigger(
   return true;
 }
 
-export function $removeMention(trigger: string, value?: string) {
+export function $removeMention(trigger: string, value?: string, focus = true) {
   let removed = false;
+  let prev: LexicalNode | null = null;
+  let next: LexicalNode | null = null;
   const mentions = $nodesOfType(BeautifulMentionNode);
   for (const mention of mentions) {
     const sameTrigger = mention.getTrigger() === trigger;
     const sameValue = mention.getValue() === value;
     if (sameTrigger && (sameValue || !value)) {
-      const prev = getPreviousSibling(mention);
-      const next = getNextSibling(mention);
+      prev = getPreviousSibling(mention);
+      next = getNextSibling(mention);
       mention.remove();
       removed = true;
       // Prevent double spaces
@@ -209,6 +212,9 @@ export function $removeMention(trigger: string, value?: string) {
       }
     }
   }
+  if (removed && focus) {
+    focusEditor(prev, next);
+  }
   return removed;
 }
 
@@ -216,16 +222,37 @@ export function $renameMention(
   trigger: string,
   newValue: string,
   value?: string,
+  focus = true,
 ) {
-  let renamed = false;
   const mentions = $nodesOfType(BeautifulMentionNode);
+  let renamedMention: BeautifulMentionNode | null = null;
   for (const mention of mentions) {
     const sameTrigger = mention.getTrigger() === trigger;
     const sameValue = mention.getValue() === value;
     if (sameTrigger && (sameValue || !value)) {
-      renamed = true;
+      renamedMention = mention;
       mention.setValue(newValue);
     }
   }
-  return renamed;
+  if (renamedMention && focus) {
+    const prev = getPreviousSibling(renamedMention);
+    const next = getNextSibling(renamedMention);
+    focusEditor(prev, next);
+    if (next && $isTextNode(next)) {
+      next.select(0, 0);
+    } else {
+      $selectEnd();
+    }
+  }
+  return renamedMention !== null;
+}
+
+function focusEditor(prev: LexicalNode | null, next: LexicalNode | null) {
+  if (next && $isTextNode(next)) {
+    next.select(0, 0);
+  } else if (prev && $isTextNode(prev)) {
+    prev.select();
+  } else {
+    $selectEnd();
+  }
 }

@@ -20,6 +20,23 @@ test.describe("Open Suggestions", () => {
     );
   });
 
+  test("should open the menu even if the editor was never focused", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "none",
+        initialValue: "Hey",
+      },
+    );
+    await expect(utils.mentionsMenu).not.toBeVisible();
+    await page.getByText("Open Suggestions").click();
+    await expect(utils.mentionsMenu).toBeVisible();
+    await utils.hasText("Hey @");
+  });
+
   test("should open the menu at the start of the editor", async ({
     page,
     browserName,
@@ -88,6 +105,25 @@ test.describe("Rename mentions", () => {
       await expect(utils.editor).toBeFocused();
     }
   });
+
+  test("should rename an mention even if the editor was never focused", async ({
+    page,
+    browserName,
+    isMobile,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "none",
+        initialValue: "due:tomorrow",
+      },
+    );
+    await page.getByText("Rename Mention").click();
+    await utils.hasText("[due:today]");
+    if (!isMobile) {
+      await expect(utils.editor).toBeFocused();
+    }
+  });
 });
 
 test.describe("Remove mentions", () => {
@@ -137,6 +173,22 @@ test.describe("Remove mentions", () => {
     await page.getByText("Remove Mention").click();
     await utils.countMentions(0);
     await utils.hasText("The is important");
+  });
+
+  test("should remove a mention even if the editor was never focused", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "none",
+        initialValue: "This is due:tomorrow and urgent",
+      },
+    );
+    await utils.countMentions(1);
+    await page.getByText("Remove Mention").click();
+    await utils.countMentions(0);
   });
 });
 
@@ -202,5 +254,20 @@ test.describe("Insert mention", () => {
     await utils.sleep(100);
     await page.getByText("Insert Mention").click();
     await utils.hasText("[#work] [#work]");
+  });
+
+  test("should insert a new mention even if the editor was never focused", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "none",
+        initialValue: "Do your",
+      },
+    );
+    await page.getByText("Insert Mention").click();
+    await utils.hasText("Do your [#work]");
   });
 });
