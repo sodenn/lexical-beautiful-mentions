@@ -122,6 +122,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     menuItemComponent: MenuItemComponent = "li",
     menuAnchorClassName,
     showMentionsOnDelete,
+    showCurrentMentionsAsSuggestions = true,
     mentionEnclosure,
     onMenuOpen,
     onMenuClose,
@@ -163,13 +164,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         return new MenuOption(value, value, data);
       }
     });
+    // limit the number of menu items
     if (menuItemLimit !== false && menuItemLimit > 0) {
       opt = opt.slice(0, menuItemLimit);
     }
-    // Add mentions from the editor
-    const readyToAddEditorMentions = !onSearch || (!loading && query !== null);
-    // when a search function is provided, wait for the delayed search to prevent flickering
-    if (readyToAddEditorMentions) {
+    // Add mentions from the editor. When a search function is provided, wait for the
+    // delayed search to prevent flickering.
+    const readyToAddCurrentMentions = !onSearch || (!loading && query !== null);
+    if (readyToAddCurrentMentions && showCurrentMentionsAsSuggestions) {
       editor.getEditorState().read(() => {
         const mentions = $nodesOfType(BeautifulMentionNode);
         for (const mention of mentions) {
@@ -208,6 +210,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     trigger,
     creatable,
     menuItemLimit,
+    showCurrentMentionsAsSuggestions,
   ]);
 
   const open = isEditorFocused && (!!options.length || loading);

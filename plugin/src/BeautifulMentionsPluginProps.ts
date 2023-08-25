@@ -122,6 +122,12 @@ interface BeautifulMentionsProps {
    * @default {@link DEFAULT_PUNCTUATION}
    */
   punctuation?: string;
+  /**
+   * If `true`, the mention menu contains the mentions that are currently
+   * in the editor.
+   * @default true
+   */
+  showCurrentMentionsAsSuggestions?: boolean;
 }
 
 type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
