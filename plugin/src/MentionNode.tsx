@@ -8,7 +8,8 @@ import {
   type LexicalNode,
   type NodeKey,
 } from "lexical";
-import React from "react";
+import React, { ElementType } from "react";
+import { BeautifulMentionComponentProps } from "./BeautifulMentionsPluginProps";
 import MentionComponent from "./MentionComponent";
 import { BeautifulMentionsTheme } from "./theme";
 
@@ -166,6 +167,10 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     self.__data = data;
   }
 
+  component(): ElementType<BeautifulMentionComponentProps> | null {
+    return null;
+  }
+
   decorate(_editor: LexicalEditor, config: EditorConfig) {
     const theme: BeautifulMentionsTheme = config.theme.beautifulMentions || {};
     const entry = Object.entries(theme).find(([trigger]) =>
@@ -184,9 +189,11 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
         nodeKey={this.getKey()}
         trigger={this.getTrigger()}
         value={this.getValue()}
+        data={this.getData()}
         className={className}
         classNameFocused={classNameFocused}
         themeValues={themeValues}
+        component={this.component()}
       />
     );
   }

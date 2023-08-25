@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { TooltipProvider } from "@/components/ui/Tooltip";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ReactNode } from "react";
@@ -17,10 +18,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Navbar />
-          <main className="container flex flex-col items-center px-4 pb-3 pt-5 sm:mx-auto">
-            {children}
-          </main>
+          <TooltipProvider delayDuration={200}>
+            <Navbar />
+            <main className="container flex flex-col items-center px-4 pb-3 pt-5 sm:mx-auto">
+              {children}
+            </main>
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

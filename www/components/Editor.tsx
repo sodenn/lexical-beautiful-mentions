@@ -60,11 +60,15 @@ const queryMentions = async (
 };
 
 export default function Editor() {
-  const { initialValue } = useConfiguration();
+  const { initialValue, customMentionNode } = useConfiguration();
   return (
     <div className="mt-5 w-full max-w-2xl">
       <LexicalComposer
-        initialConfig={editorConfig(Object.keys(mentionItems), initialValue)}
+        initialConfig={editorConfig(
+          Object.keys(mentionItems),
+          initialValue,
+          customMentionNode,
+        )}
       >
         <Plugins />
       </LexicalComposer>

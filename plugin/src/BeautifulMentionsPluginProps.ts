@@ -261,3 +261,23 @@ export type BeautifulMentionsItemsProps =
 export type BeautifulMentionsPluginProps =
   | BeautifulMentionsSearchProps
   | BeautifulMentionsItemsProps;
+
+export interface BeautifulMentionComponentProps
+  extends Omit<ComponentPropsWithRef<any>, "value" | "data"> {
+  /**
+   * The trigger character(s) of the mention.
+   */
+  trigger: string;
+  /**
+   * The value of the mention without the trigger character(s).
+   */
+  value: string;
+  /**
+   * Additional data belonging to the mention.
+   */
+  data?: { [p: string]: string | boolean | number };
+  /**
+   * Contains a concatenated string of `trigger` and `value`.
+   */
+  "data-beautiful-mention": string;
+}

@@ -11,12 +11,14 @@
 A mentions plugin for the lexical editor. lexical is an extendable text editor for the web build by Meta. While the lexical playground offers a basic mentions plugin for demo purposes, this plugin is more advanced and offers the following features:
 
 - **Customizable triggers**: Use characters, words or regular expressions as triggers for mentions.
-- **Editing mentions outside of the editor**: Programmatically insert, delete, or rename mentions via the `useBeautifulMentions` hook.
+- **Editing mentions outside the editor**: Programmatically insert, delete, or rename mentions via the `useBeautifulMentions` hook.
 - **Customizable mention style**: You can change the look of the mentions via the editor theme to match the style of your application.
 - **Automatic spacing**: The plugin automatically adds spaces around the mentions, which makes it easier for the user to continue typing.
 - **Adding new mentions**: You can allow users to create new mentions that are not in the suggestion list.
 - **Flexible way to provide mentions**: You can use an async query function or a predefined list to provide mentions for the suggestion list.
 - **Custom menu and menu item**: You can customize the look and behavior of the menu that displays the mention suggestions.
+- **Additional metadata**: You can add additional metadata to the mention items, which will be included in the mention nodes when serializing the editor content.
+- **Custom mention component**: You can replace the default mention component with a custom component of your choice.
 
 ## Installation
 
@@ -65,7 +67,7 @@ return (
 );
 ```
 
-### Customizable mention style
+### Customize mention style
 
 <img src="https://raw.githubusercontent.com/sodenn/lexical-beautiful-mentions/main/resources/screenshot1.png" width="200"/><br>
 ```tsx
@@ -99,7 +101,71 @@ return (
 );
 ```
 
-### Add custom menu and menu item component
+### Custom mention node and component
+
+If applying styles via the theme is not enough, you can replace the BeautifulMentionNode by using the lexical [Node Overrides](https://lexical.dev/docs/concepts/node-replacement) API. This allows you to change the default behavior of the mention node:
+```tsx
+export class CustomMentionsNode extends BeautifulMentionNode {
+  static getType() {
+    return "custom-beautifulMention";
+  }
+  static clone(node: CustomBeautifulMentionNode) {
+    // TODO: implement
+  }
+  static importJSON(serializedNode: SerializedBeautifulMentionNode) {
+    // TODO: implement
+  }
+  exportJSON(): SerializedBeautifulMentionNode {
+    // TODO: implement
+  }
+  component(): ElementType<BeautifulMentionComponentProps> | null {
+    // the component that renders the mention in the editor
+    // return null to use the default component
+    // 💡 if you only want to replace the component use the `createBeautifulMentionNode` helper method.
+  }
+  decorate(editor: LexicalEditor, config: EditorConfig): React.JSX.Element {
+    // TODO: implement
+  }
+}
+const editorConfig = {
+  // ...
+  nodes: [
+    // Don't forget to register your custom node separately!
+    CustomMentionsNode,
+    {
+      replace: BeautifulMentionNode, 
+      with: (node: BeautifulMentionNode) => {
+        return new CustomMentionsNode(
+          node.getTrigger(),
+          node.getValue(),
+          node.getData(),
+        );
+      }
+    }
+  ]
+}
+```
+
+The plugin also provides a helper method that overrides the default `BeautifulMentionNode` and uses a customized version with a component of your choice:
+
+```tsx
+const CustomMentionComponent = forwardRef<
+  HTMLDivElement,
+  BeautifulMentionComponentProps
+>(({ trigger, value, children, ...other }, ref) => {
+  return (
+    <div {...other} ref={ref} title={trigger + value}>
+      {value}
+    </div>
+  );
+});
+const editorConfig = {
+  // ...
+  nodes: [...createBeautifulMentionNode(CustomMentionComponent)],
+};
+```
+
+###  Custom menu and menu item component
 
 <img src="https://raw.githubusercontent.com/sodenn/lexical-beautiful-mentions/main/resources/screenshot2.png" width="500"/><br>
 ```tsx

@@ -104,4 +104,25 @@ test.describe("mentions handling", () => {
     await utils.editor.press(undoCommand);
     await utils.hasText("");
   });
+
+  test("should use custom mention nodes", async ({
+    page,
+    browserName,
+    isMobile,
+  }) => {
+    test.skip(!!isMobile, "desktop only");
+    await testUtils(
+      { page, browserName },
+      {
+        initialValue: "@Catherine",
+        customMentionNode: true,
+      },
+    );
+    const mentionPosition = await page
+      .locator(`[data-beautiful-mention="@Catherine"]`)
+      .boundingBox();
+    await expect(page.getByRole("tooltip")).not.toBeVisible();
+    await page.mouse.move(mentionPosition.x, mentionPosition.y);
+    await expect(page.getByRole("tooltip")).toBeVisible();
+  });
 });

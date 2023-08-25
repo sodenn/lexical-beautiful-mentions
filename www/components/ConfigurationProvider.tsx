@@ -2,7 +2,7 @@
 import { defaultInitialValue } from "@/lib/editor-config";
 import useQueryParams, { QueryParam } from "@/lib/useQueryParams";
 import { sanitize } from "dompurify";
-import { BeautifulMentionsPluginProps } from "lexical-beautiful-mentions";
+import { useRouter } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -12,30 +12,8 @@ import {
   useState,
 } from "react";
 
-interface Configuration
-  extends Pick<
-    BeautifulMentionsPluginProps,
-    "allowSpaces" | "creatable" | "insertOnBlur"
-  > {
-  initialValue: string;
-  autoFocus: "rootStart" | "rootEnd" | "none";
-  asynchronous: boolean;
-  commandFocus: boolean;
-  combobox: boolean;
-  comboboxAdditionalItems: boolean;
-  mentionEnclosure?: string;
-  showMentionsOnDelete: boolean;
-  setAllowSpaces: (allowSpaces: boolean) => void;
-  setCreatable: (creatable: boolean) => void;
-  setInsertOnBlur: (insertOnBlur: boolean) => void;
-  setMentionEnclosure: (mentionEnclosure: boolean) => void;
-  setAsynchronous: (asynchronous: boolean) => void;
-  setCombobox: (combobox: boolean) => void;
-  setComboboxAdditionalItems: (comboboxAdditionalItems: boolean) => void;
-  setShowMentionsOnDelete: (showMentionsOnDelete: boolean) => void;
-}
-
-const ConfigurationCtx = createContext<Configuration>(undefined);
+const ConfigurationCtx =
+  createContext<ReturnType<typeof useConfigurationValue>>(undefined);
 
 const creatableMap = {
   "@": 'Add user "{{name}}"',
@@ -44,7 +22,8 @@ const creatableMap = {
   "rec:": 'Add recurrence "{{name}}"',
 };
 
-const ConfigurationProvider = ({ children }: PropsWithChildren) => {
+function useConfigurationValue() {
+  const router = useRouter();
   const { setQueryParams, hasQueryParams, getQueryParam } = useQueryParams();
   const [asynchronous, _setAsynchronous] = useState(
     getQueryParam("async") === "true",
@@ -67,6 +46,9 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   );
   const [showMentionsOnDelete, _setShowMentionsOnDelete] = useState(
     getQueryParam("mentions") === "true",
+  );
+  const [customMentionNode, _setCustomMentionNode] = useState(
+    getQueryParam("cstmn") === "true",
   );
   const commandFocus = getQueryParam("cf") === "true";
   const focusParam = getQueryParam("focus");
@@ -141,6 +123,15 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     [setQueryParams],
   );
 
+  const setCustomMentionNode = useCallback(
+    (customMentionNode: boolean) => {
+      router.refresh();
+      _setCustomMentionNode(customMentionNode);
+      setQueryParams([{ name: "cstmn", value: customMentionNode.toString() }]);
+    },
+    [router, setQueryParams],
+  );
+
   const setAllowSpaces = useCallback(
     (allowSpaces: boolean) => {
       _setAllowSpaces(allowSpaces);
@@ -165,7 +156,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
     [setQueryParams],
   );
 
-  const value = useMemo(
+  return useMemo(
     () => ({
       initialValue,
       autoFocus,
@@ -175,6 +166,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       setComboboxAdditionalItems,
       mentionEnclosure: mentionEnclosure ? '"' : undefined,
       showMentionsOnDelete,
+      customMentionNode,
       allowSpaces,
       creatable: creatable ? creatableMap : false,
       insertOnBlur,
@@ -185,6 +177,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       setCombobox,
       setMentionEnclosure,
       setShowMentionsOnDelete,
+      setCustomMentionNode,
       commandFocus,
     }),
     [
@@ -195,6 +188,7 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       comboboxAdditionalItems,
       commandFocus,
       creatable,
+      customMentionNode,
       initialValue,
       insertOnBlur,
       mentionEnclosure,
@@ -207,9 +201,13 @@ const ConfigurationProvider = ({ children }: PropsWithChildren) => {
       setMentionEnclosure,
       setShowMentionsOnDelete,
       showMentionsOnDelete,
+      setCustomMentionNode,
     ],
   );
+}
 
+const ConfigurationProvider = ({ children }: PropsWithChildren) => {
+  const value = useConfigurationValue();
   return (
     <ConfigurationCtx.Provider value={value}>
       {children}
