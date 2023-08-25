@@ -1,5 +1,14 @@
 # lexical-beautiful-mentions
 
+## 0.1.15
+
+### Patch Changes
+
+- 164beac: feat(): add support for custom mention nodes
+- a8da266: feat(): add option to enable/disable that the current mentions are displayed as suggestions
+- c473eab: feat(): add 'data' field to getMentions function
+- 1d2f712: fix(): allows inserting, deleting and renaming mentions when the editor was not previously focused
+
 ## 0.1.14
 
 ### Patch Changes
