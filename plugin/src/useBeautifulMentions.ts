@@ -82,8 +82,8 @@ export function useBeautifulMentions() {
   const getMentions = useCallback(() => {
     return editor.getEditorState().read(() =>
       $nodesOfType(BeautifulMentionNode).map((node) => {
-        const { trigger, value } = node.exportJSON();
-        return { trigger, value };
+        const { trigger, value, data } = node.exportJSON();
+        return { trigger, value, data };
       }),
     );
   }, [editor]);
