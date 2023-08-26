@@ -45,7 +45,7 @@ export const MenuItem = forwardRef<
   <li
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
+      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none",
       selected && "bg-accent text-accent-foreground",
     )}
     {...props}
