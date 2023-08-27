@@ -25,6 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         project: [ "chromium", "Mobile Safari" ]
+        shard: [1/4, 2/4, 3/4, 4/4]
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -40,14 +41,15 @@ jobs:
       if: matrix.project == 'Mobile Safari'
       run: npx playwright install webkit
     - name: Run Playwright tests
-      run: npx playwright test --project="${{ matrix.project }}"
+      run: npx playwright test --project="${{ matrix.project }}" --shard ${{ matrix.shard }}
       working-directory: www
-    - uses: actions/upload-artifact@v3
+    - name: Upload blob report to GitHub Actions Artifacts
       if: always()
+      uses: actions/upload-artifact@v3
       with:
-        name: playwright-report-${{ matrix.project }}
-        path: www/playwright-report/
-        retention-days: 3
+        name: all-blob-reports
+        path: blob-report
+        retention-days: 2
   hygiene:
     runs-on: ubuntu-latest
     steps:
