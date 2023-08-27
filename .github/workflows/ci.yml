@@ -24,8 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [ "chromium", "Mobile Safari" ]
-        shard: [1/3, 2/3, 3/3]
+        shard: [1/4, 2/4, 3/4, 4/4]
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -34,14 +33,10 @@ jobs:
         cache: 'npm'
     - name: Install dependencies
       run: npm ci
-    - name: Install chromium
-      if: matrix.project == 'chromium'
-      run: npx playwright install chromium
-    - name: Install Mobile Safari
-      if: matrix.project == 'Mobile Safari'
-      run: npx playwright install webkit
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test --project="${{ matrix.project }}" --shard ${{ matrix.shard }}
+      run: npx playwright test --shard ${{ matrix.shard }}
       working-directory: www
     - name: Upload blob report to GitHub Actions Artifacts
       if: always()
