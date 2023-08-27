@@ -435,7 +435,7 @@ export function Menu<TOption extends MenuOption>({
           event.preventDefault();
           event.stopImmediatePropagation();
           close();
-          return true;
+          return false;
         },
         COMMAND_PRIORITY_LOW,
       ),
