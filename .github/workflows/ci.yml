@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [ "chromium", "Mobile Safari" ]
+        shard: [1/4, 2/4, 3/4, 4/4]
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -33,21 +33,43 @@ jobs:
         cache: 'npm'
     - name: Install dependencies
       run: npm ci
-    - name: Install chromium
-      if: matrix.project == 'chromium'
-      run: npx playwright install chromium
-    - name: Install Mobile Safari
-      if: matrix.project == 'Mobile Safari'
-      run: npx playwright install webkit
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test --project="${{ matrix.project }}"
+      run: npx playwright test --shard ${{ matrix.shard }}
       working-directory: www
-    - uses: actions/upload-artifact@v3
+    - name: Upload blob report to GitHub Actions Artifacts
       if: always()
+      uses: actions/upload-artifact@v3
       with:
-        name: playwright-report-${{ matrix.project }}
-        path: www/playwright-report/
-        retention-days: 3
+        name: all-blob-reports
+        path: www/blob-report
+        retention-days: 1
+  merge-reports:
+    if: always()
+    needs: [ e2e ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: all-blob-reports
+          path: all-blob-reports
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+          retention-days: 14
   hygiene:
     runs-on: ubuntu-latest
     steps:
