@@ -2,6 +2,22 @@ import { expect, test } from "@playwright/test";
 import { testUtils } from "./test-utils";
 
 test.describe("Mention Menu", () => {
+  test("should close the menu when the editor is blurred", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "end",
+        initialValue: "@",
+      },
+    );
+    await expect(utils.mentionsMenu).toBeVisible();
+    await utils.editor.blur();
+    await expect(utils.mentionsMenu).not.toBeVisible();
+  });
+
   test("should open the menu before a comma", async ({ page, browserName }) => {
     const utils = await testUtils(
       { page, browserName },

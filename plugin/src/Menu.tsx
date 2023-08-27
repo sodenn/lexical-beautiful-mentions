@@ -4,6 +4,7 @@ import {
   $getSelection,
   $isRangeSelection,
   $isTextNode,
+  BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
   KEY_ARROW_DOWN_COMMAND,
   KEY_ARROW_UP_COMMAND,
@@ -424,6 +425,17 @@ export function Menu<TOption extends MenuOption>({
           event.stopImmediatePropagation();
           close();
           return true;
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand<KeyboardEvent>(
+        BLUR_COMMAND,
+        (payload) => {
+          const event = payload;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          close();
+          return false;
         },
         COMMAND_PRIORITY_LOW,
       ),

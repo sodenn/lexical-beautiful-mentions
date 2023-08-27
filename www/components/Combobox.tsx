@@ -51,7 +51,7 @@ export const ComboboxItem = forwardRef<
     <li
       ref={ref}
       className={cn(
-        "relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-sm outline-none transition-colors",
+        "relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-sm outline-none",
         selected && "bg-accent text-accent-foreground",
       )}
       {...props}

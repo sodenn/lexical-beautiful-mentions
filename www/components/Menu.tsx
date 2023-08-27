@@ -27,7 +27,7 @@ export const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}
-        className="m-0 mt-6 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in slide-in-from-top-2"
+        className="absolute top-6 m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in slide-in-from-top-2"
         {...other}
       />
     );
@@ -45,7 +45,7 @@ export const MenuItem = forwardRef<
   <li
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
+      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none",
       selected && "bg-accent text-accent-foreground",
     )}
     {...props}
