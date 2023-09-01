@@ -41,12 +41,12 @@
     "@babel/core": "7.22.11",
     "@playwright/test": "1.37.1",
     "@types/dompurify": "3.0.2",
-    "@types/node": "18.17.11",
+    "@types/node": "18.17.13",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
     "eslint-config-next": "13.4.19",
     "playwright": "1.37.1",
-    "postcss": "8.4.28"
+    "postcss": "8.4.29"
   }
 }
