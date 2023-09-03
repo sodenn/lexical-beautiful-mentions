@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.16
+
+### Patch Changes
+
+- ea87bf0: fix(): close menu when editor focus is lost
+
 ## 0.1.15
 
 ### Patch Changes
