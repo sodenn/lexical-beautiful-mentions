@@ -245,6 +245,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           nodeToReplace.replace(mentionNode);
         }
         closeMenu?.();
+
+        justSelectedAnOption.current = true;
       });
     },
     [editor, trigger, creatable, mentionEnclosure],
