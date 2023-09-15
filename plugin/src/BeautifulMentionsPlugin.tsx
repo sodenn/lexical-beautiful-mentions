@@ -16,7 +16,7 @@ import {
   RangeSelection,
   TextNode,
 } from "lexical";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import { ComboboxPlugin } from "./ComboboxPlugin";
@@ -128,6 +128,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     onMenuClose,
     punctuation = DEFAULT_PUNCTUATION,
   } = props;
+
+  const justSelectedAnOption = useRef(false);
+
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
     () => props.triggers || Object.keys(items || {}),
@@ -142,6 +145,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     trigger,
     items,
     onSearch,
+    justSelectedAnOption
   });
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,
