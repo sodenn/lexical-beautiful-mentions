@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.17
+
+### Patch Changes
+
+- 31c36f2: fix(): adjust query value after selecting an option (#177) [thanks, matusca96]
+- 9bc9674: docs(): remove animation from Menu component
+
 ## 0.1.16
 
 ### Patch Changes
