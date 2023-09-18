@@ -11,10 +11,11 @@ interface MentionsLookupServiceOptions {
     trigger: string,
     queryString?: string | null,
   ) => Promise<BeautifulMentionsItem[]>;
+  justSelectedAnOption?: React.MutableRefObject<boolean>;
 }
 
 export function useMentionLookupService(options: MentionsLookupServiceOptions) {
-  const { queryString, trigger, searchDelay, items, onSearch } = options;
+  const { queryString, trigger, searchDelay, items, onSearch, justSelectedAnOption } = options;
   const debouncedQueryString = useDebounce(queryString, searchDelay);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Array<BeautifulMentionsItem>>([]);
@@ -50,12 +51,17 @@ export function useMentionLookupService(options: MentionsLookupServiceOptions) {
     if (onSearch) {
       setLoading(true);
       setQuery(debouncedQueryString);
-      onSearch(trigger, debouncedQueryString)
+      onSearch(trigger, justSelectedAnOption?.current ? '' : debouncedQueryString)
         .then(setResults)
         .finally(() => setLoading(false));
+
+      if (justSelectedAnOption?.current) {
+        justSelectedAnOption.current = false;
+      }
+
       return;
     }
-  }, [debouncedQueryString, items, onSearch, trigger]);
+  }, [debouncedQueryString, items, onSearch, trigger, justSelectedAnOption]);
 
   return useMemo(
     () => ({ loading, results, query }),
