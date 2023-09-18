@@ -14,7 +14,7 @@ export const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
       return (
         <div
           ref={ref}
-          className="m-0 mt-6 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-2.5 text-sm text-popover-foreground shadow-md animate-in slide-in-from-top-2"
+          className="m-0 mt-6 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-2.5 text-sm text-popover-foreground shadow-md"
         >
           Loading...
         </div>
@@ -27,7 +27,7 @@ export const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}
-        className="absolute top-6 m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in slide-in-from-top-2"
+        className="absolute top-6 m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
         {...other}
       />
     );
