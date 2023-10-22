@@ -1,5 +1,4 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useBasicTypeaheadTriggerMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
   $createTextNode,
@@ -16,7 +15,13 @@ import {
   RangeSelection,
   TextNode,
 } from "lexical";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import * as ReactDOM from "react-dom";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import { ComboboxPlugin } from "./ComboboxPlugin";
@@ -145,10 +150,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     trigger,
     items,
     onSearch,
-    justSelectedAnOption
-  });
-  const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
-    minLength: 0,
+    justSelectedAnOption,
   });
   const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
     null,
@@ -260,17 +262,13 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         return null;
       }
 
-      const slashMatch = checkForSlashTriggerMatch(text, editor);
-      if (slashMatch !== null) {
-        return null;
-      }
-
       const queryMatch = checkForMentions(
         text,
         triggers,
         punctuation,
         allowSpaces,
       );
+
       if (queryMatch) {
         const { replaceableString, matchingString } = queryMatch;
         const index = replaceableString.lastIndexOf(matchingString);
@@ -286,9 +284,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       } else {
         setTrigger(null);
       }
+
       return null;
     },
-    [checkForSlashTriggerMatch, editor, triggers, allowSpaces, punctuation],
+    [allowSpaces, punctuation, triggers],
   );
 
   const convertTextToMention = useCallback(() => {
