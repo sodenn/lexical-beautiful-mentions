@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.18
+
+### Patch Changes
+
+- 50d0ae0: feat(BeautifulMentionComponentProps): data prop with generic type
+- 7e14758: feat(): drop check for slash
+
 ## 0.1.17
 
 ### Patch Changes
