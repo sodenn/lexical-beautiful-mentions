@@ -121,7 +121,7 @@ export class CustomMentionsNode extends BeautifulMentionNode {
   component(): ElementType<BeautifulMentionComponentProps> | null {
     // the component that renders the mention in the editor
     // return null to use the default component
-    // 💡 if you only want to replace the component use the `createBeautifulMentionNode` helper method.
+    // 💡 if you only want to replace the component use the `createBeautifulMentionNode` helper method. See below for more details 👇
   }
   decorate(editor: LexicalEditor, config: EditorConfig): React.JSX.Element {
     // TODO: implement
@@ -151,8 +151,8 @@ The plugin also provides a helper method that overrides the default `BeautifulMe
 ```tsx
 const CustomMentionComponent = forwardRef<
   HTMLDivElement,
-  BeautifulMentionComponentProps
->(({ trigger, value, children, ...other }, ref) => {
+  BeautifulMentionComponentProps<MyData>
+>(({ trigger, value, children, data: myData, ...other }, ref) => {
   return (
     <div {...other} ref={ref} title={trigger + value}>
       {value}
