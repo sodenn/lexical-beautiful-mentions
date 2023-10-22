@@ -1,0 +1,6 @@
+{
+  "vitest.commandLine": "npx vitest",
+  "vitest.include": [
+    "plugin/**/*.spec.{ts,tsx}"
+  ],
+}
