@@ -347,4 +347,24 @@ test.describe("Mention Menu", () => {
     open = await utils.isMenuOrComboboxOpen();
     expect(open).toBe(false);
   });
+
+  test("should remove the typeahead element when the menu is closed", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "end",
+      },
+    );
+    await utils.editorType("@");
+    await expect(page.locator("#typeahead-menu")).toHaveCount(1);
+    await utils.editorType("xyz");
+    await expect(page.locator("#typeahead-menu")).toHaveCount(0);
+    await utils.editor.blur();
+    await utils.sleep(200);
+    await utils.editor.focus();
+    await expect(page.locator("#typeahead-menu")).toHaveCount(0);
+  });
 });

@@ -51,7 +51,7 @@ export async function testUtils(
     mentionEnclosure,
     showMentionsOnDelete,
     comboboxAdditionalItems,
-    customMentionNode
+    customMentionNode,
   );
   await utils.init();
   return utils;
@@ -74,7 +74,7 @@ export class TestUtils {
     private mentionEnclosure: boolean,
     private showMentionsOnDelete: boolean,
     private comboboxAdditionalItems: boolean,
-    private customMentionNode: boolean
+    private customMentionNode: boolean,
   ) {
     this.setInitialValue(initialValue);
   }
@@ -136,7 +136,7 @@ export class TestUtils {
   }
 
   async editorType(text: string) {
-    await this.editor.type(text);
+    await this.editor.pressSequentially(text);
     await this.sleep(this.browserName === "webkit" ? 200 : 100);
   }
 
