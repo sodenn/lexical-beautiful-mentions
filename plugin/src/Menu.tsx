@@ -225,11 +225,12 @@ export function useDynamicPositioning(
   resolution: MenuResolution | null,
   targetElement: HTMLElement | null,
   onReposition: () => void,
-  onVisibilityChange?: (isInView: boolean) => void,
+  onVisibilityChange: (isInView: boolean) => void,
+  menuVisible?: boolean,
 ) {
   const [editor] = useLexicalComposerContext();
   useEffect(() => {
-    if (targetElement != null && resolution != null) {
+    if (targetElement != null && resolution != null && menuVisible) {
       const rootElement = editor.getRootElement();
       const rootScrollParent =
         rootElement != null
@@ -272,7 +273,14 @@ export function useDynamicPositioning(
         document.removeEventListener("scroll", handleScroll);
       };
     }
-  }, [targetElement, editor, onVisibilityChange, onReposition, resolution]);
+  }, [
+    targetElement,
+    editor,
+    onVisibilityChange,
+    onReposition,
+    resolution,
+    menuVisible,
+  ]);
 }
 
 export function Menu<TOption extends MenuOption>({
@@ -575,18 +583,24 @@ export function useMenuAnchorRef(
 
   useEffect(() => {
     const rootElement = editor.getRootElement();
+
+    const removeMenu = () => {
+      const containerDiv = anchorElementRef.current;
+      if (containerDiv !== null && containerDiv.isConnected) {
+        containerDiv.remove();
+      }
+    };
+
     if (resolution !== null && menuVisible) {
       positionMenu();
       return () => {
         if (rootElement !== null) {
           rootElement.removeAttribute("aria-controls");
         }
-
-        const containerDiv = anchorElementRef.current;
-        if (containerDiv !== null && containerDiv.isConnected) {
-          containerDiv.remove();
-        }
+        removeMenu();
       };
+    } else if (!menuVisible) {
+      removeMenu();
     }
   }, [editor, positionMenu, resolution, menuVisible]);
 
@@ -606,6 +620,7 @@ export function useMenuAnchorRef(
     anchorElementRef.current,
     positionMenu,
     onVisibilityChange,
+    menuVisible,
   );
 
   return anchorElementRef;
