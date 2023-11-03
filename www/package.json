@@ -28,7 +28,7 @@
     "dompurify": "3.0.6",
     "lexical": "0.12.2",
     "lexical-beautiful-mentions": "*",
-    "lucide-react": "0.290.0",
+    "lucide-react": "0.292.0",
     "next": "14.0.1",
     "next-themes": "0.2.1",
     "react": "18.2.0",
