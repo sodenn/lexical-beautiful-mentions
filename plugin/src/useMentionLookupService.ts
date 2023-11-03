@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import { BeautifulMentionsItem } from "./BeautifulMentionsPluginProps";
 import { useDebounce } from "./useDebounce";
 
@@ -11,11 +11,18 @@ interface MentionsLookupServiceOptions {
     trigger: string,
     queryString?: string | null,
   ) => Promise<BeautifulMentionsItem[]>;
-  justSelectedAnOption?: React.MutableRefObject<boolean>;
+  justSelectedAnOption?: MutableRefObject<boolean>;
 }
 
 export function useMentionLookupService(options: MentionsLookupServiceOptions) {
-  const { queryString, trigger, searchDelay, items, onSearch, justSelectedAnOption } = options;
+  const {
+    queryString,
+    trigger,
+    searchDelay,
+    items,
+    onSearch,
+    justSelectedAnOption,
+  } = options;
   const debouncedQueryString = useDebounce(queryString, searchDelay);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Array<BeautifulMentionsItem>>([]);
@@ -51,7 +58,10 @@ export function useMentionLookupService(options: MentionsLookupServiceOptions) {
     if (onSearch) {
       setLoading(true);
       setQuery(debouncedQueryString);
-      onSearch(trigger, justSelectedAnOption?.current ? '' : debouncedQueryString)
+      onSearch(
+        trigger,
+        justSelectedAnOption?.current ? "" : debouncedQueryString,
+      )
         .then(setResults)
         .finally(() => setLoading(false));
 

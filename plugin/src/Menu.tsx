@@ -55,15 +55,16 @@ export class MenuOption {
    */
   key: string;
   /**
-   * Value to be inserted into the editor.
+   * The menu item value. For example: "John".
    */
   value: string;
   /**
-   * Value to be displayed in the menu.
+   * The value to be displayed. Normally the same as `value` but can be
+   * used to display a different value. For example: "Add 'John'".
    */
   displayValue: string;
   /**
-   * Additional data belonging to the option.
+   * Additional data belonging to the option. For example: `{ id: 1 }`.
    */
   data?: { [key: string]: string | boolean | number };
   /**
@@ -132,7 +133,7 @@ function getFullMatchOffset(
 ): number {
   let triggerOffset = offset;
   for (let i = triggerOffset; i <= entryText.length; i++) {
-    if (documentText.substr(-i) === entryText.substr(0, i)) {
+    if (documentText.substring(-i) === entryText.substring(0, i)) {
       triggerOffset = i;
     }
   }
@@ -176,7 +177,6 @@ export function $splitNodeContainingQuery(
   } else {
     [, newNode] = anchorNode.splitText(startOffset, selectionOffset);
   }
-
   return newNode;
 }
 

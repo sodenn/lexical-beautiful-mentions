@@ -97,7 +97,7 @@ export function checkForMentions(
     text,
   );
   if (match !== null) {
-    // The strategy ignores leading whitespace but we need to know it's
+    // The strategy ignores leading whitespace, but we need to know its
     // length to add it to the leadOffset
     const maybeLeadingWhitespace = match[1];
     const matchingStringWithTrigger = match[2];
@@ -131,11 +131,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     mentionEnclosure,
     onMenuOpen,
     onMenuClose,
+    onMenuItemSelect,
     punctuation = DEFAULT_PUNCTUATION,
   } = props;
-
   const justSelectedAnOption = useRef(false);
-
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
     () => props.triggers || Object.keys(items || {}),
@@ -161,6 +160,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const creatable = getCreatableProp(props.creatable, trigger);
   const menuItemLimit = getMenuItemLimitProp(props.menuItemLimit, trigger);
   const options = useMemo(() => {
+    if (!trigger) {
+      return [];
+    }
     // Add options from the lookup service
     let opt = results.map((result) => {
       if (typeof result === "string") {
@@ -239,7 +241,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           !!creatable && selectedOption.value !== selectedOption.displayValue;
         const value =
           newMention && mentionEnclosure && /\s/.test(selectedOption.value)
-            ? mentionEnclosure + selectedOption.value + mentionEnclosure
+            ? mentionEnclosure + selectedOption.value + mentionEnclosure // if the value has spaces, wrap it in the enclosure
             : selectedOption.value;
         const data = selectedOption.data;
         const mentionNode = $createBeautifulMentionNode(trigger, value, data);
@@ -247,11 +249,30 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           nodeToReplace.replace(mentionNode);
         }
         closeMenu?.();
-
         justSelectedAnOption.current = true;
       });
     },
     [editor, trigger, creatable, mentionEnclosure],
+  );
+
+  const handleSelectMenuItem = useCallback(
+    (
+      selectedOption: MenuOption,
+      nodeToReplace: TextNode | null,
+      closeMenu?: () => void,
+    ) => {
+      if (!trigger) {
+        return;
+      }
+      onMenuItemSelect?.({
+        trigger,
+        value: selectedOption.value,
+        displayValue: selectedOption.displayValue,
+        data: selectedOption.data,
+      });
+      handleSelectOption(selectedOption, nodeToReplace, closeMenu);
+    },
+    [handleSelectOption, onMenuItemSelect, trigger],
   );
 
   const checkForMentionMatch = useCallback(
@@ -570,7 +591,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   return (
     <TypeaheadMenuPlugin<MenuOption>
       onQueryChange={setQueryString}
-      onSelectOption={handleSelectOption}
+      onSelectOption={handleSelectMenuItem}
       onSelectionChange={setSelectedMenuIndex}
       triggerFn={checkForMentionMatch}
       options={options}
@@ -602,6 +623,12 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     role="menuitem"
                     aria-selected={selectedIndex === i}
                     aria-label={`Choose ${option.value}`}
+                    item={{
+                      trigger: trigger || "",
+                      value: option.value,
+                      displayValue: option.displayValue,
+                      data: option.data,
+                    }}
                     itemValue={option.value}
                     label={option.displayValue}
                     {...option.data}

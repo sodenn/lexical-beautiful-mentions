@@ -41,7 +41,7 @@ Menu.displayName = "Menu";
 export const MenuItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsMenuItemProps
->(({ selected, itemValue, label, ...props }, ref) => (
+>(({ selected, item, itemValue, ...props }, ref) => (
   <li
     ref={ref}
     className={cn(

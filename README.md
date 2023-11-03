@@ -152,7 +152,7 @@ The plugin also provides a helper method that overrides the default `BeautifulMe
 const CustomMentionComponent = forwardRef<
   HTMLDivElement,
   BeautifulMentionComponentProps<MyData>
->(({ trigger, value, children, data: myData, ...other }, ref) => {
+>(({ trigger, value, data: myData, children, ...other }, ref) => {
   return (
     <div {...other} ref={ref} title={trigger + value}>
       {value}
@@ -183,7 +183,7 @@ const CustomMenu = forwardRef<
 const CustomMenuItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsMenuItemProps
->(({ selected, label, itemValue, ...props }, ref) => (
+>(({ selected, item, ...props }, ref) => (
   <li
     className={`m-0 flex ... ${selected ? "bg-gray-100 ..." : "bg-white ..."}`}
     {...props}
@@ -243,7 +243,7 @@ All additional metadata are available as props of the `BeautifulMentionsMenuItem
 const CustomMenuItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsMenuItemProps
->(({ id, email, ...props }, ref) => (
+>(({ item: { data: { id, email }}, ...props }, ref) => (
  <li
   // ...
  />
