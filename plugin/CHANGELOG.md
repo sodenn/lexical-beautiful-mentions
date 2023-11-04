@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.19
+
+### Patch Changes
+
+- 215e1ed: feat(Menu): add callback fired when the user selects a menu item
+- 7391fb0: fix(Menu): remove typeahead element from DOM after menu is closed
+
 ## 0.1.18
 
 ### Patch Changes
