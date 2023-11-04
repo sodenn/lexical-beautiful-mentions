@@ -23,7 +23,10 @@ import React, {
   useState,
 } from "react";
 import * as ReactDOM from "react-dom";
-import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
+import {
+  BeautifulMentionsMenuItem,
+  BeautifulMentionsPluginProps,
+} from "./BeautifulMentionsPluginProps";
 import { ComboboxPlugin } from "./ComboboxPlugin";
 import {
   $createBeautifulMentionNode,
@@ -56,6 +59,27 @@ import {
 } from "./mention-utils";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
+
+class MentionOption extends MenuOption {
+  readonly menuItem: BeautifulMentionsMenuItem;
+  constructor(
+    /**
+     * The trigger that was used to open the menu.
+     */
+    public readonly trigger: string,
+    value: string,
+    displayValue: string,
+    data?: { [key: string]: string | boolean | number },
+  ) {
+    super(value, displayValue, data);
+    this.menuItem = {
+      trigger,
+      value,
+      displayValue,
+      data,
+    };
+  }
+}
 
 // Non-standard series of chars. Each series must be preceded and followed by
 // a valid char.
@@ -166,10 +190,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     // Add options from the lookup service
     let opt = results.map((result) => {
       if (typeof result === "string") {
-        return new MenuOption(result, result);
+        return new MentionOption(trigger, result, result);
       } else {
         const { value, ...data } = result;
-        return new MenuOption(value, value, data);
+        return new MentionOption(trigger, value, value, data);
       }
     });
     // limit the number of menu items
@@ -191,7 +215,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             (query === null || mention.getValue().startsWith(query)) &&
             opt.every((o) => o.value !== value)
           ) {
-            opt.push(new MenuOption(value, value, data));
+            opt.push(new MentionOption(trigger, value, value, data));
           }
         }
       });
@@ -205,7 +229,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           ? `Add "${query}"`
           : undefined;
       if (displayValue) {
-        opt.push(new MenuOption(query, displayValue));
+        opt.push(new MentionOption(trigger, query, displayValue));
       }
     }
     return opt;
@@ -241,10 +265,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           !!creatable && selectedOption.value !== selectedOption.displayValue;
         const value =
           newMention && mentionEnclosure && /\s/.test(selectedOption.value)
-            ? mentionEnclosure + selectedOption.value + mentionEnclosure // if the value has spaces, wrap it in the enclosure
+            ? // if the value has spaces, wrap it in the enclosure
+              mentionEnclosure + selectedOption.value + mentionEnclosure
             : selectedOption.value;
-        const data = selectedOption.data;
-        const mentionNode = $createBeautifulMentionNode(trigger, value, data);
+        const mentionNode = $createBeautifulMentionNode(
+          trigger,
+          value,
+          selectedOption.data,
+        );
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
         }
@@ -623,12 +651,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     role="menuitem"
                     aria-selected={selectedIndex === i}
                     aria-label={`Choose ${option.value}`}
-                    item={{
-                      trigger: trigger || "",
-                      value: option.value,
-                      displayValue: option.displayValue,
-                      data: option.data,
-                    }}
+                    item={option.menuItem}
                     itemValue={option.value}
                     label={option.displayValue}
                     {...option.data}

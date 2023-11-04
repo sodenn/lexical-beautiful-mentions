@@ -53,34 +53,29 @@ export class MenuOption {
    * Unique key to iterate over options. Equals to `data` if provided, otherwise
    * `value` is used.
    */
-  key: string;
-  /**
-   * The menu item value. For example: "John".
-   */
-  value: string;
-  /**
-   * The value to be displayed. Normally the same as `value` but can be
-   * used to display a different value. For example: "Add 'John'".
-   */
-  displayValue: string;
-  /**
-   * Additional data belonging to the option. For example: `{ id: 1 }`.
-   */
-  data?: { [key: string]: string | boolean | number };
+  readonly key: string;
   /**
    * Ref to the DOM element of the option.
    */
   ref?: MutableRefObject<HTMLElement | null>;
 
   constructor(
-    value: string,
-    displayValue: string,
-    data?: { [key: string]: string | boolean | number },
+    /**
+     * The menu item value. For example: "John".
+     */
+    public readonly value: string,
+    /**
+     * The value to be displayed. Normally the same as `value` but can be
+     * used to display a different value. For example: "Add 'John'".
+     */
+    public readonly displayValue: string,
+    /**
+     * Additional data belonging to the option. For example: `{ id: 1 }`.
+     */
+    public readonly data?: { [key: string]: string | boolean | number },
   ) {
     this.key = !data ? value : JSON.stringify({ ...data, value });
-    this.value = value;
     this.displayValue = displayValue ?? value;
-    this.data = data;
     this.ref = { current: null };
     this.setRefElement = this.setRefElement.bind(this);
   }

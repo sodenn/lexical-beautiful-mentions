@@ -50,7 +50,7 @@ export interface BeautifulMentionsComboboxItem {
 /**
  * The mention without the trigger. For example: "John". Either a string or
  * an object with at least a `value` property. If an object is provided,
- * additional metadata can be specified. For example: `{ value: "John", id: 1 }`.
+ * additional data can be specified. For example: `{ value: "John", id: 1 }`.
  */
 export type BeautifulMentionsItem =
   | string
