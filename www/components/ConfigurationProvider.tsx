@@ -2,7 +2,6 @@
 import { defaultInitialValue } from "@/lib/editor-config";
 import useQueryParams, { QueryParam } from "@/lib/useQueryParams";
 import DOMPurify from "dompurify";
-import { useRouter } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -25,7 +24,6 @@ const creatableMap = {
 };
 
 function useConfigurationValue() {
-  const router = useRouter();
   const { setQueryParams, hasQueryParams, getQueryParam } = useQueryParams();
   const [asynchronous, _setAsynchronous] = useState(
     getQueryParam("async") === "true",
@@ -127,11 +125,13 @@ function useConfigurationValue() {
 
   const setCustomMentionNode = useCallback(
     (customMentionNode: boolean) => {
-      router.refresh();
       _setCustomMentionNode(customMentionNode);
       setQueryParams([{ name: "cstmn", value: customMentionNode.toString() }]);
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     },
-    [router, setQueryParams],
+    [setQueryParams],
   );
 
   const setAllowSpaces = useCallback(

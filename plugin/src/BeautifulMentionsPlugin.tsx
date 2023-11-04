@@ -23,7 +23,10 @@ import React, {
   useState,
 } from "react";
 import * as ReactDOM from "react-dom";
-import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
+import {
+  BeautifulMentionsMenuItem,
+  BeautifulMentionsPluginProps,
+} from "./BeautifulMentionsPluginProps";
 import { ComboboxPlugin } from "./ComboboxPlugin";
 import {
   $createBeautifulMentionNode,
@@ -56,6 +59,27 @@ import {
 } from "./mention-utils";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
+
+class MentionOption extends MenuOption {
+  readonly menuItem: BeautifulMentionsMenuItem;
+  constructor(
+    /**
+     * The trigger that was used to open the menu.
+     */
+    public readonly trigger: string,
+    value: string,
+    displayValue: string,
+    data?: { [key: string]: string | boolean | number },
+  ) {
+    super(value, displayValue, data);
+    this.menuItem = {
+      trigger,
+      value,
+      displayValue,
+      data,
+    };
+  }
+}
 
 // Non-standard series of chars. Each series must be preceded and followed by
 // a valid char.
@@ -97,7 +121,7 @@ export function checkForMentions(
     text,
   );
   if (match !== null) {
-    // The strategy ignores leading whitespace but we need to know it's
+    // The strategy ignores leading whitespace, but we need to know its
     // length to add it to the leadOffset
     const maybeLeadingWhitespace = match[1];
     const matchingStringWithTrigger = match[2];
@@ -131,11 +155,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     mentionEnclosure,
     onMenuOpen,
     onMenuClose,
+    onMenuItemSelect,
     punctuation = DEFAULT_PUNCTUATION,
   } = props;
-
   const justSelectedAnOption = useRef(false);
-
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
     () => props.triggers || Object.keys(items || {}),
@@ -161,13 +184,16 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const creatable = getCreatableProp(props.creatable, trigger);
   const menuItemLimit = getMenuItemLimitProp(props.menuItemLimit, trigger);
   const options = useMemo(() => {
+    if (!trigger) {
+      return [];
+    }
     // Add options from the lookup service
     let opt = results.map((result) => {
       if (typeof result === "string") {
-        return new MenuOption(result, result);
+        return new MentionOption(trigger, result, result);
       } else {
         const { value, ...data } = result;
-        return new MenuOption(value, value, data);
+        return new MentionOption(trigger, value, value, data);
       }
     });
     // limit the number of menu items
@@ -189,7 +215,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             (query === null || mention.getValue().startsWith(query)) &&
             opt.every((o) => o.value !== value)
           ) {
-            opt.push(new MenuOption(value, value, data));
+            opt.push(new MentionOption(trigger, value, value, data));
           }
         }
       });
@@ -203,7 +229,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           ? `Add "${query}"`
           : undefined;
       if (displayValue) {
-        opt.push(new MenuOption(query, displayValue));
+        opt.push(new MentionOption(trigger, query, displayValue));
       }
     }
     return opt;
@@ -239,19 +265,42 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           !!creatable && selectedOption.value !== selectedOption.displayValue;
         const value =
           newMention && mentionEnclosure && /\s/.test(selectedOption.value)
-            ? mentionEnclosure + selectedOption.value + mentionEnclosure
+            ? // if the value has spaces, wrap it in the enclosure
+              mentionEnclosure + selectedOption.value + mentionEnclosure
             : selectedOption.value;
-        const data = selectedOption.data;
-        const mentionNode = $createBeautifulMentionNode(trigger, value, data);
+        const mentionNode = $createBeautifulMentionNode(
+          trigger,
+          value,
+          selectedOption.data,
+        );
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
         }
         closeMenu?.();
-
         justSelectedAnOption.current = true;
       });
     },
     [editor, trigger, creatable, mentionEnclosure],
+  );
+
+  const handleSelectMenuItem = useCallback(
+    (
+      selectedOption: MenuOption,
+      nodeToReplace: TextNode | null,
+      closeMenu?: () => void,
+    ) => {
+      if (!trigger) {
+        return;
+      }
+      onMenuItemSelect?.({
+        trigger,
+        value: selectedOption.value,
+        displayValue: selectedOption.displayValue,
+        data: selectedOption.data,
+      });
+      handleSelectOption(selectedOption, nodeToReplace, closeMenu);
+    },
+    [handleSelectOption, onMenuItemSelect, trigger],
   );
 
   const checkForMentionMatch = useCallback(
@@ -570,7 +619,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   return (
     <TypeaheadMenuPlugin<MenuOption>
       onQueryChange={setQueryString}
-      onSelectOption={handleSelectOption}
+      onSelectOption={handleSelectMenuItem}
       onSelectionChange={setSelectedMenuIndex}
       triggerFn={checkForMentionMatch}
       options={options}
@@ -602,6 +651,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     role="menuitem"
                     aria-selected={selectedIndex === i}
                     aria-label={`Choose ${option.value}`}
+                    item={option.menuItem}
                     itemValue={option.value}
                     label={option.displayValue}
                     {...option.data}

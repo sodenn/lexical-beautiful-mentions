@@ -1,34 +1,68 @@
 import { ComponentPropsWithRef, ElementType } from "react";
 
-export interface BeautifulMentionsComboboxItem {
+/**
+ * Represents a menu item for a mention.
+ */
+export interface BeautifulMentionsMenuItem {
   /**
-   * Value to be inserted into the editor.
+   * The trigger of the mention. For example: "@".
+   */
+  trigger: string;
+  /**
+   * The value of the mention without the trigger. For example: "John".
    */
   value: string;
   /**
-   * Value to be displayed in the menu.
+   * Value to be displayed in the menu. Normally the same as `value` but can be
+   * used to display a different value. For example: "Add 'John'".
    */
   displayValue: string;
   /**
-   * Additional data belonging to the option.
+   * Additional data belonging to the mention.
    */
   data?: { [key: string]: string | boolean | number };
 }
 
 /**
- * The mention without the trigger character(s). Either a
- * string or an object with at least a `value` property.
+ * Represents a combobox item for a mention.
+ */
+export interface BeautifulMentionsComboboxItem {
+  /**
+   * The type of the item.
+   */
+  itemType: "trigger" | "value" | "additional";
+  /**
+   * Depending on the item type, either the trigger or the value of the
+   * mention.
+   */
+  value: string;
+  /**
+   * The value to be displayed. Normally the same as `value` but can be
+   * used to display a different value.
+   */
+  displayValue: string;
+  /**
+   * Additional data belonging to the mention.
+   */
+  data?: { [key: string]: string | boolean | number };
+}
+
+/**
+ * The mention without the trigger. For example: "John". Either a string or
+ * an object with at least a `value` property. If an object is provided,
+ * additional data can be specified. For example: `{ value: "John", id: 1 }`.
  */
 export type BeautifulMentionsItem =
   | string
   | {
-      /**
-       * The mention without the trigger character(s).
-       */
       value: string;
       [key: string]: string | boolean | number;
     };
 
+/**
+ * Props for BeautifulMentionsMenu component. This component is used to render
+ * the menu that shows the suggestions for a mention.
+ */
 export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   /**
    * If `true`, the `onSearch` function is currently running.
@@ -36,6 +70,10 @@ export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   loading?: boolean;
 }
 
+/**
+ * Props for BeautifulMentionsMenuItem component. This component is used to
+ * render a menu item.
+ */
 export type BeautifulMentionsMenuItemProps = Omit<
   ComponentPropsWithRef<any>,
   "selected" | "label"
@@ -46,26 +84,40 @@ export type BeautifulMentionsMenuItemProps = Omit<
   selected: boolean;
   /**
    * The label of the menu item.
+   * @deprecated Use `item` instead.
    */
   label: string;
   /**
    * The value of the menu item.
+   * @deprecated Use `item` instead.
    */
   itemValue: string;
+  /**
+   * Contains information about the menu item.
+   */
+  item: BeautifulMentionsMenuItem;
 };
 
+/**
+ * Props for BeautifulMentionsCombobox component. This component is used to
+ * render the combobox that shows the available triggers and mentions.
+ */
 export interface BeautifulMentionsComboboxProps
   extends ComponentPropsWithRef<any> {
-  /**
-   * The options shown in the combobox can be either triggers or mentions.
-   */
-  optionType: "triggers" | "values";
   /**
    * If `true`, the `onSearch` function is currently running.
    */
   loading?: boolean;
+  /**
+   * The items shown in the combobox can be either triggers or mentions.
+   */
+  itemType: "trigger" | "value";
 }
 
+/**
+ * Props for BeautifulMentionsComboboxItem component. This component is used to
+ * render a combobox item.
+ */
 export type BeautifulMentionsComboboxItemProps = Omit<
   ComponentPropsWithRef<any>,
   "selected" | "option"
@@ -75,8 +127,7 @@ export type BeautifulMentionsComboboxItemProps = Omit<
    */
   selected: boolean;
   /**
-   * Contains the value, display value and additional data defined in
-   * {@link BeautifulMentionsItem} or {@link BeautifulMentionsComboboxItem}.
+   * Contains information about the combobox item.
    */
   item: BeautifulMentionsComboboxItem;
 };
@@ -92,10 +143,6 @@ interface BeautifulMentionsProps {
    * @default false
    */
   creatable?: boolean | string | Record<string, boolean | string>;
-  /**
-   * The class name to apply to the menu component root element.
-   */
-  menuAnchorClassName?: string;
   /**
    * At most, the specified number of menu items will be rendered.
    * If a map is provided, individual limits can be specified for each
@@ -132,6 +179,10 @@ interface BeautifulMentionsProps {
 
 type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
   /**
+   * The class name to apply to the menu component root element.
+   */
+  menuAnchorClassName?: string;
+  /**
    * The component to use for the menu.
    * @default ul
    */
@@ -154,6 +205,10 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    * Callback fired when the menu requests to be closed.
    */
   onMenuClose?: () => void;
+  /**
+   * Callback fired when the user selects a menu item.
+   */
+  onMenuItemSelect?: (item: BeautifulMentionsMenuItem) => void;
   combobox?: never;
   comboboxOpen?: never;
   comboboxAnchor?: never;
@@ -199,7 +254,7 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
   /**
    * Additional items to show in the combobox.
    */
-  comboboxAdditionalItems?: BeautifulMentionsComboboxItem[];
+  comboboxAdditionalItems?: Omit<BeautifulMentionsComboboxItem, "itemType">[];
   /**
    * Callback fired when the user selects a combobox item.
    */
@@ -217,11 +272,13 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
    * item changes.
    */
   onComboboxFocusChange?: (item: BeautifulMentionsComboboxItem | null) => void;
+  menuAnchorClassName?: never;
   menuComponent?: never;
   menuItemComponent?: never;
   insertOnBlur?: never;
   onMenuOpen?: never;
   onMenuClose?: never;
+  onMenuItemSelect?: never;
 };
 
 type BeautifulMentionsPluginWithCompProps =
@@ -268,15 +325,19 @@ export type BeautifulMentionsPluginProps =
   | BeautifulMentionsSearchProps
   | BeautifulMentionsItemsProps;
 
+/**
+ * Props for BeautifulMention component. This component is used to render
+ * a mention in the editor.
+ */
 export interface BeautifulMentionComponentProps<
   T extends { [p: string]: string | boolean | number } = {},
 > extends Omit<ComponentPropsWithRef<any>, "value" | "data"> {
   /**
-   * The trigger character(s) of the mention.
+   * The trigger of the mention.
    */
   trigger: string;
   /**
-   * The value of the mention without the trigger character(s).
+   * The value of the mention without the trigger.
    */
   value: string;
   /**

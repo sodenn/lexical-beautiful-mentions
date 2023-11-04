@@ -137,15 +137,15 @@ function Plugins() {
   }, []);
 
   const handleComboboxFocusChange = useCallback(
-    (label: BeautifulMentionsComboboxItem) => {
-      setComboboxItemSelected(label !== null);
+    (item: BeautifulMentionsComboboxItem | null) => {
+      setComboboxItemSelected(item !== null);
     },
     [],
   );
 
   const handleComboboxItemSelect = useCallback(
     (item: BeautifulMentionsComboboxItem) => {
-      if (item.value === "additionalItem") {
+      if (item.itemType === "additional") {
         setMenuOrComboboxOpen(false);
       }
     },

@@ -53,33 +53,29 @@ export class MenuOption {
    * Unique key to iterate over options. Equals to `data` if provided, otherwise
    * `value` is used.
    */
-  key: string;
-  /**
-   * Value to be inserted into the editor.
-   */
-  value: string;
-  /**
-   * Value to be displayed in the menu.
-   */
-  displayValue: string;
-  /**
-   * Additional data belonging to the option.
-   */
-  data?: { [key: string]: string | boolean | number };
+  readonly key: string;
   /**
    * Ref to the DOM element of the option.
    */
   ref?: MutableRefObject<HTMLElement | null>;
 
   constructor(
-    value: string,
-    displayValue: string,
-    data?: { [key: string]: string | boolean | number },
+    /**
+     * The menu item value. For example: "John".
+     */
+    public readonly value: string,
+    /**
+     * The value to be displayed. Normally the same as `value` but can be
+     * used to display a different value. For example: "Add 'John'".
+     */
+    public readonly displayValue: string,
+    /**
+     * Additional data belonging to the option. For example: `{ id: 1 }`.
+     */
+    public readonly data?: { [key: string]: string | boolean | number },
   ) {
     this.key = !data ? value : JSON.stringify({ ...data, value });
-    this.value = value;
     this.displayValue = displayValue ?? value;
-    this.data = data;
     this.ref = { current: null };
     this.setRefElement = this.setRefElement.bind(this);
   }
@@ -132,7 +128,7 @@ function getFullMatchOffset(
 ): number {
   let triggerOffset = offset;
   for (let i = triggerOffset; i <= entryText.length; i++) {
-    if (documentText.substr(-i) === entryText.substr(0, i)) {
+    if (documentText.substring(-i) === entryText.substring(0, i)) {
       triggerOffset = i;
     }
   }
@@ -176,7 +172,6 @@ export function $splitNodeContainingQuery(
   } else {
     [, newNode] = anchorNode.splitText(startOffset, selectionOffset);
   }
-
   return newNode;
 }
 
