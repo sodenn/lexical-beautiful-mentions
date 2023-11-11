@@ -24,6 +24,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { BeautifulMentionsItemData } from "./BeautifulMentionsPluginProps";
 import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 
 const useLayoutEffectImpl: typeof useLayoutEffect = CAN_USE_DOM
@@ -72,7 +73,7 @@ export class MenuOption {
     /**
      * Additional data belonging to the option. For example: `{ id: 1 }`.
      */
-    public readonly data?: { [key: string]: string | boolean | number },
+    public readonly data?: { [key: string]: BeautifulMentionsItemData },
   ) {
     this.key = !data ? value : JSON.stringify({ ...data, value });
     this.displayValue = displayValue ?? value;

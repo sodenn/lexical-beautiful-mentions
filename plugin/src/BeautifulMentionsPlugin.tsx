@@ -24,6 +24,7 @@ import React, {
 } from "react";
 import * as ReactDOM from "react-dom";
 import {
+  BeautifulMentionsItemData,
   BeautifulMentionsMenuItem,
   BeautifulMentionsPluginProps,
 } from "./BeautifulMentionsPluginProps";
@@ -69,7 +70,7 @@ class MentionOption extends MenuOption {
     public readonly trigger: string,
     value: string,
     displayValue: string,
-    data?: { [key: string]: string | boolean | number },
+    data?: { [key: string]: BeautifulMentionsItemData },
   ) {
     super(value, displayValue, data);
     this.menuItem = {
