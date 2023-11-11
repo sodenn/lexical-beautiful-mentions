@@ -23,7 +23,10 @@ import {
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import React, { ElementType, useCallback, useMemo, useState } from "react";
-import { BeautifulMentionComponentProps as CustomBeautifulMentionComponentProps } from "./BeautifulMentionsPluginProps";
+import {
+  BeautifulMentionsItemData,
+  BeautifulMentionComponentProps as CustomBeautifulMentionComponentProps,
+} from "./BeautifulMentionsPluginProps";
 import { $isBeautifulMentionNode } from "./MentionNode";
 import { IS_IOS } from "./environment";
 import { getNextSibling, getPreviousSibling } from "./mention-utils";
@@ -33,7 +36,7 @@ interface BeautifulMentionComponentProps {
   nodeKey: NodeKey;
   trigger: string;
   value: string;
-  data?: { [p: string]: string | boolean | number };
+  data?: { [p: string]: BeautifulMentionsItemData };
   component?: ElementType<CustomBeautifulMentionComponentProps> | null;
   className?: string;
   classNameFocused?: string;

@@ -23,6 +23,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import {
   BeautifulMentionsComboboxItem,
+  BeautifulMentionsItemData,
   BeautifulMentionsPluginProps,
 } from "./BeautifulMentionsPluginProps";
 import {
@@ -71,7 +72,7 @@ class ComboboxOption extends MenuOption {
     public readonly itemType: "trigger" | "value" | "additional",
     value: string,
     displayValue: string,
-    data: { [key: string]: string | boolean | number } = {},
+    data: { [key: string]: BeautifulMentionsItemData } = {},
   ) {
     super(value, displayValue, data);
     this.comboboxItem = {

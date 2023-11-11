@@ -20,7 +20,7 @@ export interface BeautifulMentionsMenuItem {
   /**
    * Additional data belonging to the mention.
    */
-  data?: { [key: string]: string | boolean | number };
+  data?: { [key: string]: BeautifulMentionsItemData };
 }
 
 /**
@@ -44,8 +44,10 @@ export interface BeautifulMentionsComboboxItem {
   /**
    * Additional data belonging to the mention.
    */
-  data?: { [key: string]: string | boolean | number };
+  data?: { [key: string]: BeautifulMentionsItemData };
 }
+
+export type BeautifulMentionsItemData = string | boolean | number | null;
 
 /**
  * The mention without the trigger. For example: "John". Either a string or
@@ -56,7 +58,7 @@ export type BeautifulMentionsItem =
   | string
   | {
       value: string;
-      [key: string]: string | boolean | number;
+      [key: string]: BeautifulMentionsItemData;
     };
 
 /**
@@ -330,7 +332,7 @@ export type BeautifulMentionsPluginProps =
  * a mention in the editor.
  */
 export interface BeautifulMentionComponentProps<
-  T extends { [p: string]: string | boolean | number } = {},
+  T extends { [p: string]: BeautifulMentionsItemData } = {},
 > extends Omit<ComponentPropsWithRef<any>, "value" | "data"> {
   /**
    * The trigger of the mention.
