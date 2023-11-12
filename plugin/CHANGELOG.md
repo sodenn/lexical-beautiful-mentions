@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.20
+
+### Patch Changes
+
+- 662e895: feat(): add null type to BeautifulMentionsItem data fields
+
 ## 0.1.19
 
 ### Patch Changes
