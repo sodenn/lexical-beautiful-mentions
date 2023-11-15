@@ -16,7 +16,8 @@ export let CustomBeautifulMentionNode: ReturnType<typeof generateClass>;
 export function createBeautifulMentionNode(
   mentionComponent: ElementType<BeautifulMentionComponentProps>,
 ) {
-  CustomBeautifulMentionNode = generateClass(mentionComponent);
+  CustomBeautifulMentionNode =
+    CustomBeautifulMentionNode || generateClass(mentionComponent);
   return [
     CustomBeautifulMentionNode,
     {
