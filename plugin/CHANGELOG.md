@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.21
+
+### Patch Changes
+
+- f60adca: fix(createBeautifulMentionNode): prevent re-creating the BeautifulMentionNode class on every call
+
 ## 0.1.20
 
 ### Patch Changes
