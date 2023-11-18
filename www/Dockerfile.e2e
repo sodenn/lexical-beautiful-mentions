@@ -3,7 +3,7 @@
 # 2. Start the dev server on host machine
 # 3. Update playwright snapshots by running:
 # docker run -it --rm -v "$(pwd)/tests:/tests" playwright-docker:latest
-FROM mcr.microsoft.com/playwright:v1.39.0-jammy
+FROM mcr.microsoft.com/playwright:v1.40.0-jammy
 
 COPY playwright.config.ts ./playwright.config.ts
 # Remove webServer config from playwright config
