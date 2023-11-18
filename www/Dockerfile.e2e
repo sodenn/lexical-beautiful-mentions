@@ -2,7 +2,7 @@
 # docker build -f Dockerfile.e2e -t playwright-docker .
 # 2. Start the dev server on host machine
 # 3. Update playwright snapshots by running:
-# docker run -it --rm -v "$(pwd)/tests:/tests" playwright-docker:latest
+# docker run -it --rm -v "$(pwd)/tests:/tests" playwright-docker
 FROM mcr.microsoft.com/playwright:v1.40.0-jammy
 
 COPY playwright.config.ts ./playwright.config.ts
@@ -17,4 +17,4 @@ RUN npm install -D @playwright/test
 
 ENV HOST=host.docker.internal
 
-CMD ["npx", "playwright", "test", "--reporter=line", "-g", "should dynamically position the menu", "--update-snapshots"]
+CMD ["npx", "playwright", "test", "--reporter=line", "-g", "should not show the option to add a new mention if it already exists", "--update-snapshots"]
