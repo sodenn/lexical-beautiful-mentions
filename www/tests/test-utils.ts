@@ -136,7 +136,7 @@ export class TestUtils {
   }
 
   async editorType(text: string) {
-    await this.editor.pressSequentially(text);
+    await this.editor.pressSequentially(text, { delay: 50 });
     await this.sleep(this.browserName === "webkit" ? 200 : 100);
   }
 
