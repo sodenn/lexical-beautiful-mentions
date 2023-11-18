@@ -227,8 +227,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         typeof creatable === "string"
           ? creatable.replace("{{name}}", query)
           : typeof creatable === "undefined" || creatable
-          ? `Add "${query}"`
-          : undefined;
+            ? `Add "${query}"`
+            : undefined;
       if (displayValue) {
         opt.push(new MentionOption(trigger, query, displayValue));
       }
@@ -413,8 +413,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         const mentionNode = $isBeautifulMentionNode(node)
           ? node
           : $isBeautifulMentionNode(prevNode) && offset === 0
-          ? prevNode
-          : null;
+            ? prevNode
+            : null;
         if (mentionNode) {
           const trigger = mentionNode.getTrigger();
           mentionNode.replace($createTextNode(trigger));
