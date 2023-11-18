@@ -9,8 +9,31 @@ import {
   KEY_DOWN_COMMAND,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
+import { SerializedLexicalNode } from "lexical/LexicalNode";
 import React from "react";
 import { $createZeroWidthNode, $isZeroWidthNode } from "./ZeroWidthNode";
+
+export const ZERO_WIDTH_CHARACTER = "​"; // zero-width space (U+200B)
+
+interface SerializedNode extends SerializedLexicalNode {
+  children?: Array<SerializedNode>;
+}
+
+/**
+ * Removes all zero-width nodes from the given node and its children.
+ */
+export function removeZeroWidthNodes<T extends SerializedNode>(node: T): T {
+  if (node.children) {
+    node.children = node.children.filter((child) => {
+      if (child.type === "zeroWidth") {
+        return false;
+      }
+      removeZeroWidthNodes(child);
+      return true;
+    });
+  }
+  return node;
+}
 
 /**
  * This plugin serves as a patch to fix an incorrect cursor position in Safari.
