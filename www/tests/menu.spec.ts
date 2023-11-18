@@ -80,11 +80,11 @@ test.describe("Mention Menu", () => {
       { page, browserName },
       {
         initialValue:
-          "Hey @Catherine, the task is #urgent and due:tomorrow #meeting",
+          "Hey @Catherine, the task is #urgent and due:tomorrow at 2pm #meeting",
       },
     );
-    await utils.editorType("@ant");
-    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(1);
+    await utils.editorType("@");
+    await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(5);
     await expect(page).toHaveScreenshot({
       fullPage: true,
       animations: "disabled",
