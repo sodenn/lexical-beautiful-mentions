@@ -80,7 +80,7 @@ test.describe("Mention Menu", () => {
       { page, browserName },
       {
         initialValue:
-          "Hey @John, the task is #urgent and due tomorrow at 2pm #meeting",
+          "Hey @Catherine, the task is #urgent and due:tomorrow #meeting",
       },
     );
     await utils.editorType("@ant");
