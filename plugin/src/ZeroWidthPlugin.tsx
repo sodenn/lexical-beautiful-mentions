@@ -5,13 +5,19 @@ import {
   $getSelection,
   $isDecoratorNode,
   $isRangeSelection,
+  $nodesOfType,
   COMMAND_PRIORITY_HIGH,
   KEY_DOWN_COMMAND,
+  LineBreakNode,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import { SerializedLexicalNode } from "lexical/LexicalNode";
 import React from "react";
-import { $createZeroWidthNode, $isZeroWidthNode } from "./ZeroWidthNode";
+import {
+  $createZeroWidthNode,
+  $isZeroWidthNode,
+  ZeroWidthNode,
+} from "./ZeroWidthNode";
 
 export const ZERO_WIDTH_CHARACTER = "​"; // zero-width space (U+200B)
 
@@ -52,9 +58,18 @@ export function ZeroWidthPlugin() {
           () => {
             const root = $getRoot();
             const last = root.getLastDescendant();
+            // add ZeroWidthNode at the end of the editor
             if ($isDecoratorNode(last)) {
+              $nodesOfType(ZeroWidthNode).forEach((node) => node.remove()); // cleanup
               last.insertAfter($createZeroWidthNode());
             }
+            // add ZeroWidthNode before each line break
+            $nodesOfType(LineBreakNode).forEach((node) => {
+              const prev = node.getPreviousSibling();
+              if ($isDecoratorNode(prev)) {
+                node.insertBefore($createZeroWidthNode());
+              }
+            });
           },
           // merge with previous history entry to allow undoing
           { tag: "history-merge" },

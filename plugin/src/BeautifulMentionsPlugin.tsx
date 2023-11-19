@@ -454,6 +454,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         cursorAtStartOfNode,
         cursorAtEndOfNode,
       } = selectionInfo;
+      // [Mention][|][Text]
       if (
         isTextNode &&
         cursorAtStartOfNode &&
@@ -461,6 +462,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ) {
         node.insertBefore($createTextNode(" "));
       }
+      // [Text][|][Mention]
       if (
         isTextNode &&
         cursorAtEndOfNode &&
@@ -468,6 +470,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ) {
         node.insertAfter($createTextNode(" "));
       }
+      // [Text][|][Word]
       if (isTextNode && isTrigger && wordCharAfterCursor) {
         const content =
           textContent.substring(0, offset) +
@@ -475,6 +478,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           textContent.substring(offset);
         node.setTextContent(content);
       }
+      // [Mention][|]
       if ($isBeautifulMentionNode(node) && nextNode === null) {
         node.insertAfter($createTextNode(" "));
       }
