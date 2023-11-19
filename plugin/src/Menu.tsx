@@ -26,6 +26,7 @@ import {
 } from "react";
 import { BeautifulMentionsItemData } from "./BeautifulMentionsPluginProps";
 import { CAN_USE_DOM, IS_MOBILE } from "./environment";
+import { getTextContent } from "./mention-utils";
 
 const useLayoutEffectImpl: typeof useLayoutEffect = CAN_USE_DOM
   ? useLayoutEffect
@@ -156,7 +157,7 @@ export function $splitNodeContainingQuery(
     return null;
   }
   const selectionOffset = anchor.offset;
-  const textContent = anchorNode.getTextContent().slice(0, selectionOffset);
+  const textContent = getTextContent(anchorNode).slice(0, selectionOffset);
   const characterOffset = match.replaceableString.length;
   const queryOffset = getFullMatchOffset(
     textContent,

@@ -13,6 +13,7 @@ import {
   $selectEnd,
   getNextSibling,
   getPreviousSibling,
+  getTextContent,
 } from "./mention-utils";
 import {
   $createBeautifulMentionNode,
@@ -197,18 +198,20 @@ export function $removeMention(trigger: string, value?: string, focus = true) {
       removed = true;
       // Prevent double spaces
       if (
-        prev?.getTextContent().endsWith(" ") &&
-        next?.getTextContent().startsWith(" ")
+        prev &&
+        getTextContent(prev).endsWith(" ") &&
+        next &&
+        getTextContent(next).startsWith(" ")
       ) {
-        prev.setTextContent(prev.getTextContent().slice(0, -1));
+        prev.setTextContent(getTextContent(prev).slice(0, -1));
       }
       // Remove trailing space
       if (
         next === null &&
         $isTextNode(prev) &&
-        prev.getTextContent().endsWith(" ")
+        getTextContent(prev).endsWith(" ")
       ) {
-        prev.setTextContent(prev.getTextContent().trimEnd());
+        prev.setTextContent(getTextContent(prev).trimEnd());
       }
     }
   }

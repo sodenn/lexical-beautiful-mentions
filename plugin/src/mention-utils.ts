@@ -11,6 +11,7 @@ import {
   RootNode,
 } from "lexical";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
+import { $isZeroWidthNode } from "./ZeroWidthNode";
 
 export const DEFAULT_PUNCTUATION =
   "\\.,\\*\\?\\$\\|#{}\\(\\)\\^\\[\\]\\\\/!%'\"~=<>_:;";
@@ -53,7 +54,7 @@ export function $getSelectionInfo(triggers: string[], punctuation: string) {
   const [node] = nodes;
   const isTextNode = $isTextNode(node) && node.isSimpleText();
   const offset = anchor.type === "text" ? anchor.offset : 0;
-  const textContent = node.getTextContent();
+  const textContent = getTextContent(node);
   const cursorAtStartOfNode = offset === 0;
   const cursorAtEndOfNode = textContent.length === offset;
   const charBeforeCursor = textContent.charAt(offset - 1);
@@ -92,7 +93,7 @@ export function $getSelectionInfo(triggers: string[], punctuation: string) {
 
 export function getNextSibling(node: LexicalNode) {
   let nextSibling = node.getNextSibling();
-  while (nextSibling !== null && nextSibling.getType() === "zeroWidth") {
+  while (nextSibling !== null && $isZeroWidthNode(nextSibling)) {
     nextSibling = nextSibling.getNextSibling();
   }
   return nextSibling;
@@ -100,13 +101,17 @@ export function getNextSibling(node: LexicalNode) {
 
 export function getPreviousSibling(node: LexicalNode) {
   let previousSibling = node.getPreviousSibling();
-  while (
-    previousSibling !== null &&
-    previousSibling.getType() === "zeroWidth"
-  ) {
+  while (previousSibling !== null && $isZeroWidthNode(previousSibling)) {
     previousSibling = previousSibling.getPreviousSibling();
   }
   return previousSibling;
+}
+
+export function getTextContent(node: LexicalNode) {
+  if ($isZeroWidthNode(node)) {
+    return "";
+  }
+  return node.getTextContent();
 }
 
 export function getCreatableProp(
@@ -162,8 +167,8 @@ export function $selectEnd() {
   const offset = $isElementNode(lastNode)
     ? lastNode.getChildrenSize()
     : $isTextNode(lastNode)
-    ? lastNode.getTextContent().length
-    : 0;
+      ? getTextContent(lastNode).length
+      : 0;
   const type = $isElementNode(lastNode) ? "element" : "text";
   if (key) {
     const newSelection = $createRangeSelection();

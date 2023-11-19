@@ -16,6 +16,7 @@ import {
   isSelectionOnEntityBoundary,
   useMenuAnchorRef,
 } from "./Menu";
+import { getTextContent } from "./mention-utils";
 
 function getTextUpToAnchor(selection: RangeSelection): string | null {
   const anchor = selection.anchor;
@@ -27,7 +28,7 @@ function getTextUpToAnchor(selection: RangeSelection): string | null {
     return null;
   }
   const anchorOffset = anchor.offset;
-  return anchorNode.getTextContent().slice(0, anchorOffset);
+  return getTextContent(anchorNode).slice(0, anchorOffset);
 }
 
 function tryToPositionRange(leadOffset: number, range: Range): boolean {

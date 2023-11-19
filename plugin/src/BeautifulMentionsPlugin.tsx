@@ -56,6 +56,7 @@ import {
   VALID_CHARS,
   getCreatableProp,
   getMenuItemLimitProp,
+  getTextContent,
   isWordChar,
 } from "./mention-utils";
 import { useIsFocused } from "./useIsFocused";
@@ -355,7 +356,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       return false;
     }
     const node = selectionInfo.node;
-    const textContent = node.getTextContent();
+    const textContent = getTextContent(node);
     const queryMatch = checkForMentions(
       textContent,
       triggers,
