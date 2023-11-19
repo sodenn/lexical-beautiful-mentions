@@ -6,7 +6,7 @@ import {
   type NodeKey,
   type SerializedTextNode,
 } from "lexical";
-import { EditorConfig } from "lexical/LexicalEditor";
+import { ZERO_WIDTH_CHARACTER } from "./ZeroWidthPlugin";
 
 export type SerializedZeroWidthNode = SerializedTextNode;
 
@@ -25,9 +25,7 @@ export class ZeroWidthNode extends TextNode {
   }
 
   constructor(key?: NodeKey) {
-    // Workaround: Use a zero-width space instead of an empty string because
-    // otherwise the cursor is not correctly aligned with the line height.
-    super("​", key); // 🚨 contains a zero-width space (U+200B)
+    super(ZERO_WIDTH_CHARACTER, key);
   }
 
   exportJSON(): SerializedZeroWidthNode {
@@ -37,11 +35,7 @@ export class ZeroWidthNode extends TextNode {
     };
   }
 
-  updateDOM(
-    prevNode: ZeroWidthNode,
-    dom: HTMLElement,
-    config: EditorConfig,
-  ): boolean {
+  updateDOM(): boolean {
     return false;
   }
 
@@ -54,7 +48,11 @@ export class ZeroWidthNode extends TextNode {
   }
 
   getTextContent(): string {
-    return "";
+    // Must be a non-empty string, otherwise nodes inserted via `$insertNodes`
+    // are not at the correct position.
+    // 🚨 Don't forget to remove the spaces when exporting to JSON.
+    // You can use the `removeZeroWidthNodes` function for this.
+    return ZERO_WIDTH_CHARACTER;
   }
 }
 

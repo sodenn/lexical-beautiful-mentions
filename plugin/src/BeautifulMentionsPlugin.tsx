@@ -56,6 +56,7 @@ import {
   VALID_CHARS,
   getCreatableProp,
   getMenuItemLimitProp,
+  getTextContent,
   isWordChar,
 } from "./mention-utils";
 import { useIsFocused } from "./useIsFocused";
@@ -227,8 +228,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         typeof creatable === "string"
           ? creatable.replace("{{name}}", query)
           : typeof creatable === "undefined" || creatable
-          ? `Add "${query}"`
-          : undefined;
+            ? `Add "${query}"`
+            : undefined;
       if (displayValue) {
         opt.push(new MentionOption(trigger, query, displayValue));
       }
@@ -355,7 +356,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       return false;
     }
     const node = selectionInfo.node;
-    const textContent = node.getTextContent();
+    const textContent = getTextContent(node);
     const queryMatch = checkForMentions(
       textContent,
       triggers,
@@ -413,8 +414,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         const mentionNode = $isBeautifulMentionNode(node)
           ? node
           : $isBeautifulMentionNode(prevNode) && offset === 0
-          ? prevNode
-          : null;
+            ? prevNode
+            : null;
         if (mentionNode) {
           const trigger = mentionNode.getTrigger();
           mentionNode.replace($createTextNode(trigger));
@@ -454,6 +455,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         cursorAtStartOfNode,
         cursorAtEndOfNode,
       } = selectionInfo;
+      // [Mention][|][Text]
       if (
         isTextNode &&
         cursorAtStartOfNode &&
@@ -461,6 +463,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ) {
         node.insertBefore($createTextNode(" "));
       }
+      // [Text][|][Mention]
       if (
         isTextNode &&
         cursorAtEndOfNode &&
@@ -468,6 +471,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ) {
         node.insertAfter($createTextNode(" "));
       }
+      // [Text][|][Word]
       if (isTextNode && isTrigger && wordCharAfterCursor) {
         const content =
           textContent.substring(0, offset) +
@@ -475,6 +479,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           textContent.substring(offset);
         node.setTextContent(content);
       }
+      // [Mention][|]
       if ($isBeautifulMentionNode(node) && nextNode === null) {
         node.insertAfter($createTextNode(" "));
       }

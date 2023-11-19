@@ -8,29 +8,27 @@ import {
   FOCUS_COMMAND,
   LexicalNode,
 } from "lexical";
-import { $isBeautifulMentionNode } from "lexical-beautiful-mentions";
+import {
+  $isBeautifulMentionNode,
+  $isZeroWidthNode,
+} from "lexical-beautiful-mentions";
 import { useLayoutEffect, useState } from "react";
 
-export function getDebugTextContent(node: LexicalNode) {
-  const nodes = [];
-  const stack = [node];
-  while (stack.length > 0) {
-    let hasChildren = false;
-    const currentNode = stack.pop();
-    if ($isElementNode(currentNode)) {
-      const children = currentNode.getChildren();
-      hasChildren = children.length > 0;
-      stack.unshift(...children);
+export function getDebugTextContent(node: LexicalNode): string {
+  let result = "";
+
+  if ($isElementNode(node)) {
+    const children = node.getChildren();
+    for (const child of children) {
+      result += getDebugTextContent(child);
     }
-    if (currentNode !== node && !hasChildren) {
-      nodes.push(
-        $isBeautifulMentionNode(currentNode)
-          ? "[" + currentNode.getTextContent() + "]"
-          : currentNode.getTextContent(),
-      );
-    }
+  } else if ($isBeautifulMentionNode(node)) {
+    result += "[" + node.getTextContent() + "]";
+  } else if (!$isZeroWidthNode(node)) {
+    result += node.getTextContent();
   }
-  return nodes.reverse().join("");
+
+  return result;
 }
 
 export function useIsFocused() {

@@ -60,8 +60,8 @@ function useConfigurationValue() {
     focusParam === "start"
       ? "rootStart"
       : focusParam === "none"
-      ? "none"
-      : "rootEnd";
+        ? "none"
+        : "rootEnd";
 
   const setAsynchronous = useCallback(
     (asynchronous: boolean) => {
