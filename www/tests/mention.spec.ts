@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import * as os from "os";
 import { testUtils } from "./test-utils";
 
 test.describe("mentions handling", () => {
@@ -124,5 +125,27 @@ test.describe("mentions handling", () => {
     await expect(page.getByRole("tooltip")).not.toBeVisible();
     await page.mouse.move(mentionPosition.x, mentionPosition.y);
     await expect(page.getByRole("tooltip")).toBeVisible();
+  });
+
+  test("should copy mention to clipboard and paste it back in the editor", async ({
+    page,
+    browserName,
+    isMobile,
+  }) => {
+    test.skip(!!isMobile, "desktop only");
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        initialValue: "@Catherine",
+        customMentionNode: true,
+      },
+    );
+    await page.click(`[data-beautiful-mention="@Catherine"]`);
+    const isMac = os.platform() === "darwin";
+    const modifier = isMac ? "Meta" : "Control";
+    await page.keyboard.press(`${modifier}+KeyC`);
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press(`${modifier}+KeyV`);
+    await utils.hasText("[@Catherine] [@Catherine]");
   });
 });
