@@ -12,6 +12,7 @@ import {
   KEY_DOWN_COMMAND,
   KEY_SPACE_COMMAND,
   NodeSelection,
+  PASTE_COMMAND,
   RangeSelection,
   TextNode,
 } from "lexical";
@@ -47,6 +48,7 @@ import {
   REMOVE_MENTIONS_COMMAND,
   RENAME_MENTIONS_COMMAND,
 } from "./mention-commands";
+import { $convertToMentionNodes } from "./mention-converter";
 import {
   $getSelectionInfo,
   $selectEnd,
@@ -383,7 +385,15 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return true;
   }, [options, punctuation, selectedMenuIndex, trigger, triggers]);
 
-  const setSelection = useCallback(() => {
+  const archiveSelection = useCallback(() => {
+    const selection = $getSelection();
+    if (selection) {
+      setOldSelection(selection);
+      $setSelection(null);
+    }
+  }, []);
+
+  const restoreSelection = useCallback(() => {
     const selection = $getSelection();
     if (!selection && oldSelection) {
       $setSelection(oldSelection);
@@ -394,14 +404,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       setOldSelection(null);
     }
   }, [oldSelection]);
-
-  const archiveSelection = useCallback(() => {
-    const selection = $getSelection();
-    if (selection) {
-      setOldSelection(selection);
-      $setSelection(null);
-    }
-  }, []);
 
   const handleDeleteMention = useCallback(
     (event: KeyboardEvent) => {
@@ -428,20 +430,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     [showMentionsOnDelete, triggers, punctuation],
   );
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const { key, metaKey, ctrlKey } = event;
-      const simpleKey = key.length === 1;
-      const isTrigger = triggers.some((trigger) => key === trigger);
-      const wordChar = isWordChar(key, triggers, punctuation);
+  const insertSpaceIfNecessary = useCallback(
+    (startsWithTriggerChar = false) => {
       const selectionInfo = $getSelectionInfo(triggers, punctuation);
-      if (
-        !simpleKey ||
-        (!wordChar && !isTrigger) ||
-        !selectionInfo ||
-        metaKey ||
-        ctrlKey
-      ) {
+      if (!selectionInfo) {
         return false;
       }
       const {
@@ -472,7 +464,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         node.insertAfter($createTextNode(" "));
       }
       // [Text][|][Word]
-      if (isTextNode && isTrigger && wordCharAfterCursor) {
+      if (isTextNode && startsWithTriggerChar && wordCharAfterCursor) {
         const content =
           textContent.substring(0, offset) +
           " " +
@@ -483,9 +475,51 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       if ($isBeautifulMentionNode(node) && nextNode === null) {
         node.insertAfter($createTextNode(" "));
       }
-      return false;
     },
     [punctuation, triggers],
+  );
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const { key, metaKey, ctrlKey } = event;
+      const simpleKey = key.length === 1;
+      const isTrigger = triggers.some((trigger) => key === trigger);
+      const wordChar = isWordChar(key, triggers, punctuation);
+      if (!simpleKey || (!wordChar && !isTrigger) || metaKey || ctrlKey) {
+        return false;
+      }
+      insertSpaceIfNecessary(isTrigger);
+      return false;
+    },
+    [insertSpaceIfNecessary, punctuation, triggers],
+  );
+
+  const handlePaste = useCallback(
+    (event: ClipboardEvent) => {
+      if (allowSpaces) {
+        return false;
+      }
+      const text = event.clipboardData?.getData("Text");
+      if (!text) {
+        return false;
+      }
+      restoreSelection();
+      const selection = $getSelection();
+      if (selection) {
+        insertSpaceIfNecessary();
+        const nodes = $convertToMentionNodes(text, triggers, punctuation);
+        selection.insertNodes(nodes);
+        return true;
+      }
+      return false;
+    },
+    [
+      allowSpaces,
+      insertSpaceIfNecessary,
+      punctuation,
+      triggers,
+      restoreSelection,
+    ],
   );
 
   React.useEffect(() => {
@@ -524,7 +558,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.registerCommand(
         INSERT_MENTION_COMMAND,
         ({ trigger, value, focus = true }) => {
-          setSelection();
+          restoreSelection();
           const inserted = $insertMentionAtSelection(
             triggers,
             punctuation,
@@ -563,11 +597,12 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       editor.registerCommand(
         OPEN_MENTION_MENU_COMMAND,
         ({ trigger }) => {
-          setSelection();
+          restoreSelection();
           return $insertTriggerAtSelection(triggers, punctuation, trigger);
         },
         COMMAND_PRIORITY_LOW,
       ),
+      editor.registerCommand(PASTE_COMMAND, handlePaste, COMMAND_PRIORITY_LOW),
     );
   }, [
     editor,
@@ -578,10 +613,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     creatable,
     isEditorFocused,
     convertTextToMention,
-    setSelection,
+    restoreSelection,
     archiveSelection,
     handleKeyDown,
     handleDeleteMention,
+    handlePaste,
   ]);
 
   useEffect(() => {
