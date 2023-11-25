@@ -51,7 +51,12 @@ export function $getSelectionInfo(triggers: string[], punctuation: string) {
     return;
   }
 
-  const [node] = nodes;
+  const [_node] = nodes;
+  const node = $isZeroWidthNode(_node) ? _node.getPreviousSibling() : _node;
+  if (!node) {
+    return;
+  }
+
   const isTextNode = $isTextNode(node) && node.isSimpleText();
   const offset = anchor.type === "text" ? anchor.offset : 0;
   const textContent = getTextContent(node);
