@@ -83,7 +83,7 @@ test.describe("Mention Menu", () => {
           "Hey @Catherine, the task is #urgent and due:tomorrow at 2pm #meeting",
       },
     );
-    await utils.editorType("@");
+    await utils.editorType("@a");
     await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(5);
     await expect(page).toHaveScreenshot({
       fullPage: true,

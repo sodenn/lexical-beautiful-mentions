@@ -291,7 +291,8 @@ export type BeautifulMentionsSearchProps =
   BeautifulMentionsPluginWithCompProps & {
     items?: never;
     /**
-     * The characters that trigger the mention menu.
+     * The characters that trigger the mention menu. Needed to tell the plugin
+     * when to call the query function.
      */
     triggers: string[];
     /**
@@ -318,7 +319,12 @@ export type BeautifulMentionsItemsProps =
      * will be shown in the menu.
      */
     items: Record<string, BeautifulMentionsItem[]>;
-    triggers?: never;
+    /**
+     * Optional list of trigger characters. If provided, the mention menu will
+     * only be opened for the specified triggers. Useful if the trigger is a
+     * regular expression that should not be shown to the user.
+     */
+    triggers?: string[];
     onSearch?: never;
     searchDelay?: never;
   };

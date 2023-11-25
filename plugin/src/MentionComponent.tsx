@@ -12,6 +12,7 @@ import {
   BLUR_COMMAND,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
+  COPY_COMMAND,
   GridSelection,
   KEY_ARROW_LEFT_COMMAND,
   KEY_ARROW_RIGHT_COMMAND,
@@ -22,7 +23,14 @@ import {
   RangeSelection,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import React, { ElementType, useCallback, useMemo, useState } from "react";
+import {
+  ElementType,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   BeautifulMentionsItemData,
   BeautifulMentionComponentProps as CustomBeautifulMentionComponentProps,
@@ -63,7 +71,7 @@ export default function BeautifulMentionComponent(
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
   const isFocused = $isNodeSelection(selection) && isSelected;
-  const ref = React.useRef<any>(null);
+  const ref = useRef<any>(null);
   const mention = trigger + value;
 
   const finalClasses = useMemo(() => {
@@ -189,7 +197,21 @@ export default function BeautifulMentionComponent(
     return false;
   }, [isSelected, setSelected]);
 
-  React.useEffect(() => {
+  const onCopy = useCallback(() => {
+    if (isSelected) {
+      const node = $getNodeByKey(nodeKey);
+      if (!node || !node.isSelected()) {
+        return false;
+      }
+      const text = node.getTextContent();
+      if (text) {
+        navigator.clipboard.writeText(text);
+      }
+    }
+    return false;
+  }, [isSelected, nodeKey]);
+
+  useEffect(() => {
     let isMounted = true;
     const unregister = mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
@@ -222,6 +244,7 @@ export default function BeautifulMentionComponent(
         onArrowRightPress,
         COMMAND_PRIORITY_LOW,
       ),
+      editor.registerCommand(COPY_COMMAND, onCopy, COMMAND_PRIORITY_LOW),
       editor.registerCommand(BLUR_COMMAND, onBlur, COMMAND_PRIORITY_LOW),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
