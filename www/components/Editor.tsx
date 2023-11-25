@@ -170,6 +170,7 @@ function Plugins() {
     ...(combobox
       ? {
           combobox,
+          triggers,
           comboboxOpen: menuOrComboboxOpen,
           comboboxAnchor: comboboxAnchor.current,
           comboboxAnchorClassName:

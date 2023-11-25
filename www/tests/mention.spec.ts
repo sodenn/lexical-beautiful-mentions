@@ -127,7 +127,10 @@ test.describe("mentions handling", () => {
     await expect(page.getByRole("tooltip")).toBeVisible();
   });
 
-  test("should copy mention to clipboard and paste it back in the editor", async ({
+  // only works when running in headful mode
+  // - https://github.com/kenthu/human-interest-verifier/issues/1
+  // - https://github.com/microsoft/playwright/issues/11654
+  test.skip("should copy mention to clipboard and paste it back in the editor", async ({
     page,
     browserName,
     isMobile,
