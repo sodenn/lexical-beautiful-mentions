@@ -264,6 +264,7 @@ export default function BeautifulMentionComponent(
     onBlur,
     onDelete,
     onSelectionChange,
+    onCopy,
   ]);
 
   if (Component) {
