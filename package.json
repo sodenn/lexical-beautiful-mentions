@@ -1,6 +1,6 @@
 {
   "name": "lexical-beautiful-mentions",
-  "version": "0.1.21",
+  "version": "0.12.0",
   "private": true,
   "workspaces": [
     "plugin",
