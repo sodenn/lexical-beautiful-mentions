@@ -161,6 +161,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     onMenuClose,
     onMenuItemSelect,
     punctuation = DEFAULT_PUNCTUATION,
+    showAddOption = true,
   } = props;
   const justSelectedAnOption = useRef(false);
   const isEditorFocused = useIsFocused();
@@ -225,7 +226,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       });
     }
     // Add option to create a new mention
-    if (query && opt.every((o) => o.displayValue !== query)) {
+    if (query && showAddOption && opt.every((o) => o.displayValue !== query)) {
       const displayValue =
         typeof creatable === "string"
           ? creatable.replace("{{name}}", query)
