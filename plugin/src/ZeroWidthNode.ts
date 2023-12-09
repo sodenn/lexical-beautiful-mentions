@@ -17,14 +17,17 @@ export class ZeroWidthNode extends TextNode {
   }
 
   static clone(node: ZeroWidthNode): ZeroWidthNode {
-    return new ZeroWidthNode(node.__key);
+    return new ZeroWidthNode(node.__textContent, node.__key);
   }
 
   static importJSON(_: SerializedZeroWidthNode): ZeroWidthNode {
     return $createZeroWidthNode();
   }
 
-  constructor(key?: NodeKey) {
+  constructor(
+    private __textContent: string,
+    key?: NodeKey,
+  ) {
     super(ZERO_WIDTH_CHARACTER, key);
   }
 
@@ -48,16 +51,12 @@ export class ZeroWidthNode extends TextNode {
   }
 
   getTextContent(): string {
-    // Must be a non-empty string, otherwise nodes inserted via `$insertNodes`
-    // are not at the correct position.
-    // 🚨 Don't forget to remove the spaces when exporting to JSON.
-    // You can use the `removeZeroWidthNodes` function for this.
-    return ZERO_WIDTH_CHARACTER;
+    return this.__textContent;
   }
 }
 
-export function $createZeroWidthNode(): ZeroWidthNode {
-  const zeroWidthNode = new ZeroWidthNode();
+export function $createZeroWidthNode(textContent = ""): ZeroWidthNode {
+  const zeroWidthNode = new ZeroWidthNode(textContent);
 
   // Prevents that a space that is inserted by the user is deleted again
   // directly after the input.
