@@ -5,15 +5,13 @@ import {
   $getSelection,
   $nodesOfType,
   $setSelection,
+  BaseSelection,
   BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
-  GridSelection,
   KEY_BACKSPACE_COMMAND,
   KEY_DOWN_COMMAND,
   KEY_SPACE_COMMAND,
-  NodeSelection,
   PASTE_COMMAND,
-  RangeSelection,
   TextNode,
 } from "lexical";
 import React, {
@@ -30,13 +28,6 @@ import {
   BeautifulMentionsPluginProps,
 } from "./BeautifulMentionsPluginProps";
 import { ComboboxPlugin } from "./ComboboxPlugin";
-import {
-  $createBeautifulMentionNode,
-  $isBeautifulMentionNode,
-  BeautifulMentionNode,
-} from "./MentionNode";
-import { MenuOption, MenuTextMatch } from "./Menu";
-import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 import {
   $insertMentionAtSelection,
@@ -53,14 +44,21 @@ import {
   $getSelectionInfo,
   $selectEnd,
   DEFAULT_PUNCTUATION,
-  LENGTH_LIMIT,
-  TRIGGERS,
-  VALID_CHARS,
   getCreatableProp,
   getMenuItemLimitProp,
   getTextContent,
   isWordChar,
+  LENGTH_LIMIT,
+  TRIGGERS,
+  VALID_CHARS,
 } from "./mention-utils";
+import {
+  $createBeautifulMentionNode,
+  $isBeautifulMentionNode,
+  BeautifulMentionNode,
+} from "./MentionNode";
+import { MenuOption, MenuTextMatch } from "./Menu";
+import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
 
@@ -182,9 +180,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
     null,
   );
-  const [oldSelection, setOldSelection] = useState<
-    RangeSelection | NodeSelection | GridSelection | null
-  >(null);
+  const [oldSelection, setOldSelection] = useState<BaseSelection | null>(null);
   const creatable = getCreatableProp(props.creatable, trigger);
   const menuItemLimit = getMenuItemLimitProp(props.menuItemLimit, trigger);
   const options = useMemo(() => {
