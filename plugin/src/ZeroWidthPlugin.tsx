@@ -11,34 +11,27 @@ import {
   LineBreakNode,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import { SerializedLexicalNode } from "lexical/LexicalNode";
-import React from "react";
+import { useEffect } from "react";
 import {
   $createZeroWidthNode,
   $isZeroWidthNode,
   ZeroWidthNode,
 } from "./ZeroWidthNode";
 
-export const ZERO_WIDTH_CHARACTER = "​"; // zero-width space (U+200B)
+export const ZERO_WIDTH_CHARACTER = "​"; // 🚨 contains a zero-width space (U+200B)
 
-interface SerializedNode extends SerializedLexicalNode {
-  children?: Array<SerializedNode>;
-}
-
-/**
- * Removes all zero-width nodes from the given node and its children.
- */
-export function removeZeroWidthNodes<T extends SerializedNode>(node: T): T {
-  if (node.children) {
-    node.children = node.children.filter((child) => {
-      if (child.type === "zeroWidth") {
-        return false;
-      }
-      removeZeroWidthNodes(child);
-      return true;
-    });
-  }
-  return node;
+interface ZeroWidthPluginProps {
+  /**
+   * Defines the return value of `getTextContent()`. By default, an empty string to not corrupt
+   * the text content of the editor.
+   *
+   * Note: If other nodes are not at the correct position when inserting via `$insertNodes`,
+   * try to use a non-empty string like " " or a zero-width character. But don't forget
+   * to remove these characters when exporting the editor content.
+   *
+   * @default empty string
+   */
+  textContent?: string;
 }
 
 /**
@@ -47,10 +40,10 @@ export function removeZeroWidthNodes<T extends SerializedNode>(node: T): T {
  * all browsers.
  * {@link https://github.com/facebook/lexical/issues/4487}.
  */
-export function ZeroWidthPlugin() {
+export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
   const [editor] = useLexicalComposerContext();
 
-  React.useEffect(() => {
+  useEffect(() => {
     return mergeRegister(
       editor.registerUpdateListener(() => {
         // add a zero-width space node at the end if the last node is a decorator node
@@ -61,13 +54,13 @@ export function ZeroWidthPlugin() {
             // add ZeroWidthNode at the end of the editor
             if ($isDecoratorNode(last)) {
               $nodesOfType(ZeroWidthNode).forEach((node) => node.remove()); // cleanup
-              last.insertAfter($createZeroWidthNode());
+              last.insertAfter($createZeroWidthNode(textContent));
             }
             // add ZeroWidthNode before each line break
             $nodesOfType(LineBreakNode).forEach((node) => {
               const prev = node.getPreviousSibling();
               if ($isDecoratorNode(prev)) {
-                node.insertBefore($createZeroWidthNode());
+                node.insertBefore($createZeroWidthNode(textContent));
               }
             });
           },
@@ -113,7 +106,7 @@ export function ZeroWidthPlugin() {
         COMMAND_PRIORITY_HIGH,
       ),
     );
-  }, [editor]);
+  }, [editor, textContent]);
 
   return null;
 }
