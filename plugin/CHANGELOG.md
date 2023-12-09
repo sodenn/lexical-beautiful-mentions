@@ -1,5 +1,13 @@
 # lexical-beautiful-mentions
 
+## 0.1.22
+
+### Patch Changes
+
+- 17b8bd5: feat(): copy value of selected mention to clipboard
+- 2388ee5: fix(ZeroWidthPlugin): 🚨 to avoid that the trigger character is inserted at the wrong position when using `openMentionMenu` (lexical >0.12.4), you need to set the new `textContent` prop of the ZeroWidthPlugin to a non-empty string. Don`t forget to remove the non-empty string characters before saving the content to your database.
+- 17b8bd5: feat(): paste mentions from clipboard into editor
+
 ## 0.1.21
 
 ### Patch Changes
