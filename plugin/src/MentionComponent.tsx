@@ -9,18 +9,16 @@ import {
   $isNodeSelection,
   $isTextNode,
   $setSelection,
+  BaseSelection,
   BLUR_COMMAND,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   COPY_COMMAND,
-  GridSelection,
   KEY_ARROW_LEFT_COMMAND,
   KEY_ARROW_RIGHT_COMMAND,
   KEY_BACKSPACE_COMMAND,
   KEY_DELETE_COMMAND,
   NodeKey,
-  NodeSelection,
-  RangeSelection,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import {
@@ -35,9 +33,9 @@ import {
   BeautifulMentionsItemData,
   BeautifulMentionComponentProps as CustomBeautifulMentionComponentProps,
 } from "./BeautifulMentionsPluginProps";
-import { $isBeautifulMentionNode } from "./MentionNode";
 import { IS_IOS } from "./environment";
 import { getNextSibling, getPreviousSibling } from "./mention-utils";
+import { $isBeautifulMentionNode } from "./MentionNode";
 import { BeautifulMentionsThemeValues } from "./theme";
 
 interface BeautifulMentionComponentProps {
@@ -67,9 +65,7 @@ export default function BeautifulMentionComponent(
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
-  const [selection, setSelection] = useState<
-    RangeSelection | NodeSelection | GridSelection | null
-  >(null);
+  const [selection, setSelection] = useState<BaseSelection | null>(null);
   const isFocused = $isNodeSelection(selection) && isSelected;
   const ref = useRef<any>(null);
   const mention = trigger + value;
