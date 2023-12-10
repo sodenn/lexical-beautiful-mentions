@@ -8,6 +8,8 @@
 [github-codeql-analysis-action-image]: https://github.com/sodenn/lexical-beautiful-mentions/actions/workflows/codeql-analysis.yml/badge.svg
 [github-codeql-analysis-action-url]: https://github.com/sodenn/lexical-beautiful-mentions/actions/workflows/codeql-analysis.yml
 
+[Demo](https://lexical-beautiful-mentions-docs.vercel.app/)
+
 A mentions plugin for the lexical editor. lexical is an extendable text editor for the web build by Meta. While the lexical playground offers a basic mentions plugin for demo purposes, this plugin is more advanced and offers the following features:
 
 - **Customizable triggers**: Use characters, words or regular expressions as triggers for mentions.
@@ -19,6 +21,7 @@ A mentions plugin for the lexical editor. lexical is an extendable text editor f
 - **Custom menu and menu item**: You can customize the look and behavior of the menu that displays the mention suggestions.
 - **Additional metadata**: You can add additional metadata to the mention items, which will be included in the mention nodes when serializing the editor content.
 - **Custom mention component**: You can replace the default mention component with a custom component of your choice.
+- **Clipboard support**: Copy and paste mentions works out of the box.
 
 ## Installation
 
@@ -212,29 +215,32 @@ const mentionItems = {
     // ...
   ],
 };
-// serializes to the following lexical nodes:
-// [
-//   {
-//     "trigger": "@",
-//     "value": "Catherine",
-//     "data": {
-//       "id": "1",
-//       "email": "catherine.a@example.com"
-//     },
-//     "type": "beautifulMention",
-//     "version": 1
-//   },
-//   {
-//     "trigger": "@",
-//     "value": "Catherine",
-//     "data": {
-//       "id": "2",
-//       "email": "catherine.b@example.com"
-//     },
-//     "type": "beautifulMention",
-//     "version": 1
-//   }
-// ]
+```
+
+Serializes to the following lexical nodes:
+```json
+ [
+   {
+     "trigger": "@",
+     "value": "Catherine",
+     "data": {
+       "id": "1",
+       "email": "catherine.a@example.com"
+     },
+     "type": "beautifulMention",
+     "version": 1
+   },
+   {
+     "trigger": "@",
+     "value": "Catherine",
+     "data": {
+       "id": "2",
+       "email": "catherine.b@example.com"
+     },
+     "type": "beautifulMention",
+     "version": 1
+   }
+ ]
 ```
 
 All additional metadata are available as props of the `BeautifulMentionsMenuItem` component:
@@ -286,6 +292,15 @@ return (
     {/** ... */}
   </LexicalComposer>
 );
+```
+
+### Disable creating new mentions
+
+```tsx
+<BeautifulMentionsPlugin
+  items={mentionItems}
+  creatable={false} // 👈 hide the menu item that allows users to create new mentions
+/>
 ```
 
 ### Async query function
