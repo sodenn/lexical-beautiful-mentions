@@ -104,7 +104,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
         }
         return {
           conversion: convertElement,
-          priority: 0,
+          priority: 1,
         };
       },
     };
