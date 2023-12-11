@@ -8,8 +8,8 @@ import { forwardRef } from "react";
 
 const CustomMentionComponent = forwardRef<
   HTMLSpanElement,
-  BeautifulMentionComponentProps
->(({ trigger, value, children, ...other }, ref) => {
+  BeautifulMentionComponentProps<{ id: string }>
+>(({ trigger, value, data, children, ...other }, ref) => {
   return (
     <Tooltip>
       <TooltipTrigger>
@@ -23,6 +23,11 @@ const CustomMentionComponent = forwardRef<
           <p>
             Value: <code>{value}</code>
           </p>
+          {data?.id && (
+            <p>
+              ID: <code>{data.id}</code>
+            </p>
+          )}
         </TooltipContent>
       </TooltipTrigger>
     </Tooltip>

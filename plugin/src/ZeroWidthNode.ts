@@ -1,6 +1,9 @@
 import {
   $applyNodeReplacement,
   DOMConversionMap,
+  DOMConversionOutput,
+  DOMExportOutput,
+  LexicalEditor,
   TextNode,
   type LexicalNode,
   type NodeKey,
@@ -9,6 +12,12 @@ import {
 import { ZERO_WIDTH_CHARACTER } from "./ZeroWidthPlugin";
 
 export type SerializedZeroWidthNode = SerializedTextNode;
+
+function convertZeroWidthElement(
+  domNode: HTMLElement,
+): DOMConversionOutput | null {
+  return null;
+}
 
 /* eslint @typescript-eslint/no-unused-vars: "off" */
 export class ZeroWidthNode extends TextNode {
@@ -34,6 +43,7 @@ export class ZeroWidthNode extends TextNode {
   exportJSON(): SerializedZeroWidthNode {
     return {
       ...super.exportJSON(),
+      text: "",
       type: "zeroWidth",
     };
   }
@@ -44,6 +54,10 @@ export class ZeroWidthNode extends TextNode {
 
   static importDOM(): DOMConversionMap | null {
     return null;
+  }
+
+  exportDOM(editor: LexicalEditor): DOMExportOutput {
+    return { element: null };
   }
 
   isTextEntity(): boolean {
