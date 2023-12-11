@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.23
+
+### Patch Changes
+
+- cc96095: fix(BeautifulMentionNode + ZeroWidthNode): fix HTML/JSON node serialization & deserialization
+
 ## 0.1.22
 
 ### Patch Changes
