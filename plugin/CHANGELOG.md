@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.24
+
+### Patch Changes
+
+- 2487452: fix(Menu): prevent other key enter commands from blocking the menu from closing
+
 ## 0.1.23
 
 ### Patch Changes
