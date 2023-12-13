@@ -6,6 +6,7 @@ import {
   $isTextNode,
   BLUR_COMMAND,
   COMMAND_PRIORITY_LOW,
+  COMMAND_PRIORITY_NORMAL,
   KEY_ARROW_DOWN_COMMAND,
   KEY_ARROW_UP_COMMAND,
   KEY_ENTER_COMMAND,
@@ -479,7 +480,7 @@ export function Menu<TOption extends MenuOption>({
           selectOptionAndCleanUp(options[selectedIndex]);
           return true;
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_NORMAL,
       ),
     );
   }, [

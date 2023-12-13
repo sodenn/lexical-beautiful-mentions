@@ -492,7 +492,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       editor.registerCommand<KeyboardEvent>(
         KEY_ENTER_COMMAND,
         handleKeySelect,
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_NORMAL,
       ),
       editor.registerCommand<KeyboardEvent>(
         KEY_TAB_COMMAND,
