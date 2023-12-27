@@ -10,7 +10,6 @@ import {
   $isTextNode,
   $setSelection,
   BLUR_COMMAND,
-  BaseSelection,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   KEY_ARROW_LEFT_COMMAND,
@@ -20,14 +19,7 @@ import {
   NodeKey,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import {
-  ElementType,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ElementType, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   BeautifulMentionsItemData,
   BeautifulMentionComponentProps as CustomBeautifulMentionComponentProps,
@@ -64,21 +56,19 @@ export default function BeautifulMentionComponent(
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
-  const [selection, setSelection] = useState<BaseSelection | null>(null);
-  const isFocused = $isNodeSelection(selection) && isSelected;
   const ref = useRef<any>(null);
   const mention = trigger + value;
 
   const finalClasses = useMemo(() => {
     if (className) {
       const classes = [className];
-      if (isFocused && classNameFocused) {
+      if (isSelected && classNameFocused) {
         classes.push(classNameFocused);
       }
       return classes.join(" ").trim() || undefined;
     }
     return "";
-  }, [isFocused, className, classNameFocused]);
+  }, [isSelected, className, classNameFocused]);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -167,21 +157,18 @@ export default function BeautifulMentionComponent(
         if (!event.shiftKey) {
           clearSelection();
         }
-        setSelected(!isSelected);
+        setSelected(true);
         return true;
       }
       return false;
     },
-    [isSelected, clearSelection, setSelected],
+    [clearSelection, setSelected],
   );
 
   const onBlur = useCallback(() => {
-    if (isFocused) {
-      $setSelection(null);
-      return true;
-    }
+    $setSelection(null);
     return false;
-  }, [isFocused]);
+  }, []);
 
   // Make sure that the focus is removed when clicking next to the mention
   const onSelectionChange = useCallback(() => {
@@ -193,13 +180,7 @@ export default function BeautifulMentionComponent(
   }, [isSelected, setSelected]);
 
   useEffect(() => {
-    let isMounted = true;
     const unregister = mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
-        if (isMounted) {
-          setSelection(editorState.read(() => $getSelection()));
-        }
-      }),
       editor.registerCommand<MouseEvent>(
         CLICK_COMMAND,
         onClick,
@@ -233,7 +214,6 @@ export default function BeautifulMentionComponent(
       ),
     );
     return () => {
-      isMounted = false;
       unregister();
     };
   }, [
@@ -266,7 +246,7 @@ export default function BeautifulMentionComponent(
       <span
         ref={ref}
         className={
-          isFocused && !!themeValues.containerFocused
+          isSelected && !!themeValues.containerFocused
             ? themeValues.containerFocused
             : themeValues.container
         }

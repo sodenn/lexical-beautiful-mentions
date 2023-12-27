@@ -122,9 +122,13 @@ test.describe("mentions handling", () => {
     const mentionPosition = await page
       .locator(`[data-beautiful-mention="@Catherine"]`)
       .boundingBox();
-    await expect(page.getByRole("tooltip")).not.toBeVisible();
-    await page.mouse.move(mentionPosition.x, mentionPosition.y);
-    await expect(page.getByRole("tooltip")).toBeVisible();
+    await expect(
+      page.locator(`[data-beautiful-mention="@Catherine"]`),
+    ).toHaveAttribute("data-state", "closed");
+    await page.mouse.move(mentionPosition.x + 1, mentionPosition.y + 1);
+    await expect(
+      page.locator(`[data-beautiful-mention="@Catherine"]`),
+    ).toHaveAttribute("data-state", "delayed-open");
   });
 
   // only works when running in headful mode
