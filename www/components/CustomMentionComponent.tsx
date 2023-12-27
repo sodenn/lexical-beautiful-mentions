@@ -12,24 +12,24 @@ const CustomMentionComponent = forwardRef<
 >(({ trigger, value, data, children, ...other }, ref) => {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild>
         <span {...other} ref={ref}>
           {value}
         </span>
-        <TooltipContent>
-          <p>
-            Trigger: <code>{trigger}</code>
-          </p>
-          <p>
-            Value: <code>{value}</code>
-          </p>
-          {data?.id && (
-            <p>
-              ID: <code>{data.id}</code>
-            </p>
-          )}
-        </TooltipContent>
       </TooltipTrigger>
+      <TooltipContent>
+        <p>
+          Trigger: <code>{trigger}</code>
+        </p>
+        <p>
+          Value: <code>{value}</code>
+        </p>
+        {data?.id && (
+          <p>
+            ID: <code>{data.id}</code>
+          </p>
+        )}
+      </TooltipContent>
     </Tooltip>
   );
 });

@@ -487,12 +487,15 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     (event: ClipboardEvent) => {
       const text = event.clipboardData?.getData("text/plain");
       const firstChar = text && text.charAt(0);
-      if (firstChar && isWordChar(firstChar, triggers, punctuation)) {
+      const isTrigger = triggers.some((trigger) => firstChar === trigger);
+      const isPunctuation =
+        firstChar && new RegExp(`[\\s${punctuation}]`).test(firstChar);
+      if (isTrigger || !isPunctuation) {
         insertSpaceIfNecessary();
       }
       return false; // will be handled by the lexical clipboard module
     },
-    [insertSpaceIfNecessary, punctuation, triggers],
+    [insertSpaceIfNecessary, triggers, punctuation],
   );
 
   useEffect(() => {
