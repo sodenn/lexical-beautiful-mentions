@@ -29,7 +29,7 @@ export function useMentionLookupService(options: MentionsLookupServiceOptions) {
   const [query, setQuery] = useState<string | null>(null);
 
   useEffect(() => {
-    if (trigger === null || debouncedQueryString === null) {
+    if (trigger === null || (onSearch && debouncedQueryString === null)) {
       setResults([]);
       setQuery(null);
       return;
@@ -43,16 +43,14 @@ export function useMentionLookupService(options: MentionsLookupServiceOptions) {
       if (!mentions) {
         return;
       }
-      const result = !debouncedQueryString
+      const result = !queryString
         ? [...mentions[1]]
         : mentions[1].filter((item) => {
             const value = typeof item === "string" ? item : item.value;
-            return value
-              .toLowerCase()
-              .includes(debouncedQueryString.toLowerCase());
+            return value.toLowerCase().includes(queryString.toLowerCase());
           });
       setResults(result);
-      setQuery(debouncedQueryString);
+      setQuery(queryString);
       return;
     }
     if (onSearch) {

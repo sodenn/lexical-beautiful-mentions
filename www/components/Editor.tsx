@@ -13,7 +13,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { $getRoot, EditorState } from "lexical";
 import {
   BeautifulMentionsComboboxItem,
@@ -204,7 +204,7 @@ function Plugins() {
           combobox && menuOrComboboxOpen && "rounded-t",
         )}
       >
-        <PlainTextPlugin
+        <RichTextPlugin
           contentEditable={
             <ContentEditable
               style={{ tabSize: 1 }}

@@ -5,22 +5,15 @@ import {
   $getSelection,
   $nodesOfType,
   $setSelection,
-  BaseSelection,
   BLUR_COMMAND,
+  BaseSelection,
   COMMAND_PRIORITY_LOW,
   KEY_BACKSPACE_COMMAND,
   KEY_DOWN_COMMAND,
   KEY_SPACE_COMMAND,
-  PASTE_COMMAND,
   TextNode,
 } from "lexical";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
 import {
   BeautifulMentionsItemData,
@@ -28,6 +21,13 @@ import {
   BeautifulMentionsPluginProps,
 } from "./BeautifulMentionsPluginProps";
 import { ComboboxPlugin } from "./ComboboxPlugin";
+import {
+  $createBeautifulMentionNode,
+  $isBeautifulMentionNode,
+  BeautifulMentionNode,
+} from "./MentionNode";
+import { MenuOption, MenuTextMatch } from "./Menu";
+import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 import {
   $insertMentionAtSelection,
@@ -39,26 +39,18 @@ import {
   REMOVE_MENTIONS_COMMAND,
   RENAME_MENTIONS_COMMAND,
 } from "./mention-commands";
-import { $convertToMentionNodes } from "./mention-converter";
 import {
   $getSelectionInfo,
   $selectEnd,
   DEFAULT_PUNCTUATION,
+  LENGTH_LIMIT,
+  TRIGGERS,
+  VALID_CHARS,
   getCreatableProp,
   getMenuItemLimitProp,
   getTextContent,
   isWordChar,
-  LENGTH_LIMIT,
-  TRIGGERS,
-  VALID_CHARS,
 } from "./mention-utils";
-import {
-  $createBeautifulMentionNode,
-  $isBeautifulMentionNode,
-  BeautifulMentionNode,
-} from "./MentionNode";
-import { MenuOption, MenuTextMatch } from "./Menu";
-import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
 import { useIsFocused } from "./useIsFocused";
 import { useMentionLookupService } from "./useMentionLookupService";
 
@@ -490,35 +482,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     [insertSpaceIfNecessary, punctuation, triggers],
   );
 
-  const handlePaste = useCallback(
-    (event: ClipboardEvent) => {
-      if (allowSpaces) {
-        return false;
-      }
-      const text = event.clipboardData?.getData("Text");
-      if (!text) {
-        return false;
-      }
-      restoreSelection();
-      const selection = $getSelection();
-      if (selection) {
-        insertSpaceIfNecessary();
-        const nodes = $convertToMentionNodes(text, triggers, punctuation);
-        selection.insertNodes(nodes);
-        return true;
-      }
-      return false;
-    },
-    [
-      allowSpaces,
-      insertSpaceIfNecessary,
-      punctuation,
-      triggers,
-      restoreSelection,
-    ],
-  );
-
-  React.useEffect(() => {
+  useEffect(() => {
     return mergeRegister(
       editor.registerCommand(
         KEY_DOWN_COMMAND,
@@ -598,7 +562,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         },
         COMMAND_PRIORITY_LOW,
       ),
-      editor.registerCommand(PASTE_COMMAND, handlePaste, COMMAND_PRIORITY_LOW),
     );
   }, [
     editor,
@@ -613,7 +576,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     archiveSelection,
     handleKeyDown,
     handleDeleteMention,
-    handlePaste,
   ]);
 
   useEffect(() => {

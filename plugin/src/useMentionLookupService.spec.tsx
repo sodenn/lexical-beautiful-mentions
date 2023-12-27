@@ -23,7 +23,7 @@ const queryFn = async (
 };
 
 describe("useMentionLookupService", () => {
-  it("should return all mentions for predefined items and no search term", async () => {
+  it("should return the full list of mentions when the search term is empty", async () => {
     const { result } = renderHook(() =>
       useMentionLookupService({
         queryString: "",
@@ -31,6 +31,20 @@ describe("useMentionLookupService", () => {
         items: items,
       }),
     );
+    await waitFor(() => {
+      expect(result.current.results).toStrictEqual(["today", "tomorrow"]);
+    });
+  });
+
+  it("should return the full list of mentions when the search term is null", async () => {
+    const { result } = renderHook(() =>
+      useMentionLookupService({
+        queryString: null,
+        trigger: "due:",
+        items: items,
+      }),
+    );
+
     await waitFor(() => {
       expect(result.current.results).toStrictEqual(["today", "tomorrow"]);
     });
@@ -87,25 +101,11 @@ describe("useMentionLookupService", () => {
     });
   });
 
-  it("should return an empty array when no matching trigger is found", async () => {
+  it("should return an empty array when no matching trigger was found", async () => {
     const { result } = renderHook(() =>
       useMentionLookupService({
         queryString: "j",
         trigger: "#",
-        items: items,
-      }),
-    );
-
-    await waitFor(() => {
-      expect(result.current.results).toStrictEqual([]);
-    });
-  });
-
-  it("should return an empty array when `queryString` is `null`", async () => {
-    const { result } = renderHook(() =>
-      useMentionLookupService({
-        queryString: null,
-        trigger: "due:",
         items: items,
       }),
     );
