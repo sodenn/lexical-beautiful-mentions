@@ -69,7 +69,14 @@ export function useMentionLookupService(options: MentionsLookupServiceOptions) {
 
       return;
     }
-  }, [debouncedQueryString, items, onSearch, trigger, justSelectedAnOption]);
+  }, [
+    debouncedQueryString,
+    items,
+    onSearch,
+    trigger,
+    justSelectedAnOption,
+    queryString,
+  ]);
 
   return useMemo(
     () => ({ loading, results, query }),
