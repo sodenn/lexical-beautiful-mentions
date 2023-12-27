@@ -11,6 +11,7 @@ import {
   KEY_BACKSPACE_COMMAND,
   KEY_DOWN_COMMAND,
   KEY_SPACE_COMMAND,
+  PASTE_COMMAND,
   TextNode,
 } from "lexical";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -482,6 +483,18 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     [insertSpaceIfNecessary, punctuation, triggers],
   );
 
+  const handlePaste = useCallback(
+    (event: ClipboardEvent) => {
+      const text = event.clipboardData?.getData("text/plain");
+      const firstChar = text && text.charAt(0);
+      if (firstChar && isWordChar(firstChar, triggers, punctuation)) {
+        insertSpaceIfNecessary();
+      }
+      return false; // will be handled by the lexical clipboard module
+    },
+    [insertSpaceIfNecessary, punctuation, triggers],
+  );
+
   useEffect(() => {
     return mergeRegister(
       editor.registerCommand(
@@ -562,6 +575,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         },
         COMMAND_PRIORITY_LOW,
       ),
+      editor.registerCommand(PASTE_COMMAND, handlePaste, COMMAND_PRIORITY_LOW),
     );
   }, [
     editor,
@@ -576,6 +590,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     archiveSelection,
     handleKeyDown,
     handleDeleteMention,
+    handlePaste,
   ]);
 
   useEffect(() => {
