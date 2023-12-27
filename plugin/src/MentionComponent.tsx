@@ -9,11 +9,10 @@ import {
   $isNodeSelection,
   $isTextNode,
   $setSelection,
-  BaseSelection,
   BLUR_COMMAND,
+  BaseSelection,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
-  COPY_COMMAND,
   KEY_ARROW_LEFT_COMMAND,
   KEY_ARROW_RIGHT_COMMAND,
   KEY_BACKSPACE_COMMAND,
@@ -33,9 +32,9 @@ import {
   BeautifulMentionsItemData,
   BeautifulMentionComponentProps as CustomBeautifulMentionComponentProps,
 } from "./BeautifulMentionsPluginProps";
+import { $isBeautifulMentionNode } from "./MentionNode";
 import { IS_IOS } from "./environment";
 import { getNextSibling, getPreviousSibling } from "./mention-utils";
-import { $isBeautifulMentionNode } from "./MentionNode";
 import { BeautifulMentionsThemeValues } from "./theme";
 
 interface BeautifulMentionComponentProps {
@@ -193,20 +192,6 @@ export default function BeautifulMentionComponent(
     return false;
   }, [isSelected, setSelected]);
 
-  const onCopy = useCallback(() => {
-    if (isSelected) {
-      const node = $getNodeByKey(nodeKey);
-      if (!node || !node.isSelected()) {
-        return false;
-      }
-      const text = node.getTextContent();
-      if (text) {
-        navigator.clipboard.writeText(text);
-      }
-    }
-    return false;
-  }, [isSelected, nodeKey]);
-
   useEffect(() => {
     let isMounted = true;
     const unregister = mergeRegister(
@@ -240,7 +225,6 @@ export default function BeautifulMentionComponent(
         onArrowRightPress,
         COMMAND_PRIORITY_LOW,
       ),
-      editor.registerCommand(COPY_COMMAND, onCopy, COMMAND_PRIORITY_LOW),
       editor.registerCommand(BLUR_COMMAND, onBlur, COMMAND_PRIORITY_LOW),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
@@ -260,7 +244,6 @@ export default function BeautifulMentionComponent(
     onBlur,
     onDelete,
     onSelectionChange,
-    onCopy,
   ]);
 
   if (Component) {

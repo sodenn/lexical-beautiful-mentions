@@ -10,7 +10,7 @@
 
 [Demo](https://lexical-beautiful-mentions-docs.vercel.app/)
 
-A mentions plugin for the lexical editor. lexical is an extendable text editor for the web build by Meta. While the lexical playground offers a basic mentions plugin for demo purposes, this plugin is more advanced and offers the following features:
+A mentions plugin for the [lexical editor](https://lexical.dev/). lexical is an extendable text editor for the web build by Meta. While the lexical playground offers a basic mentions plugin for demo purposes, this plugin is more advanced and offers more features.
 
 - **Customizable triggers**: Use characters, words or regular expressions as triggers for mentions.
 - **Editing mentions outside the editor**: Programmatically insert, delete, or rename mentions via the `useBeautifulMentions` hook.
@@ -21,7 +21,6 @@ A mentions plugin for the lexical editor. lexical is an extendable text editor f
 - **Custom menu and menu item**: You can customize the look and behavior of the menu that displays the mention suggestions.
 - **Additional metadata**: You can add additional metadata to the mention items, which will be included in the mention nodes when serializing the editor content.
 - **Custom mention component**: You can replace the default mention component with a custom component of your choice.
-- **Clipboard support**: Copy and paste mentions works out of the box.
 
 ## Installation
 
@@ -48,6 +47,9 @@ import { BeautifulMentionsPlugin, BeautifulMentionNode } from "lexical-beautiful
 Add the plugin to the lexical editor:
 
 ```tsx
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
+
 const mentionItems = {
   "@": ["Anton", "Boris", "Catherine", "Dmitri", "Elena", "Felix", "Gina"],
   "#": ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"],
@@ -62,6 +64,11 @@ const editorConfig = {
 return (
   <LexicalComposer initialConfig={editorConfig}>
     {/** ... */}
+    <PlainTextPlugin // 👈 use the lexical RichTextPlugin for clipboard support
+      contentEditable={/* ... */}
+      placeholder={/* ... */}
+      errorBoundary={/* ... */}
+    />
     <BeautifulMentionsPlugin
       items={mentionItems}
     />
