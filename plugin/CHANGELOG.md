@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.26
+
+### Patch Changes
+
+- ab5971d: fix(): insert a space (if necessary) when pasting text
+- 18c2bb5: feat(): mentions adopt the selected state when the text section is selected
+
 ## 0.1.25
 
 ### Patch Changes
