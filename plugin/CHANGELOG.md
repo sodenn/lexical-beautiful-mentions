@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.25
+
+### Patch Changes
+
+- 3f97fa8: fix(): remove the copy-and-paste handling from the plugin and suggest to use the lexical RichTextPlugin instead
+
 ## 0.1.24
 
 ### Patch Changes
