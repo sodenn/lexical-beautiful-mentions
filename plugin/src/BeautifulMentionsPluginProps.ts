@@ -154,7 +154,7 @@ interface BeautifulMentionsProps {
   menuItemLimit?: number | false | Record<string, number | false>;
   /**
    * If `true`, mentions can contain spaces.
-   * @default false
+   * @default true
    */
   allowSpaces?: boolean;
   /**
