@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.27
+
+### Patch Changes
+
+- cb6a655: fix(): onBlur behavior in MentionComponent
+
 ## 0.1.26
 
 ### Patch Changes
