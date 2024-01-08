@@ -166,9 +166,12 @@ export default function BeautifulMentionComponent(
   );
 
   const onBlur = useCallback(() => {
-    $setSelection(null);
+    const node = $getNodeByKey(nodeKey);
+    if (node && node.isSelected()) {
+      $setSelection(null);
+    }
     return false;
-  }, []);
+  }, [nodeKey]);
 
   // Make sure that the focus is removed when clicking next to the mention
   const onSelectionChange = useCallback(() => {
