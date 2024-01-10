@@ -22,7 +22,8 @@ type Entry = MentionEntry | TextEntry;
 
 function findMentions(text: string, triggers: string[], punctuation: string) {
   const regex = new RegExp(
-    TRIGGERS(triggers) +
+    "(?<=\\s|^|\\()" +
+      TRIGGERS(triggers) +
       "((?:" +
       VALID_CHARS(triggers, punctuation) +
       "){1," +
