@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.28
+
+### Patch Changes
+
+- 413fcbf: fix(): set missing return type of BeautifulMentionNode methods
+
 ## 0.1.27
 
 ### Patch Changes
