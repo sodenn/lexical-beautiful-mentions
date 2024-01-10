@@ -1,4 +1,9 @@
-import type { SerializedLexicalNode, Spread } from "lexical";
+import type {
+  DOMConversionMap,
+  DOMExportOutput,
+  SerializedLexicalNode,
+  Spread,
+} from "lexical";
 import {
   $applyNodeReplacement,
   DecoratorNode,
@@ -57,11 +62,11 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   __value: string;
   __data?: { [p: string]: BeautifulMentionsItemData };
 
-  static getType() {
+  static getType(): string {
     return "beautifulMention";
   }
 
-  static clone(node: BeautifulMentionNode) {
+  static clone(node: BeautifulMentionNode): BeautifulMentionNode {
     return new BeautifulMentionNode(
       node.__trigger,
       node.__value,
@@ -70,7 +75,9 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     );
   }
 
-  static importJSON(serializedNode: SerializedBeautifulMentionNode) {
+  static importJSON(
+    serializedNode: SerializedBeautifulMentionNode,
+  ): BeautifulMentionNode {
     return $createBeautifulMentionNode(
       serializedNode.trigger,
       serializedNode.value,
@@ -78,7 +85,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     );
   }
 
-  exportDOM() {
+  exportDOM(): DOMExportOutput {
     const element = document.createElement("span");
     element.setAttribute("data-lexical-beautiful-mention", "true");
     element.setAttribute(
@@ -96,7 +103,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     return { element };
   }
 
-  static importDOM() {
+  static importDOM(): DOMConversionMap | null {
     return {
       span: (domNode: HTMLElement) => {
         if (!domNode.hasAttribute("data-lexical-beautiful-mention")) {
@@ -133,15 +140,15 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     };
   }
 
-  createDOM() {
+  createDOM(): HTMLElement {
     return document.createElement("span");
   }
 
-  getTextContent() {
+  getTextContent(): string {
     return this.__trigger + this.__value;
   }
 
-  updateDOM() {
+  updateDOM(): boolean {
     return false;
   }
 
@@ -174,7 +181,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     return null;
   }
 
-  decorate(_editor: LexicalEditor, config: EditorConfig) {
+  decorate(_editor: LexicalEditor, config: EditorConfig): JSX.Element {
     const theme: BeautifulMentionsTheme = config.theme.beautifulMentions || {};
     const entry = Object.entries(theme).find(([trigger]) =>
       new RegExp(trigger).test(this.__trigger),

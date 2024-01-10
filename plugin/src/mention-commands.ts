@@ -198,7 +198,7 @@ export function $removeMention(trigger: string, value?: string, focus = true) {
       removed = true;
       // Prevent double spaces
       if (
-        prev &&
+        $isTextNode(prev) &&
         getTextContent(prev).endsWith(" ") &&
         next &&
         getTextContent(next).startsWith(" ")

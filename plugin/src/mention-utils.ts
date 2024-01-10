@@ -8,10 +8,41 @@ import {
   $isTextNode,
   $setSelection,
   LexicalNode,
+  RangeSelection,
   RootNode,
+  TextNode,
 } from "lexical";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import { $isZeroWidthNode } from "./ZeroWidthNode";
+
+interface SelectionInfoBase {
+  offset: number;
+  textContent: string;
+  selection: RangeSelection;
+  prevNode: LexicalNode | null;
+  nextNode: LexicalNode | null;
+  cursorAtStartOfNode: boolean;
+  cursorAtEndOfNode: boolean;
+  wordCharBeforeCursor: boolean;
+  wordCharAfterCursor: boolean;
+  spaceBeforeCursor: boolean;
+  spaceAfterCursor: boolean;
+}
+
+interface TextNodeSelectionInfo extends SelectionInfoBase {
+  isTextNode: true;
+  node: TextNode;
+}
+
+interface LexicalNodeSelectionInfo extends SelectionInfoBase {
+  isTextNode: false;
+  node: LexicalNode;
+}
+
+type SelectionInfo =
+  | TextNodeSelectionInfo
+  | LexicalNodeSelectionInfo
+  | undefined;
 
 export const DEFAULT_PUNCTUATION =
   "\\.,\\*\\?\\$\\|#{}\\(\\)\\^\\[\\]\\\\/!%'\"~=<>_:;";
@@ -34,7 +65,10 @@ export function isWordChar(
   return new RegExp(VALID_CHARS(triggers, punctuation)).test(char);
 }
 
-export function $getSelectionInfo(triggers: string[], punctuation: string) {
+export function $getSelectionInfo(
+  triggers: string[],
+  punctuation: string,
+): SelectionInfo {
   const selection = $getSelection();
   if (!selection || !$isRangeSelection(selection)) {
     return;
@@ -79,7 +113,7 @@ export function $getSelectionInfo(triggers: string[], punctuation: string) {
   const prevNode = getPreviousSibling(node);
   const nextNode = getNextSibling(node);
 
-  return {
+  const props = {
     node,
     offset,
     isTextNode,
@@ -94,6 +128,20 @@ export function $getSelectionInfo(triggers: string[], punctuation: string) {
     spaceBeforeCursor,
     spaceAfterCursor,
   };
+
+  if (isTextNode) {
+    return {
+      ...props,
+      isTextNode: true,
+      node: node as TextNode,
+    };
+  } else {
+    return {
+      ...props,
+      isTextNode: false,
+      node: node as LexicalNode,
+    };
+  }
 }
 
 export function getNextSibling(node: LexicalNode) {
