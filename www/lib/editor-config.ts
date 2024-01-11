@@ -23,6 +23,10 @@ function setEditorState(initialValue: string, triggers: string[]) {
   };
 }
 
+const [CustomBeautifulMentionNode, replacement] = createBeautifulMentionNode(
+  CustomMentionComponent,
+);
+
 const editorConfig = (
   triggers: string[],
   initialValue: string,
@@ -36,7 +40,7 @@ const editorConfig = (
   editorState: setEditorState(initialValue, triggers),
   nodes: [
     ...(customMentionNode
-      ? createBeautifulMentionNode(CustomMentionComponent)
+      ? [CustomBeautifulMentionNode, replacement]
       : [BeautifulMentionNode]),
     ZeroWidthNode,
   ],
