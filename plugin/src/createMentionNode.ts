@@ -1,4 +1,4 @@
-import { LexicalEditor } from "lexical";
+import { LexicalEditor, LexicalNodeReplacement } from "lexical";
 import { EditorConfig } from "lexical/LexicalEditor";
 import React, { ElementType } from "react";
 import { BeautifulMentionComponentProps } from "./BeautifulMentionsPluginProps";
@@ -7,7 +7,9 @@ import {
   SerializedBeautifulMentionNode,
 } from "./MentionNode";
 
-export let CustomBeautifulMentionNode: ReturnType<typeof generateClass>;
+export type CustomBeautifulMentionNodeKlass = ReturnType<typeof generateClass>;
+
+export let CustomBeautifulMentionNode: CustomBeautifulMentionNodeKlass;
 
 /**
  * Instead of using the default `BeautifulMentionNode` class, you can
@@ -15,7 +17,7 @@ export let CustomBeautifulMentionNode: ReturnType<typeof generateClass>;
  */
 export function createBeautifulMentionNode(
   mentionComponent: ElementType<BeautifulMentionComponentProps>,
-) {
+): [CustomBeautifulMentionNodeKlass, LexicalNodeReplacement] {
   CustomBeautifulMentionNode =
     CustomBeautifulMentionNode || generateClass(mentionComponent);
   return [
