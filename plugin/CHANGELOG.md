@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.29
+
+### Patch Changes
+
+- b2e5c65: fix(createBeautifulMentionNode): add missing return type for custom mention node
+- d03f567: fix($convertToMentionNodes): triggers followed by text in the middle of a word should be recognized as mentions
+
 ## 0.1.28
 
 ### Patch Changes
