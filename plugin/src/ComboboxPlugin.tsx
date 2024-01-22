@@ -1,4 +1,8 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import {
+  MenuTextMatch,
+  TriggerFn,
+} from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
   $createTextNode,
@@ -26,12 +30,7 @@ import {
   BeautifulMentionsItemData,
   BeautifulMentionsPluginProps,
 } from "./BeautifulMentionsPluginProps";
-import {
-  $splitNodeContainingQuery,
-  MenuOption,
-  MenuTextMatch,
-  TriggerFn,
-} from "./Menu";
+import { $splitNodeContainingQuery, MenuOption } from "./Menu";
 import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 import { $insertTriggerAtSelection } from "./mention-commands";
 import { getTextContent } from "./mention-utils";
