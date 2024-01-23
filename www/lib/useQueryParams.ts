@@ -14,6 +14,7 @@ interface QueryParams {
   enclosure: string; // mentionEnclosure
   cbai: string; // comboboxAdditionalItems
   cstmn: string; // custom mention node
+  empty: string; // noResults
 }
 
 export interface QueryParam {

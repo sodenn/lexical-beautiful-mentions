@@ -145,6 +145,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     insertOnBlur = true,
     menuComponent: MenuComponent = "ul",
     menuItemComponent: MenuItemComponent = "li",
+    emptyComponent: EmptyComponent,
     menuAnchorClassName,
     showMentionsOnDelete,
     showCurrentMentionsAsSuggestions = true,
@@ -653,7 +654,20 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
       ) => {
         selectedMenuIndexRef.current = selectedIndex;
-        return anchorElementRef.current && (options.length > 0 || loading)
+        if (
+          anchorElementRef.current &&
+          options.length === 0 &&
+          query &&
+          !loading &&
+          isEditorFocused &&
+          EmptyComponent
+        ) {
+          return ReactDOM.createPortal(
+            <EmptyComponent />,
+            anchorElementRef.current,
+          );
+        }
+        return anchorElementRef.current && open
           ? ReactDOM.createPortal(
               <MenuComponent
                 loading={loading}
