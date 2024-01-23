@@ -349,7 +349,7 @@ test.describe("Mention Menu", () => {
     expect(open).toBe(false);
   });
 
-  test("should remove the typeahead element when the menu is closed", async ({
+  test("should remove the typeahead element when cursor is not at a mention position", async ({
     page,
     browserName,
   }) => {
@@ -360,12 +360,9 @@ test.describe("Mention Menu", () => {
       },
     );
     await utils.editorType("@");
-    await expect(page.locator("#typeahead-menu")).toHaveCount(1);
     await utils.editorType("xyz");
-    await expect(page.locator("#typeahead-menu")).toHaveCount(0);
-    await utils.editor.blur();
-    await utils.sleep(200);
-    await utils.editor.focus();
+    await expect(page.locator("#typeahead-menu")).toHaveCount(1);
+    await utils.moveCaretToStart();
     await expect(page.locator("#typeahead-menu")).toHaveCount(0);
   });
 });

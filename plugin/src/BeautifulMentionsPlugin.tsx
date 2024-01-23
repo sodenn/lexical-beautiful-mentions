@@ -1,4 +1,8 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import {
+  LexicalTypeaheadMenuPlugin,
+  MenuTextMatch,
+} from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { mergeRegister } from "@lexical/utils";
 import {
   $createTextNode,
@@ -8,6 +12,7 @@ import {
   BLUR_COMMAND,
   BaseSelection,
   COMMAND_PRIORITY_LOW,
+  COMMAND_PRIORITY_NORMAL,
   KEY_BACKSPACE_COMMAND,
   KEY_DOWN_COMMAND,
   KEY_SPACE_COMMAND,
@@ -27,8 +32,7 @@ import {
   $isBeautifulMentionNode,
   BeautifulMentionNode,
 } from "./MentionNode";
-import { MenuOption, MenuTextMatch } from "./Menu";
-import { TypeaheadMenuPlugin } from "./TypeaheadMenuPlugin";
+import { MenuOption } from "./Menu";
 import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 import {
   $insertMentionAtSelection,
@@ -58,9 +62,6 @@ import { useMentionLookupService } from "./useMentionLookupService";
 class MentionOption extends MenuOption {
   readonly menuItem: BeautifulMentionsMenuItem;
   constructor(
-    /**
-     * The trigger that was used to open the menu.
-     */
     public readonly trigger: string,
     value: string,
     displayValue: string,
@@ -170,13 +171,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     onSearch,
     justSelectedAnOption,
   });
-  const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
-    null,
-  );
+  const selectedMenuIndexRef = useRef<number | null>();
   const [oldSelection, setOldSelection] = useState<BaseSelection | null>(null);
   const creatable = getCreatableProp(props.creatable, trigger);
   const menuItemLimit = getMenuItemLimitProp(props.menuItemLimit, trigger);
-  const options = useMemo(() => {
+  const options = useMemo((): MentionOption[] => {
     if (!trigger) {
       return [];
     }
@@ -238,7 +237,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     showCurrentMentionsAsSuggestions,
   ]);
 
-  const open = isEditorFocused && (!!options.length || loading);
+  const open = !!options.length || loading;
 
   const handleClose = useCallback(() => {
     setTrigger(null);
@@ -333,8 +332,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   );
 
   const convertTextToMention = useCallback(() => {
+    const selectedMenuIndex = selectedMenuIndexRef.current;
     let option =
-      selectedMenuIndex !== null ? options[selectedMenuIndex] : undefined;
+      typeof selectedMenuIndex === "number"
+        ? options[selectedMenuIndex]
+        : undefined;
     const newMention = options.find((o) => o.value !== o.displayValue);
     if (newMention && (IS_MOBILE || option === null)) {
       option = newMention;
@@ -372,7 +374,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     node.insertAfter(mentionNode);
     mentionNode.selectNext();
     return true;
-  }, [options, punctuation, selectedMenuIndex, trigger, triggers]);
+  }, [options, punctuation, trigger, triggers]);
 
   const archiveSelection = useCallback(() => {
     const selection = $getSelection();
@@ -597,12 +599,15 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   ]);
 
   useEffect(() => {
-    if (open) {
+    if (open && isEditorFocused) {
       onMenuOpen?.();
     } else {
       onMenuClose?.();
     }
-  }, [onMenuOpen, onMenuClose, open]);
+    if (open && !isEditorFocused) {
+      handleClose();
+    }
+  }, [onMenuOpen, onMenuClose, open, isEditorFocused, handleClose]);
 
   if (!CAN_USE_DOM) {
     return null;
@@ -635,10 +640,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   }
 
   return (
-    <TypeaheadMenuPlugin<MenuOption>
+    <LexicalTypeaheadMenuPlugin<MenuOption>
+      commandPriority={COMMAND_PRIORITY_NORMAL}
       onQueryChange={setQueryString}
       onSelectOption={handleSelectMenuItem}
-      onSelectionChange={setSelectedMenuIndex}
       triggerFn={checkForMentionMatch}
       options={options}
       anchorClassName={menuAnchorClassName}
@@ -646,8 +651,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       menuRenderFn={(
         anchorElementRef,
         { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
-      ) =>
-        anchorElementRef.current && (options.length > 0 || loading)
+      ) => {
+        selectedMenuIndexRef.current = selectedIndex;
+        return anchorElementRef.current && (options.length > 0 || loading)
           ? ReactDOM.createPortal(
               <MenuComponent
                 loading={loading}
@@ -655,7 +661,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                 aria-label="Choose a mention"
                 aria-hidden={!open}
                 aria-activedescendant={
-                  selectedIndex !== null && !!options[selectedIndex]
+                  !IS_MOBILE &&
+                  selectedIndex !== null &&
+                  !!options[selectedIndex]
                     ? options[selectedIndex].displayValue
                     : ""
                 }
@@ -664,10 +672,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                   <MenuItemComponent
                     key={option.key}
                     tabIndex={-1}
-                    selected={selectedIndex === i}
+                    selected={!IS_MOBILE && selectedIndex === i}
                     ref={option.setRefElement}
                     role="menuitem"
-                    aria-selected={selectedIndex === i}
+                    aria-selected={!IS_MOBILE && selectedIndex === i}
                     aria-label={`Choose ${option.value}`}
                     item={option.menuItem}
                     itemValue={option.value}
@@ -690,8 +698,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
               </MenuComponent>,
               anchorElementRef.current,
             )
-          : null
-      }
+          : null;
+      }}
     />
   );
 }
