@@ -28,55 +28,52 @@ export function useMentionLookupService(options: MentionsLookupServiceOptions) {
   const [results, setResults] = useState<Array<BeautifulMentionsItem>>([]);
   const [query, setQuery] = useState<string | null>(null);
 
+  // lookup in items (no search function)
   useEffect(() => {
-    if (trigger === null || (onSearch && debouncedQueryString === null)) {
+    if (!items) {
+      return;
+    }
+    if (trigger === null) {
       setResults([]);
       setQuery(null);
       return;
     }
-    if (items) {
-      const mentions =
-        items &&
-        Object.entries(items).find(([key]) => {
-          return new RegExp(key).test(trigger);
+    const mentions = Object.entries(items).find(([key]) => {
+      return new RegExp(key).test(trigger);
+    });
+    if (!mentions) {
+      return;
+    }
+    const result = !queryString
+      ? [...mentions[1]]
+      : mentions[1].filter((item) => {
+          const value = typeof item === "string" ? item : item.value;
+          return value.toLowerCase().includes(queryString.toLowerCase());
         });
-      if (!mentions) {
-        return;
-      }
-      const result = !queryString
-        ? [...mentions[1]]
-        : mentions[1].filter((item) => {
-            const value = typeof item === "string" ? item : item.value;
-            return value.toLowerCase().includes(queryString.toLowerCase());
-          });
-      setResults(result);
-      setQuery(queryString);
+    setResults(result);
+    setQuery(queryString);
+  }, [items, trigger, queryString]);
+
+  // lookup by calling onSearch
+  useEffect(() => {
+    if (!onSearch) {
       return;
     }
-    if (onSearch) {
-      setLoading(true);
-      setQuery(debouncedQueryString);
-      onSearch(
-        trigger,
-        justSelectedAnOption?.current ? "" : debouncedQueryString,
-      )
-        .then(setResults)
-        .finally(() => setLoading(false));
-
-      if (justSelectedAnOption?.current) {
-        justSelectedAnOption.current = false;
-      }
-
+    if (trigger === null || debouncedQueryString === null) {
+      setResults([]);
+      setQuery(null);
       return;
     }
-  }, [
-    debouncedQueryString,
-    items,
-    onSearch,
-    trigger,
-    justSelectedAnOption,
-    queryString,
-  ]);
+    setLoading(true);
+    setQuery(debouncedQueryString);
+    onSearch(trigger, justSelectedAnOption?.current ? "" : debouncedQueryString)
+      .then((result) => setResults(result))
+      .finally(() => setLoading(false));
+
+    if (justSelectedAnOption?.current) {
+      justSelectedAnOption.current = false;
+    }
+  }, [debouncedQueryString, onSearch, trigger, justSelectedAnOption]);
 
   return useMemo(
     () => ({ loading, results, query }),

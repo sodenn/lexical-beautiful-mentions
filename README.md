@@ -263,6 +263,27 @@ const CustomMenuItem = forwardRef<
 ));
 ```
 
+### Empty state
+
+The plugin allows you to display a custom component when the mention menu is empty and no search results are found:
+
+```tsx
+const Empty = () => (
+  <div className="top-[2px] m-0 min-w-[10rem] overflow-hidden ...">
+    No results found.
+  </div>
+);
+
+// ...
+
+<BeautifulMentionsPlugin
+  // ...
+  menuComponent={CustomMenu}
+  menuItemComponent={CustomMenuItem}
+  emptyComponent={Empty} // 👈
+/>
+```
+
 ### Programmatically insert, delete, or rename mentions
 
 ```tsx

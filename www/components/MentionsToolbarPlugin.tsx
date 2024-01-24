@@ -61,6 +61,7 @@ export function MentionsToolbarPlugin() {
     allowSpaces,
     creatable,
     insertOnBlur,
+    emptyComponent,
     commandFocus,
     customMentionNode,
     setAsynchronous,
@@ -70,6 +71,7 @@ export function MentionsToolbarPlugin() {
     setAllowSpaces,
     setCreatable,
     setInsertOnBlur,
+    setEmptyComponent,
     setShowMentionsOnDelete,
     setCustomMentionNode,
   } = useConfiguration();
@@ -192,6 +194,14 @@ export function MentionsToolbarPlugin() {
           helperText="Use a custom mention node. In this example, each mention has a tooltip."
           onCheckedChange={setCustomMentionNode}
         />
+        {!combobox && (
+          <ToolbarCheckbox
+            label="No results"
+            helperText="Show a message when there are no results."
+            checked={emptyComponent}
+            onCheckedChange={setEmptyComponent}
+          />
+        )}
       </div>
     </Card>
   );

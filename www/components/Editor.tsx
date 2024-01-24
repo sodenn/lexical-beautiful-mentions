@@ -1,6 +1,7 @@
 "use client"; // prettier-ignore
 import { Combobox, ComboboxItem } from "@/components/Combobox";
 import { useConfiguration } from "@/components/ConfigurationProvider";
+import { Empty } from "@/components/Empty";
 import { MentionsToolbarPlugin } from "@/components/MentionsToolbarPlugin";
 import { Menu, MenuItem } from "@/components/Menu";
 import { Placeholder } from "@/components/Placeholder";
@@ -89,6 +90,7 @@ function Plugins() {
     combobox,
     mentionEnclosure,
     showMentionsOnDelete,
+    emptyComponent,
     comboboxAdditionalItems: _comboboxAdditionalItems,
   } = useConfiguration();
   const comboboxAnchor = useRef<HTMLDivElement>(null);
@@ -187,6 +189,7 @@ function Plugins() {
       : {
           menuComponent: Menu,
           menuItemComponent: MenuItem,
+          emptyComponent: emptyComponent ? Empty : undefined,
           onMenuOpen: handleMenuOrComboboxOpen,
           onMenuClose: handleMenuOrComboboxClose,
           insertOnBlur,

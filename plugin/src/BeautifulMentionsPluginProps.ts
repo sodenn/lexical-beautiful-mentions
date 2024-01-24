@@ -195,6 +195,10 @@ type BeautifulMentionsMenuComponentsProps = BeautifulMentionsProps & {
    */
   menuItemComponent?: ElementType<BeautifulMentionsMenuItemProps>;
   /**
+   * The component to use when there are no results.
+   */
+  emptyComponent?: ElementType;
+  /**
    * If `true`, the mention will be inserted when the user blurs the editor.
    * @default true
    */
@@ -277,6 +281,7 @@ type BeautifulMentionsMenuCommandComponentProps = BeautifulMentionsProps & {
   menuAnchorClassName?: never;
   menuComponent?: never;
   menuItemComponent?: never;
+  emptyComponent?: never;
   insertOnBlur?: never;
   onMenuOpen?: never;
   onMenuClose?: never;

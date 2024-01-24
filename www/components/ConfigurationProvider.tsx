@@ -35,6 +35,9 @@ function useConfigurationValue() {
   const [insertOnBlur, _setInsertOnBlur] = useState(
     getQueryParam("blur") === "true",
   );
+  const [emptyComponent, _setEmptyComponent] = useState(
+    getQueryParam("empty") === "true",
+  );
   const [combobox, _setCombobox] = useState(
     getQueryParam("combobox") === "true",
   );
@@ -81,6 +84,10 @@ function useConfigurationValue() {
         _setInsertOnBlur(false);
         newParams.push({ name: "blur", value: "false" });
       }
+      if (combobox && emptyComponent) {
+        _setEmptyComponent(false);
+        newParams.push({ name: "empty", value: "false" });
+      }
       if (!combobox && comboboxAdditionalItems) {
         _setComboboxAdditionalItems(false);
         newParams.push({
@@ -90,7 +97,7 @@ function useConfigurationValue() {
       }
       setQueryParams(newParams);
     },
-    [comboboxAdditionalItems, insertOnBlur, setQueryParams],
+    [insertOnBlur, emptyComponent, comboboxAdditionalItems, setQueryParams],
   );
 
   const setComboboxAdditionalItems = useCallback(
@@ -158,6 +165,14 @@ function useConfigurationValue() {
     [setQueryParams],
   );
 
+  const setEmptyComponent = useCallback(
+    (emptyComponent: boolean) => {
+      _setEmptyComponent(emptyComponent);
+      setQueryParams([{ name: "empty", value: emptyComponent.toString() }]);
+    },
+    [setQueryParams],
+  );
+
   return useMemo(
     () => ({
       initialValue,
@@ -172,10 +187,12 @@ function useConfigurationValue() {
       allowSpaces,
       creatable: creatable ? creatableMap : false,
       insertOnBlur,
+      emptyComponent,
       setAsynchronous,
       setAllowSpaces,
       setCreatable,
       setInsertOnBlur,
+      setEmptyComponent,
       setCombobox,
       setMentionEnclosure,
       setShowMentionsOnDelete,
@@ -193,6 +210,7 @@ function useConfigurationValue() {
       customMentionNode,
       initialValue,
       insertOnBlur,
+      emptyComponent,
       mentionEnclosure,
       setAllowSpaces,
       setAsynchronous,
@@ -200,6 +218,7 @@ function useConfigurationValue() {
       setComboboxAdditionalItems,
       setCreatable,
       setInsertOnBlur,
+      setEmptyComponent,
       setMentionEnclosure,
       setShowMentionsOnDelete,
       showMentionsOnDelete,

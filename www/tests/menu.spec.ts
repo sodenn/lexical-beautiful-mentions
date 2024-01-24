@@ -365,4 +365,20 @@ test.describe("Mention Menu", () => {
     await utils.moveCaretToStart();
     await expect(page.locator("#typeahead-menu")).toHaveCount(0);
   });
+
+  test("should display a no results message when there are no suggestions", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "end",
+        emptyComponent: true,
+      },
+    );
+    await expect(page.getByText("No results found")).not.toBeVisible();
+    await utils.editorType("@unknown");
+    await expect(page.getByText("No results found")).toBeVisible();
+  });
 });
