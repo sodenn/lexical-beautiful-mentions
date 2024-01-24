@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.30
+
+### Patch Changes
+
+- 7e1a1ea: refactor(TypeaheadMenuPlugin): use TypeaheadMenuPlugin from `@lexical/react`. ⚠️ Initially, this project has used a copy of `LexicalTypeaheadMenuPlugin` from `@lexical/react` with a few adjustments regarding the positioning of the menu. This is no longer needed as the positioning issues has been fixed. Now, we can use the original `LexicalTypeaheadMenuPlugin` from `@lexical/react`. If the menu is too far below the caret, this is probably due to the absolute positioning (top: x). You can remove the "top" property, as the menu opens directly under the caret now.
+- e4f29c1: feat(EmptyComponent): ability to render a custom component if no results are found
+
 ## 0.1.29
 
 ### Patch Changes
