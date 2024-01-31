@@ -39,13 +39,13 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@testing-library/react": "14.1.2",
+    "@testing-library/react": "14.2.0",
     "fast-glob": "3.3.2",
-    "happy-dom": "13.2.1",
+    "happy-dom": "13.3.8",
     "npm-run-all": "4.1.5",
     "rimraf": "5.0.5",
     "vite": "5.0.12",
-    "vitest": "1.2.1"
+    "vitest": "1.2.2"
   },
   "peerDependencies": {
     "@lexical/react": ">=0.11.0",
