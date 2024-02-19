@@ -8,32 +8,25 @@ import { forwardRef } from "react";
 /**
  * Menu component for the BeautifulMentionsPlugin.
  */
-export const Menu = forwardRef<any, BeautifulMentionsMenuProps>(
-  ({ open, loading, ...other }, ref) => {
-    if (loading) {
-      return (
-        <div
-          ref={ref}
-          className="top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-2.5 text-sm text-popover-foreground shadow-md"
-        >
-          Loading...
-        </div>
-      );
-    }
+export function Menu({ loading, ...other }: BeautifulMentionsMenuProps) {
+  if (loading) {
     return (
-      <ul
-        ref={ref}
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
-        className="absolute top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
-        {...other}
-      />
+      <div className="top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-2.5 text-sm text-popover-foreground shadow-md">
+        Loading...
+      </div>
     );
-  },
-);
-Menu.displayName = "Menu";
+  }
+  return (
+    <ul
+      style={{
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
+      className="absolute top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+      {...other}
+    />
+  );
+}
 
 /**
  * MenuItem component for the BeautifulMentionsPlugin.
