@@ -179,16 +179,12 @@ const editorConfig = {
 
 <img src="https://raw.githubusercontent.com/sodenn/lexical-beautiful-mentions/main/resources/screenshot2.png" width="500"/><br>
 ```tsx
-const CustomMenu = forwardRef<
-  HTMLElement, 
-  BeautifulMentionsMenuProps
->(({ open, loading, ...props }, ref) => (
+function CustomMenu({ loading, ...props }: BeautifulMentionsMenuProps) {
   <ul
     className="m-0 mt-6 ..."
     {...props}
-    ref={ref}
   />
-));
+}
 
 const CustomMenuItem = forwardRef<
   HTMLLIElement,
