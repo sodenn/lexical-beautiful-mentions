@@ -536,13 +536,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ),
       editor.registerCommand(
         INSERT_MENTION_COMMAND,
-        ({ trigger, value, focus = true }) => {
+        ({ trigger, value, data, focus = true }) => {
           restoreSelection();
           const inserted = $insertMentionAtSelection(
             triggers,
             punctuation,
             trigger,
             value,
+            data,
           );
           if (!focus) {
             archiveSelection();
