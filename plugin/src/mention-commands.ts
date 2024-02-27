@@ -8,6 +8,7 @@ import {
   LexicalNode,
   TextNode,
 } from "lexical";
+import { BeautifulMentionsItemData } from "./BeautifulMentionsPluginProps";
 import {
   $getSelectionInfo,
   $selectEnd,
@@ -34,6 +35,10 @@ export interface InsertMention {
    * @default true
    */
   focus?: boolean;
+  /**
+   * The data to associate with the mention.
+   */
+  data?: { [key: string]: BeautifulMentionsItemData };
 }
 
 export interface RemoveMentions {
@@ -115,8 +120,9 @@ export function $insertMentionAtSelection(
   punctuation: string,
   trigger: string,
   value: string,
+  data?: { [key: string]: BeautifulMentionsItemData },
 ) {
-  return $insertMentionOrTrigger(triggers, punctuation, trigger, value);
+  return $insertMentionOrTrigger(triggers, punctuation, trigger, value, data);
 }
 
 function $insertMentionOrTrigger(
@@ -124,6 +130,7 @@ function $insertMentionOrTrigger(
   punctuation: string,
   trigger: string,
   value?: string,
+  data?: { [key: string]: BeautifulMentionsItemData },
 ) {
   const selectionInfo = $getSelectionInfo(triggers, punctuation);
   if (!selectionInfo) {
@@ -144,7 +151,7 @@ function $insertMentionOrTrigger(
 
   // Insert a mention node or a text node with the trigger to open the mention menu.
   const mentionNode = value
-    ? $createBeautifulMentionNode(trigger, value)
+    ? $createBeautifulMentionNode(trigger, value, data)
     : $createTextNode(trigger);
 
   // Insert a mention with a leading space if the node at the cursor is not a text node.
