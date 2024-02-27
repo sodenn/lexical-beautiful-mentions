@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.31
+
+### Patch Changes
+
+- bf6d8f0: feat(useBeautifulMentions): allow to insert mentions with data
+
 ## 0.1.30
 
 ### Patch Changes
