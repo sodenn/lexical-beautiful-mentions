@@ -38,7 +38,7 @@
     "tailwindcss-animate": "1.0.7"
   },
   "devDependencies": {
-    "@babel/core": "7.23.9",
+    "@babel/core": "7.24.0",
     "@playwright/test": "1.42.0",
     "@types/dompurify": "3.0.5",
     "@types/node": "20.11.21",
