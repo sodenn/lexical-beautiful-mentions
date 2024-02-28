@@ -48,7 +48,7 @@ Add the plugin to the lexical editor:
 
 ```tsx
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 
 const mentionItems = {
   "@": ["Anton", "Boris", "Catherine", "Dmitri", "Elena", "Felix", "Gina"],
@@ -64,18 +64,20 @@ const editorConfig = {
 return (
   <LexicalComposer initialConfig={editorConfig}>
     {/** ... */}
-    <PlainTextPlugin // 👈 use the lexical RichTextPlugin for clipboard support
+    <RichTextPlugin
       contentEditable={/* ... */}
       placeholder={/* ... */}
       errorBoundary={/* ... */}
     />
-    <BeautifulMentionsPlugin
+    <BeautifulMentionsPlugin // 👈 add the mentions plugin
       items={mentionItems}
     />
     {/** ... */}
   </LexicalComposer>
 );
 ```
+
+> **Note**: Make sure to use the `RichTextPlugin` from `@lexical/react` to get clipboard support for mentions.
 
 ### Customize mention style
 
