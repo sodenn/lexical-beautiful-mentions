@@ -3,6 +3,7 @@ import {
   $isParagraphNode,
   $isTextNode,
   $nodesOfType,
+  $setSelection,
   createCommand,
   LexicalCommand,
   LexicalNode,
@@ -224,6 +225,8 @@ export function $removeMention(trigger: string, value?: string, focus = true) {
   }
   if (removed && focus) {
     focusEditor(prev, next);
+  } else if (!focus) {
+    $setSelection(null);
   }
   return removed;
 }
@@ -253,6 +256,8 @@ export function $renameMention(
     } else {
       $selectEnd();
     }
+  } else if (!focus) {
+    $setSelection(null);
   }
   return renamedMention !== null;
 }

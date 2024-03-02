@@ -270,4 +270,28 @@ test.describe("Insert mention", () => {
     await page.getByText("Insert Mention").click();
     await utils.hasText("Do your [#work]");
   });
+
+  test("should insert a new mention while another mention is selected", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "end",
+        initialValue: "Hello @Boris",
+      },
+    );
+    // add another mention
+    await utils.editorType("@Catherine");
+    await utils.editor.press("Enter");
+    // remove it again
+    await utils.editor.press("Backspace");
+    await utils.editor.press("Backspace");
+    // select the first mention
+    await utils.moveCursorBackward(1);
+    // insert a new mention
+    await page.getByText("Insert Mention").click();
+    await utils.hasText("Hello [@Boris] [#work]");
+  });
 });

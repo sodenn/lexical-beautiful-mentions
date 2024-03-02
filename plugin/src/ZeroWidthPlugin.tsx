@@ -9,6 +9,7 @@ import {
   COMMAND_PRIORITY_HIGH,
   KEY_DOWN_COMMAND,
   LineBreakNode,
+  SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import { useEffect } from "react";
 import {
@@ -82,6 +83,22 @@ export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
             const node = selection.anchor.getNode();
             if ($isZeroWidthNode(node)) {
               node.remove();
+            }
+          }
+          return false;
+        },
+        COMMAND_PRIORITY_HIGH,
+      ),
+      editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        () => {
+          // select the previous node to avoid an error that occurs when the
+          // user tries to insert a node directly after the zero-width space
+          const selection = $getSelection();
+          if ($isRangeSelection(selection) && selection.isCollapsed()) {
+            const node = selection.anchor.getNode();
+            if ($isZeroWidthNode(node)) {
+              node.selectPrevious();
             }
           }
           return false;
