@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.32
+
+### Patch Changes
+
+- b609f78: fix(): allow to select the text when it ends with a mention
+
 ## 0.1.31
 
 ### Patch Changes
