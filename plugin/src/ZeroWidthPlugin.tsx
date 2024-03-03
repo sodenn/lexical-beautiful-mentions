@@ -95,7 +95,7 @@ export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
           // select the previous node to avoid an error that occurs when the
           // user tries to insert a node directly after the zero-width space
           const selection = $getSelection();
-          if ($isRangeSelection(selection)) {
+          if ($isRangeSelection(selection) && selection.isCollapsed()) {
             const node = selection.anchor.getNode();
             if ($isZeroWidthNode(node)) {
               node.selectPrevious();

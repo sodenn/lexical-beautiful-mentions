@@ -7,6 +7,7 @@ import { mergeRegister } from "@lexical/utils";
 import {
   $createTextNode,
   $getSelection,
+  $isNodeSelection,
   $nodesOfType,
   $setSelection,
   BLUR_COMMAND,
@@ -17,6 +18,7 @@ import {
   KEY_DOWN_COMMAND,
   KEY_SPACE_COMMAND,
   PASTE_COMMAND,
+  SELECTION_CHANGE_COMMAND,
   TextNode,
 } from "lexical";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -173,7 +175,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     justSelectedAnOption,
   });
   const selectedMenuIndexRef = useRef<number | null>();
-  const [oldSelection, setOldSelection] = useState<BaseSelection | null>(null);
+  const oldSelection = useRef<BaseSelection | null>(null);
   const creatable = getCreatableProp(props.creatable, trigger);
   const menuItemLimit = getMenuItemLimitProp(props.menuItemLimit, trigger);
   const options = useMemo((): MentionOption[] => {
@@ -377,25 +379,18 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     return true;
   }, [options, punctuation, trigger, triggers]);
 
-  const archiveSelection = useCallback(() => {
-    const selection = $getSelection();
-    if (selection) {
-      setOldSelection(selection);
-      $setSelection(null);
-    }
-  }, []);
-
   const restoreSelection = useCallback(() => {
     const selection = $getSelection();
-    if (!selection && oldSelection) {
-      $setSelection(oldSelection);
+    if ((!selection || $isNodeSelection(selection)) && oldSelection.current) {
+      const newSelection = oldSelection.current.clone();
+      $setSelection(newSelection);
     } else if (!selection) {
       $selectEnd();
     }
-    if (oldSelection) {
-      setOldSelection(null);
+    if (oldSelection.current) {
+      oldSelection.current = null;
     }
-  }, [oldSelection]);
+  }, []);
 
   const handleDeleteMention = useCallback(
     (event: KeyboardEvent) => {
@@ -504,6 +499,17 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   useEffect(() => {
     return mergeRegister(
       editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        () => {
+          const selection = $getSelection();
+          if (selection && !$isNodeSelection(selection)) {
+            oldSelection.current = selection;
+          }
+          return false;
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand(
         KEY_DOWN_COMMAND,
         handleKeyDown,
         COMMAND_PRIORITY_LOW,
@@ -546,7 +552,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             data,
           );
           if (!focus) {
-            archiveSelection();
+            $setSelection(null);
           }
           return inserted;
         },
@@ -554,24 +560,13 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ),
       editor.registerCommand(
         REMOVE_MENTIONS_COMMAND,
-        ({ trigger, value, focus }) => {
-          const removed = $removeMention(trigger, value, focus);
-          if (removed && !focus) {
-            archiveSelection();
-          }
-          return removed;
-        },
+        ({ trigger, value, focus }) => $removeMention(trigger, value, focus),
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         RENAME_MENTIONS_COMMAND,
-        ({ trigger, newValue, value, focus }) => {
-          const renamed = $renameMention(trigger, newValue, value, focus);
-          if (renamed && !focus) {
-            archiveSelection();
-          }
-          return renamed;
-        },
+        ({ trigger, newValue, value, focus }) =>
+          $renameMention(trigger, newValue, value, focus),
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
@@ -593,11 +588,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     creatable,
     isEditorFocused,
     convertTextToMention,
-    restoreSelection,
-    archiveSelection,
     handleKeyDown,
     handleDeleteMention,
     handlePaste,
+    restoreSelection,
   ]);
 
   useEffect(() => {
