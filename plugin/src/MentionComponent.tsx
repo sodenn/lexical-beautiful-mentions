@@ -8,8 +8,6 @@ import {
   $isElementNode,
   $isNodeSelection,
   $isTextNode,
-  $setSelection,
-  BLUR_COMMAND,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   KEY_ARROW_LEFT_COMMAND,
@@ -28,6 +26,7 @@ import { $isBeautifulMentionNode } from "./MentionNode";
 import { IS_IOS } from "./environment";
 import { getNextSibling, getPreviousSibling } from "./mention-utils";
 import { BeautifulMentionsThemeValues } from "./theme";
+import { useIsFocused } from "./useIsFocused";
 
 interface BeautifulMentionComponentProps {
   nodeKey: NodeKey;
@@ -54,21 +53,22 @@ export default function BeautifulMentionComponent(
     component: Component,
   } = props;
   const [editor] = useLexicalComposerContext();
+  const isEditorFocused = useIsFocused();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
   const ref = useRef<any>(null);
   const mention = trigger + value;
 
-  const finalClasses = useMemo(() => {
+  const composedClassNames = useMemo(() => {
     if (className) {
       const classes = [className];
-      if (isSelected && classNameFocused) {
+      if (isSelected && isEditorFocused && classNameFocused) {
         classes.push(classNameFocused);
       }
       return classes.join(" ").trim() || undefined;
     }
     return "";
-  }, [isSelected, className, classNameFocused]);
+  }, [isSelected, className, classNameFocused, isEditorFocused]);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -165,14 +165,6 @@ export default function BeautifulMentionComponent(
     [clearSelection, setSelected],
   );
 
-  const onBlur = useCallback(() => {
-    const node = $getNodeByKey(nodeKey);
-    if (node && node.isSelected()) {
-      $setSelection(null);
-    }
-    return false;
-  }, [nodeKey]);
-
   // Make sure that the focus is removed when clicking next to the mention
   const onSelectionChange = useCallback(() => {
     if (IS_IOS && isSelected) {
@@ -209,7 +201,6 @@ export default function BeautifulMentionComponent(
         onArrowRightPress,
         COMMAND_PRIORITY_LOW,
       ),
-      editor.registerCommand(BLUR_COMMAND, onBlur, COMMAND_PRIORITY_LOW),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         onSelectionChange,
@@ -224,7 +215,6 @@ export default function BeautifulMentionComponent(
     onArrowLeftPress,
     onArrowRightPress,
     onClick,
-    onBlur,
     onDelete,
     onSelectionChange,
   ]);
@@ -236,7 +226,7 @@ export default function BeautifulMentionComponent(
         trigger={trigger}
         value={value}
         data={data}
-        className={finalClasses}
+        className={composedClassNames}
         data-beautiful-mention={mention}
       >
         {mention}
@@ -262,7 +252,11 @@ export default function BeautifulMentionComponent(
   }
 
   return (
-    <span ref={ref} className={finalClasses} data-beautiful-mention={mention}>
+    <span
+      ref={ref}
+      className={composedClassNames}
+      data-beautiful-mention={mention}
+    >
       {mention}
     </span>
   );
