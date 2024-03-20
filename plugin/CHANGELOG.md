@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.33
+
+### Patch Changes
+
+- 63de856: fix(BeautifulMentionComponent): don't reset the editor selection when a blur event occurs #410
+
 ## 0.1.32
 
 ### Patch Changes
