@@ -138,7 +138,6 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   exportJSON(): SerializedBeautifulMentionNode {
     const data = this.__data;
     return {
-      ...super.exportJSON(),
       trigger: this.__trigger,
       value: this.__value,
       ...(data ? { data } : {}),
