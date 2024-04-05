@@ -1,13 +1,11 @@
-import type {
-  DOMConversionMap,
-  DOMExportOutput,
-  SerializedLexicalNode,
-  Spread,
-} from "lexical";
 import {
   $applyNodeReplacement,
+  DOMConversionMap,
+  DOMExportOutput,
   DecoratorNode,
   LexicalEditor,
+  SerializedLexicalNode,
+  Spread,
   type DOMConversionOutput,
   type EditorConfig,
   type LexicalNode,
@@ -75,14 +73,24 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     );
   }
 
-  static importJSON(
-    serializedNode: SerializedBeautifulMentionNode,
-  ): BeautifulMentionNode {
-    return $createBeautifulMentionNode(
-      serializedNode.trigger,
-      serializedNode.value,
-      serializedNode.data,
-    );
+  constructor(
+    trigger: string,
+    value: string,
+    data?: { [p: string]: BeautifulMentionsItemData },
+    key?: NodeKey,
+  ) {
+    super(key);
+    this.__trigger = trigger;
+    this.__value = value;
+    this.__data = data;
+  }
+
+  createDOM(): HTMLElement {
+    return document.createElement("span");
+  }
+
+  updateDOM(): boolean {
+    return false;
   }
 
   exportDOM(): DOMExportOutput {
@@ -117,21 +125,20 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     };
   }
 
-  constructor(
-    trigger: string,
-    value: string,
-    data?: { [p: string]: BeautifulMentionsItemData },
-    key?: NodeKey,
-  ) {
-    super(key);
-    this.__trigger = trigger;
-    this.__value = value;
-    this.__data = data;
+  static importJSON(
+    serializedNode: SerializedBeautifulMentionNode,
+  ): BeautifulMentionNode {
+    return $createBeautifulMentionNode(
+      serializedNode.trigger,
+      serializedNode.value,
+      serializedNode.data,
+    );
   }
 
   exportJSON(): SerializedBeautifulMentionNode {
     const data = this.__data;
     return {
+      ...super.exportJSON(),
       trigger: this.__trigger,
       value: this.__value,
       ...(data ? { data } : {}),
@@ -140,16 +147,9 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     };
   }
 
-  createDOM(): HTMLElement {
-    return document.createElement("span");
-  }
-
   getTextContent(): string {
-    return this.__trigger + this.__value;
-  }
-
-  updateDOM(): boolean {
-    return false;
+    const self = this.getLatest();
+    return self.__trigger + self.__value;
   }
 
   getTrigger(): string {
@@ -181,19 +181,9 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     return null;
   }
 
-  decorate(_editor: LexicalEditor, config: EditorConfig): JSX.Element {
-    const theme: BeautifulMentionsTheme = config.theme.beautifulMentions || {};
-    const entry = Object.entries(theme).find(([trigger]) =>
-      new RegExp(trigger).test(this.__trigger),
-    );
-    const key = entry && entry[0];
-    const value = entry && entry[1];
-    const className = typeof value === "string" ? value : undefined;
-    const classNameFocused =
-      className && typeof theme[key + "Focused"] === "string"
-        ? (theme[key + "Focused"] as string)
-        : undefined;
-    const themeValues = entry && typeof value !== "string" ? value : undefined;
+  decorate(_editor: LexicalEditor, config: EditorConfig): React.JSX.Element {
+    const { className, classNameFocused, classNames } =
+      this.getCssClassesFromTheme(config);
     return (
       <MentionComponent
         nodeKey={this.getKey()}
@@ -202,10 +192,31 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
         data={this.getData()}
         className={className}
         classNameFocused={classNameFocused}
-        themeValues={themeValues}
+        classNames={classNames}
         component={this.component()}
       />
     );
+  }
+
+  getCssClassesFromTheme(config: EditorConfig) {
+    const theme: BeautifulMentionsTheme = config.theme.beautifulMentions || {};
+    const themeEntry = Object.entries(theme).find(([trigger]) =>
+      new RegExp(trigger).test(this.__trigger),
+    );
+    const key = themeEntry && themeEntry[0];
+    const value = themeEntry && themeEntry[1];
+    const className = typeof value === "string" ? value : undefined;
+    const classNameFocused =
+      className && typeof theme[key + "Focused"] === "string"
+        ? (theme[key + "Focused"] as string)
+        : undefined;
+    const classNames =
+      themeEntry && typeof value !== "string" ? value : undefined;
+    return {
+      className,
+      classNameFocused,
+      classNames,
+    };
   }
 }
 

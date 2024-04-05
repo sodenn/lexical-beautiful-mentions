@@ -13,14 +13,15 @@
 A mentions plugin for the [lexical editor](https://lexical.dev/). lexical is an extendable text editor for the web build by Meta. While the lexical playground offers a basic mentions plugin for demo purposes, this plugin is more advanced and offers more features.
 
 - **Customizable triggers**: Use characters, words or regular expressions as triggers for mentions.
-- **Editing mentions outside the editor**: Programmatically insert, delete, or rename mentions via the `useBeautifulMentions` hook.
-- **Customizable mention style**: You can change the look of the mentions via the editor theme to match the style of your application.
+- **Multiple triggers**: You can define multiple triggers (e.g. `@` and `#`).
+- [Editing mentions outside the editor](#programmatically-insert-delete-or-rename-mentions): Programmatically insert, delete, or rename mentions via the `useBeautifulMentions` hook.
 - **Automatic spacing**: The plugin automatically adds spaces around the mentions, which makes it easier for the user to continue typing.
-- **Adding new mentions**: You can allow users to create new mentions that are not in the suggestion list.
-- **Flexible way to provide mentions**: You can use an async query function or a predefined list to provide mentions for the suggestion list.
-- **Custom menu and menu item**: You can customize the look and behavior of the menu that displays the mention suggestions.
-- **Additional metadata**: You can add additional metadata to the mention items, which will be included in the mention nodes when serializing the editor content.
-- **Custom mention component**: You can replace the default mention component with a custom component of your choice.
+- [Adding new mentions](#creating-new-mentions): You can allow users to create new mentions that are not in the suggestion list.
+- [Async query function](#async-query-function): You can use an async query function to provide mentions for the suggestion list.
+- [Additional metadata](#additional-metadata): You can add additional metadata to the mention items, which will be included in the mention nodes when serializing the editor content.
+- [Customizable mention style](#customize-mention-style): You can change the look of the mentions via the editor theme to match the style of your application.
+- [Custom menu and menu item](#custom-menu-and-menu-item-component): You can customize the look and behavior of the menu that displays the mention suggestions.
+- [Custom mention component](#custom-mention-node-and-component): You can replace the default mention component with a custom component of your choice.
 
 ## Installation
 
@@ -63,8 +64,7 @@ const editorConfig = {
 
 return (
   <LexicalComposer initialConfig={editorConfig}>
-    {/** ... */}
-    <RichTextPlugin
+    <RichTextPlugin // 👈 use the RichTextPlugin to get clipboard support for mentions
       contentEditable={/* ... */}
       placeholder={/* ... */}
       errorBoundary={/* ... */}
@@ -77,8 +77,6 @@ return (
 );
 ```
 
-> **Note**: Make sure to use the `RichTextPlugin` from `@lexical/react` to get clipboard support for mentions.
-
 ### Customize mention style
 
 <img src="https://raw.githubusercontent.com/sodenn/lexical-beautiful-mentions/main/resources/screenshot1.png" width="200"/><br>
@@ -90,12 +88,15 @@ const beautifulMentionsTheme: BeautifulMentionsTheme = {
   "@": "px-1 mx-px ...",
   // 👇 add the "Focused" suffix to style the focused mention
   "@Focused": "outline-none shadow-md ...",
-  // 👇 use a configuration object if you need to apply different styles to trigger and value
+  // 👇 use a class configuration object for advanced styling
   "due:": {
     trigger: "text-blue-400 ...",
     value: "text-orange-400 ...",
+    container: "px-1 mx-px ...",
+    containerFocused: "outline-none shadow-md ...",
   },
 }
+// 👇 add the mention theme to the editor theme
 const editorConfig = {
   // ...
   theme: {
@@ -320,7 +321,20 @@ return (
 );
 ```
 
-### Disable creating new mentions
+### Creating new mentions
+
+By default, the plugin allows users to create new mentions that are not in the suggestion list.
+
+Customize the text of the menu item that allows users to create new mentions:
+
+```tsx
+<BeautifulMentionsPlugin
+  items={mentionItems}
+  creatable={`Add user "{{name}}"`} // 👈 the `{{name}}` placeholder contains the current search query
+/>
+```
+
+Hide the menu item that allows users to create new mentions:
 
 ```tsx
 <BeautifulMentionsPlugin

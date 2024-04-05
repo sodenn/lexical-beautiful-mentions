@@ -140,7 +140,6 @@ function $insertMentionOrTrigger(
 
   const {
     node,
-    offset,
     selection,
     wordCharBeforeCursor,
     wordCharAfterCursor,
@@ -155,8 +154,8 @@ function $insertMentionOrTrigger(
     ? $createBeautifulMentionNode(trigger, value, data)
     : $createTextNode(trigger);
 
-  // Insert a mention with a leading space if the node at the cursor is not a text node.
-  if (!($isParagraphNode(node) && offset === 0) && !$isTextNode(node)) {
+  // Insert a mention with a leading space
+  if (!($isParagraphNode(node) && cursorAtStartOfNode) && !$isTextNode(node)) {
     selection.insertNodes([$createTextNode(" "), mentionNode]);
     return true;
   }

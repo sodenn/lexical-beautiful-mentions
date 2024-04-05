@@ -497,6 +497,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   );
 
   useEffect(() => {
+    if (!editor.hasNodes([BeautifulMentionNode])) {
+      throw new Error(
+        "BeautifulMentionsPlugin: BeautifulMentionNode not registered on editor",
+      );
+    }
     return mergeRegister(
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,

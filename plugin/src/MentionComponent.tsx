@@ -25,7 +25,7 @@ import {
 import { $isBeautifulMentionNode } from "./MentionNode";
 import { IS_IOS } from "./environment";
 import { getNextSibling, getPreviousSibling } from "./mention-utils";
-import { BeautifulMentionsThemeValues } from "./theme";
+import { BeautifulMentionsCssClassNames } from "./theme";
 import { useIsFocused } from "./useIsFocused";
 
 interface BeautifulMentionComponentProps {
@@ -36,7 +36,7 @@ interface BeautifulMentionComponentProps {
   component?: ElementType<CustomBeautifulMentionComponentProps> | null;
   className?: string;
   classNameFocused?: string;
-  themeValues?: BeautifulMentionsThemeValues;
+  classNames?: BeautifulMentionsCssClassNames;
 }
 
 export default function BeautifulMentionComponent(
@@ -48,7 +48,7 @@ export default function BeautifulMentionComponent(
     data,
     className,
     classNameFocused,
-    themeValues,
+    classNames,
     nodeKey,
     component: Component,
   } = props;
@@ -165,9 +165,9 @@ export default function BeautifulMentionComponent(
     [clearSelection, setSelected],
   );
 
-  // Make sure that the focus is removed when clicking next to the mention
   const onSelectionChange = useCallback(() => {
     if (IS_IOS && isSelected) {
+      // needed to keep the cursor in the editor when clicking next to a selected mention
       setSelected(false);
       return true;
     }
@@ -234,19 +234,19 @@ export default function BeautifulMentionComponent(
     );
   }
 
-  if (themeValues) {
+  if (classNames) {
     return (
       <span
         ref={ref}
         className={
-          isSelected && !!themeValues.containerFocused
-            ? themeValues.containerFocused
-            : themeValues.container
+          isSelected && !!classNames.containerFocused
+            ? classNames.containerFocused
+            : classNames.container
         }
         data-beautiful-mention={mention}
       >
-        <span className={themeValues.trigger}>{trigger}</span>
-        <span className={themeValues.value}>{value}</span>
+        <span className={classNames.trigger}>{trigger}</span>
+        <span className={classNames.value}>{value}</span>
       </span>
     );
   }
