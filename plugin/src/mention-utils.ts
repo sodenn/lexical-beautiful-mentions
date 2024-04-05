@@ -13,7 +13,6 @@ import {
   TextNode,
 } from "lexical";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
-import { $isZeroWidthNode } from "./ZeroWidthNode";
 
 interface SelectionInfoBase {
   offset: number;
@@ -70,30 +69,20 @@ export function $getSelectionInfo(
   punctuation: string,
 ): SelectionInfo {
   const selection = $getSelection();
-  if (!selection || !$isRangeSelection(selection)) {
+  if (!selection || !$isRangeSelection(selection) || !selection.isCollapsed()) {
     return;
   }
 
   const anchor = selection.anchor;
   const focus = selection.focus;
-  const nodes = selection.getNodes();
-  if (
-    anchor.key !== focus.key ||
-    anchor.offset !== focus.offset ||
-    nodes.length === 0
-  ) {
-    return;
-  }
-
-  const [_node] = nodes;
-  const node = $isZeroWidthNode(_node) ? _node.getPreviousSibling() : _node;
-  if (!node) {
+  const [node] = selection.getNodes();
+  if (anchor.key !== focus.key || anchor.offset !== focus.offset || !node) {
     return;
   }
 
   const isTextNode = $isTextNode(node) && node.isSimpleText();
   const offset = anchor.type === "text" ? anchor.offset : 0;
-  const textContent = getTextContent(node);
+  const textContent = node.getTextContent();
   const cursorAtStartOfNode = offset === 0;
   const cursorAtEndOfNode = textContent.length === offset;
   const charBeforeCursor = textContent.charAt(offset - 1);
@@ -110,8 +99,8 @@ export function $getSelectionInfo(
   );
   const spaceBeforeCursor = /\s/.test(charBeforeCursor);
   const spaceAfterCursor = /\s/.test(charAfterCursor);
-  const prevNode = getPreviousSibling(node);
-  const nextNode = getNextSibling(node);
+  const prevNode = node.getPreviousSibling();
+  const nextNode = node.getNextSibling();
 
   const props = {
     node,
@@ -142,29 +131,6 @@ export function $getSelectionInfo(
       node: node as LexicalNode,
     };
   }
-}
-
-export function getNextSibling(node: LexicalNode) {
-  let nextSibling = node.getNextSibling();
-  while (nextSibling !== null && $isZeroWidthNode(nextSibling)) {
-    nextSibling = nextSibling.getNextSibling();
-  }
-  return nextSibling;
-}
-
-export function getPreviousSibling(node: LexicalNode) {
-  let previousSibling = node.getPreviousSibling();
-  while (previousSibling !== null && $isZeroWidthNode(previousSibling)) {
-    previousSibling = previousSibling.getPreviousSibling();
-  }
-  return previousSibling;
-}
-
-export function getTextContent(node: LexicalNode) {
-  if ($isZeroWidthNode(node)) {
-    return "";
-  }
-  return node.getTextContent();
 }
 
 export function getCreatableProp(
@@ -220,7 +186,7 @@ export function $selectEnd() {
   const offset = $isElementNode(lastNode)
     ? lastNode.getChildrenSize()
     : $isTextNode(lastNode)
-      ? getTextContent(lastNode).length
+      ? lastNode.getTextContent().length
       : 0;
   const type = $isElementNode(lastNode) ? "element" : "text";
   if (key) {

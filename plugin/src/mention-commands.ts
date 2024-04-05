@@ -10,13 +10,7 @@ import {
   TextNode,
 } from "lexical";
 import { BeautifulMentionsItemData } from "./BeautifulMentionsPluginProps";
-import {
-  $getSelectionInfo,
-  $selectEnd,
-  getNextSibling,
-  getPreviousSibling,
-  getTextContent,
-} from "./mention-utils";
+import { $getSelectionInfo, $selectEnd } from "./mention-utils";
 import {
   $createBeautifulMentionNode,
   BeautifulMentionNode,
@@ -199,26 +193,26 @@ export function $removeMention(trigger: string, value?: string, focus = true) {
     const sameTrigger = mention.getTrigger() === trigger;
     const sameValue = mention.getValue() === value;
     if (sameTrigger && (sameValue || !value)) {
-      prev = getPreviousSibling(mention);
-      next = getNextSibling(mention);
+      prev = mention.getPreviousSibling();
+      next = mention.getNextSibling();
       mention.remove();
       removed = true;
       // Prevent double spaces
       if (
         $isTextNode(prev) &&
-        getTextContent(prev).endsWith(" ") &&
+        prev.getTextContent().endsWith(" ") &&
         next &&
-        getTextContent(next).startsWith(" ")
+        next.getTextContent().startsWith(" ")
       ) {
-        prev.setTextContent(getTextContent(prev).slice(0, -1));
+        prev.setTextContent(prev.getTextContent().slice(0, -1));
       }
       // Remove trailing space
       if (
         next === null &&
         $isTextNode(prev) &&
-        getTextContent(prev).endsWith(" ")
+        prev.getTextContent().endsWith(" ")
       ) {
-        prev.setTextContent(getTextContent(prev).trimEnd());
+        prev.setTextContent(prev.getTextContent().trimEnd());
       }
     }
   }
@@ -247,8 +241,8 @@ export function $renameMention(
     }
   }
   if (renamedMention && focus) {
-    const prev = getPreviousSibling(renamedMention);
-    const next = getNextSibling(renamedMention);
+    const prev = renamedMention.getPreviousSibling();
+    const next = renamedMention.getNextSibling();
     focusEditor(prev, next);
     if (next && $isTextNode(next)) {
       next.select(0, 0);

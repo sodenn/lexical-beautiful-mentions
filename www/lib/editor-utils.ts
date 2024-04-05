@@ -8,10 +8,7 @@ import {
   FOCUS_COMMAND,
   LexicalNode,
 } from "lexical";
-import {
-  $isBeautifulMentionNode,
-  $isZeroWidthNode,
-} from "lexical-beautiful-mentions";
+import { $isBeautifulMentionNode } from "lexical-beautiful-mentions";
 import { useLayoutEffect, useState } from "react";
 
 export function getDebugTextContent(node: LexicalNode): string {
@@ -24,7 +21,7 @@ export function getDebugTextContent(node: LexicalNode): string {
     }
   } else if ($isBeautifulMentionNode(node)) {
     result += "[" + node.getTextContent() + "]";
-  } else if (!$isZeroWidthNode(node)) {
+  } else {
     result += node.getTextContent();
   }
 
