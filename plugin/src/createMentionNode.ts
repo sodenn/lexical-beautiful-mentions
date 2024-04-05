@@ -7,9 +7,9 @@ import {
   SerializedBeautifulMentionNode,
 } from "./MentionNode";
 
-export type CustomBeautifulMentionNodeKlass = ReturnType<typeof generateClass>;
+export type CustomBeautifulMentionNodeClass = ReturnType<typeof generateClass>;
 
-export let CustomBeautifulMentionNode: CustomBeautifulMentionNodeKlass;
+export let CustomBeautifulMentionNode: CustomBeautifulMentionNodeClass;
 
 /**
  * Instead of using the default `BeautifulMentionNode` class, you can
@@ -17,7 +17,7 @@ export let CustomBeautifulMentionNode: CustomBeautifulMentionNodeKlass;
  */
 export function createBeautifulMentionNode(
   mentionComponent: ElementType<BeautifulMentionComponentProps>,
-): [CustomBeautifulMentionNodeKlass, LexicalNodeReplacement] {
+): [CustomBeautifulMentionNodeClass, LexicalNodeReplacement] {
   CustomBeautifulMentionNode =
     CustomBeautifulMentionNode || generateClass(mentionComponent);
   return [
