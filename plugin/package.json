@@ -1,6 +1,6 @@
 {
   "name": "lexical-beautiful-mentions",
-  "version": "0.1.33",
+  "version": "0.1.34",
   "license": "MIT",
   "description": "A mentions plugin for the lexical text editor.",
   "main": "src/index.ts",
@@ -39,9 +39,9 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@testing-library/react": "14.2.2",
+    "@testing-library/react": "15.0.0",
     "fast-glob": "3.3.2",
-    "happy-dom": "14.5.1",
+    "happy-dom": "14.7.1",
     "npm-run-all2": "6.1.2",
     "rimraf": "5.0.5",
     "vite": "5.2.8",
