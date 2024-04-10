@@ -1,5 +1,14 @@
 # lexical-beautiful-mentions
 
+## 0.1.34
+
+### Patch Changes
+
+- 3fc023a: fix(utils): regex always failed to match if triggers are empty (#440) [thanks, @reekystive]
+- 8f83624: docs(): add links to sections in README.md
+- 8f83624: refactor(): rename `BeautifulMentionsThemeValues` to `BeautifulMentionsCssClassNames` for more understandable naming
+- 8f83624: feat(): throw error with explanation when BeautifulMentionNode is not registered on editor
+
 ## 0.1.33
 
 ### Patch Changes
