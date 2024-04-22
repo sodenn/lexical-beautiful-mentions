@@ -373,11 +373,16 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       option.value,
       option.data,
     );
-    node.setTextContent(textContent.substring(0, textEndIndex));
-    node.insertAfter(mentionNode);
-    mentionNode.selectNext();
+    editor.update(
+      () => {
+        node.setTextContent(textContent.substring(0, textEndIndex));
+        node.insertAfter(mentionNode);
+        mentionNode.selectNext();
+      },
+      { tag: "history-merge" },
+    );
     return true;
-  }, [options, punctuation, trigger, triggers]);
+  }, [editor, options, punctuation, trigger, triggers]);
 
   const restoreSelection = useCallback(() => {
     const selection = $getSelection();
