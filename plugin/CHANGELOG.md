@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.35
+
+### Patch Changes
+
+- 9588d0a: fix(): undo not working after insert mention on focus lost
+
 ## 0.1.34
 
 ### Patch Changes
