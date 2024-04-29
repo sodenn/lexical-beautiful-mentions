@@ -23,13 +23,13 @@
     "@typescript-eslint/parser": "7.7.1",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
-    "eslint-config-turbo": "1.13.2",
+    "eslint-config-turbo": "1.13.3",
     "eslint-plugin-react": "7.34.1",
-    "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-react-hooks": "4.6.2",
     "prettier": "3.2.5",
     "prettier-plugin-organize-imports": "3.2.4",
     "prettier-plugin-tailwindcss": "0.5.14",
-    "turbo": "1.13.2",
+    "turbo": "1.13.3",
     "typescript": "5.4.5"
   }
 }
