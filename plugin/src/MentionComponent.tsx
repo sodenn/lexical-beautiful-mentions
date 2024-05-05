@@ -168,11 +168,17 @@ export default function BeautifulMentionComponent(
   );
 
   const onBlur = useCallback(() => {
-    const selection = $getSelection();
     const node = $getNodeByKey(nodeKey);
-    if (node && node.isSelected() && (!selection || !selection.isCollapsed())) {
-      $setSelection(null);
+    if (!node || !node.isSelected()) {
+      return false;
     }
+
+    const selection = $getSelection();
+    if (!$isNodeSelection(selection)) {
+      return false;
+    }
+
+    $setSelection(null);
     return false;
   }, [nodeKey]);
 
