@@ -8,6 +8,8 @@ import {
   $isElementNode,
   $isNodeSelection,
   $isTextNode,
+  $setSelection,
+  BLUR_COMMAND,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   KEY_ARROW_LEFT_COMMAND,
@@ -165,6 +167,21 @@ export default function BeautifulMentionComponent(
     [clearSelection, setSelected],
   );
 
+  const onBlur = useCallback(() => {
+    const node = $getNodeByKey(nodeKey);
+    if (!node || !node.isSelected()) {
+      return false;
+    }
+
+    const selection = $getSelection();
+    if (!$isNodeSelection(selection)) {
+      return false;
+    }
+
+    $setSelection(null);
+    return false;
+  }, [nodeKey]);
+
   const onSelectionChange = useCallback(() => {
     if (IS_IOS && isSelected) {
       // needed to keep the cursor in the editor when clicking next to a selected mention
@@ -201,6 +218,7 @@ export default function BeautifulMentionComponent(
         onArrowRightPress,
         COMMAND_PRIORITY_LOW,
       ),
+      editor.registerCommand(BLUR_COMMAND, onBlur, COMMAND_PRIORITY_LOW),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         onSelectionChange,
@@ -216,6 +234,7 @@ export default function BeautifulMentionComponent(
     onArrowRightPress,
     onClick,
     onDelete,
+    onBlur,
     onSelectionChange,
   ]);
 
