@@ -48,7 +48,7 @@ export const DEFAULT_PUNCTUATION =
   "\\.,\\*\\?\\$\\|#{}\\(\\)\\^\\[\\]\\\\/!%'\"~=<>_:;";
 
 // Makes it possible to use brackets before the trigger: (@mention)
-export const DEFAULT_TRIGGER_PREFIXES = "=|\\(";
+export const DEFAULT_TRIGGER_PREFIXES = "\\(";
 
 // Strings that can trigger the mention menu.
 export const TRIGGERS = (triggers: string[]) =>
