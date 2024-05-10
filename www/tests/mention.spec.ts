@@ -131,12 +131,7 @@ test.describe("mentions handling", () => {
     ).toHaveAttribute("data-state", "delayed-open");
   });
 
-  test("should insert a mention in brackets", async ({
-    page,
-    browserName,
-    isMobile,
-  }) => {
-    test.skip(!!isMobile, "desktop only");
+  test("should insert a mention in brackets", async ({ page, browserName }) => {
     const utils = await testUtils({ page, browserName });
     await utils.editorType("(@Cath");
     await utils.mentionsMenu.getByText("Catherine").click();
