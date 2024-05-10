@@ -367,3 +367,15 @@ return (
   </LexicalComposer>
 );
 ```
+
+### Mention Detection
+
+You can customize the regular expression that looks for mentions in your text by using the `punctuation` and `allowedTriggerPrefixes` properties.
+
+#### Punctuation
+
+The `punctuation` property allows you to specify the punctuation characters that can appear directly after a mention. So that you can type for example `@Alice.` **without the dot** being part of the mention. The default value contains a common set of [punctuation characters](https://github.com/sodenn/lexical-beautiful-mentions/blob/eb6b1a3e1c642c77634d586ebceaf44d00cbbdfc/plugin/src/mention-utils.ts#L48).
+
+#### Allowed Trigger Prefixes
+
+The `allowedTriggerPrefixes` property allows you to specify a set of characters that can appear directly before the trigger character. By default, only brackets are allowed (e.g. `(@Alice)`).
