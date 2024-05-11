@@ -50,8 +50,8 @@ import {
   $getSelectionInfo,
   $selectEnd,
   DEFAULT_PUNCTUATION,
-  DEFAULT_TRIGGER_PREFIXES,
   LENGTH_LIMIT,
+  PRE_TRIGGER_CHARS,
   TRIGGERS,
   VALID_CHARS,
   getCreatableProp,
@@ -94,14 +94,12 @@ const VALID_JOINS = (punctuation: string) =>
 // Regex used to trigger the mention menu.
 function createMentionsRegex(
   triggers: string[],
-  allowedTriggerPrefixes: string,
+  preTriggerChars: string,
   punctuation: string,
   allowSpaces: boolean,
 ) {
   return new RegExp(
-    (allowedTriggerPrefixes
-      ? `(^|\\s|${allowedTriggerPrefixes})(`
-      : "(^|\\s)(") +
+    (preTriggerChars ? `(^|\\s|${preTriggerChars})(` : "(^|\\s)(") +
       TRIGGERS(triggers) +
       "((?:" +
       VALID_CHARS(triggers, punctuation) +
@@ -116,13 +114,13 @@ function createMentionsRegex(
 export function checkForMentions(
   text: string,
   triggers: string[],
-  allowedTriggerPrefixes: string,
+  preTriggerChars: string,
   punctuation: string,
   allowSpaces: boolean,
 ): MenuTextMatch | null {
   const match = createMentionsRegex(
     triggers,
-    allowedTriggerPrefixes,
+    preTriggerChars,
     punctuation,
     allowSpaces,
   ).exec(text);
@@ -164,7 +162,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     onMenuClose,
     onMenuItemSelect,
     punctuation = DEFAULT_PUNCTUATION,
-    allowedTriggerPrefixes = DEFAULT_TRIGGER_PREFIXES,
+    preTriggerChars = PRE_TRIGGER_CHARS,
   } = props;
   const justSelectedAnOption = useRef(false);
   const isEditorFocused = useIsFocused();
@@ -318,7 +316,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       const queryMatch = checkForMentions(
         text,
         triggers,
-        allowedTriggerPrefixes,
+        preTriggerChars,
         punctuation,
         allowSpaces,
       );
@@ -341,7 +339,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
       return null;
     },
-    [allowedTriggerPrefixes, allowSpaces, punctuation, triggers],
+    [preTriggerChars, allowSpaces, punctuation, triggers],
   );
 
   const convertTextToMention = useCallback(() => {
@@ -366,7 +364,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     const queryMatch = checkForMentions(
       textContent,
       triggers,
-      allowedTriggerPrefixes,
+      preTriggerChars,
       punctuation,
       false,
     );
@@ -393,7 +391,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       { tag: "history-merge" },
     );
     return true;
-  }, [editor, options, allowedTriggerPrefixes, punctuation, trigger, triggers]);
+  }, [editor, options, preTriggerChars, punctuation, trigger, triggers]);
 
   const restoreSelection = useCallback(() => {
     const selection = $getSelection();
