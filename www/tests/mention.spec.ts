@@ -131,6 +131,14 @@ test.describe("mentions handling", () => {
     ).toHaveAttribute("data-state", "delayed-open");
   });
 
+  test("should insert a mention in brackets", async ({ page, browserName }) => {
+    const utils = await testUtils({ page, browserName });
+    await utils.editorType("(@Cath");
+    await utils.mentionsMenu.getByText("Catherine").click();
+    await utils.editorType(")");
+    await utils.hasText(`([@Catherine])`);
+  });
+
   // only works when running in headful mode
   // - https://github.com/kenthu/human-interest-verifier/issues/1
   // - https://github.com/microsoft/playwright/issues/11654
