@@ -167,10 +167,20 @@ interface BeautifulMentionsProps {
    */
   showMentionsOnDelete?: boolean;
   /**
-   * Punctuation characters used when looking for mentions.
-   * @default {@link DEFAULT_PUNCTUATION}
+   * Regular expression that matches punctuation characters when looking for
+   * mentions.
+   *
+   * In addition to spaces, these characters can appear directly after a mention.
+   * E.g. `@John!` or `@John,`.
+   * @default \.,\*\?\$\|#{}\(\)\^\[\]\/!%'\"~=<>_:;
    */
   punctuation?: string;
+  /**
+   * Regular expression that matches characters that can appear directly directly
+   * before the trigger character.
+   * @default \(
+   */
+  preTriggerChars?: string;
   /**
    * If `true`, the mention menu contains the mentions that are currently
    * in the editor.

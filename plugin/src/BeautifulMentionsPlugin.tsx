@@ -51,6 +51,7 @@ import {
   $selectEnd,
   DEFAULT_PUNCTUATION,
   LENGTH_LIMIT,
+  PRE_TRIGGER_CHARS,
   TRIGGERS,
   VALID_CHARS,
   getCreatableProp,
@@ -92,11 +93,12 @@ const VALID_JOINS = (punctuation: string) =>
 // Regex used to trigger the mention menu.
 function createMentionsRegex(
   triggers: string[],
+  preTriggerChars: string,
   punctuation: string,
   allowSpaces: boolean,
 ) {
   return new RegExp(
-    "(^|\\s|\\()(" +
+    (preTriggerChars ? `(^|\\s|${preTriggerChars})(` : "(^|\\s)(") +
       TRIGGERS(triggers) +
       "((?:" +
       VALID_CHARS(triggers, punctuation) +
@@ -111,12 +113,16 @@ function createMentionsRegex(
 export function checkForMentions(
   text: string,
   triggers: string[],
+  preTriggerChars: string,
   punctuation: string,
   allowSpaces: boolean,
 ): MenuTextMatch | null {
-  const match = createMentionsRegex(triggers, punctuation, allowSpaces).exec(
-    text,
-  );
+  const match = createMentionsRegex(
+    triggers,
+    preTriggerChars,
+    punctuation,
+    allowSpaces,
+  ).exec(text);
   if (match !== null) {
     // The strategy ignores leading whitespace, but we need to know its
     // length to add it to the leadOffset
@@ -155,6 +161,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     onMenuClose,
     onMenuItemSelect,
     punctuation = DEFAULT_PUNCTUATION,
+    preTriggerChars = PRE_TRIGGER_CHARS,
   } = props;
   const justSelectedAnOption = useRef(false);
   const isEditorFocused = useIsFocused();
@@ -308,6 +315,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       const queryMatch = checkForMentions(
         text,
         triggers,
+        preTriggerChars,
         punctuation,
         allowSpaces,
       );
@@ -330,7 +338,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
       return null;
     },
-    [allowSpaces, punctuation, triggers],
+    [preTriggerChars, allowSpaces, punctuation, triggers],
   );
 
   const convertTextToMention = useCallback(() => {
@@ -355,6 +363,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     const queryMatch = checkForMentions(
       textContent,
       triggers,
+      preTriggerChars,
       punctuation,
       false,
     );
@@ -372,11 +381,16 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       option.value,
       option.data,
     );
-    node.setTextContent(textContent.substring(0, textEndIndex));
-    node.insertAfter(mentionNode);
-    mentionNode.selectNext();
+    editor.update(
+      () => {
+        node.setTextContent(textContent.substring(0, textEndIndex));
+        node.insertAfter(mentionNode);
+        mentionNode.selectNext();
+      },
+      { tag: "history-merge" },
+    );
     return true;
-  }, [options, punctuation, trigger, triggers]);
+  }, [editor, options, preTriggerChars, punctuation, trigger, triggers]);
 
   const restoreSelection = useCallback(() => {
     const selection = $getSelection();

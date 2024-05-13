@@ -1,5 +1,18 @@
 # lexical-beautiful-mentions
 
+## 0.1.36
+
+### Patch Changes
+
+- eb6b1a3: fix(): mention selection not being cleared when clicking outside the editor and focus the editor again
+- 7e4b35e: feat(): allow to define a set of characters that can appear directly before the trigger character
+
+## 0.1.35
+
+### Patch Changes
+
+- 9588d0a: fix(): undo not working after insert mention on focus lost
+
 ## 0.1.34
 
 ### Patch Changes
