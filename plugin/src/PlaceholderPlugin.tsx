@@ -13,56 +13,40 @@ import {
 } from "lexical";
 import { useEffect } from "react";
 import {
-  $createZeroWidthNode,
-  $isZeroWidthNode,
-  ZeroWidthNode,
-} from "./ZeroWidthNode";
-
-export const ZERO_WIDTH_CHARACTER = "​"; // 🚨 contains a zero-width space (U+200B)
-
-interface ZeroWidthPluginProps {
-  /**
-   * Defines the return value of `getTextContent()`. By default, an empty string to not corrupt
-   * the text content of the editor.
-   *
-   * Note: If other nodes are not at the correct position when inserting via `$insertNodes`,
-   * try to use a non-empty string like " " or a zero-width character. But don't forget
-   * to remove these characters when exporting the editor content.
-   *
-   * @default empty string
-   */
-  textContent?: string;
-}
+  $createPlaceholderNode,
+  $isPlaceholderNode,
+  PlaceholderNode,
+} from "./PlaceholderNode";
 
 /**
  * This plugin serves as a patch to fix an incorrect cursor position in Safari.
- * It also ensures that the cursor is correctly aligned with the line height in
- * all browsers.
  * {@link https://github.com/facebook/lexical/issues/4487}.
- *
- * @deprecated Use `PlaceholderPlugin` instead. This Plugin will be removed in a future version.
  */
-export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
+export function PlaceholderPlugin() {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
+    if (!editor.hasNodes([PlaceholderNode])) {
+      throw new Error(
+        "BeautifulMentionsPlugin: PlaceholderNode not registered on editor",
+      );
+    }
     return mergeRegister(
       editor.registerUpdateListener(() => {
-        // add a zero-width space node at the end if the last node is a decorator node
         editor.update(
           () => {
             const root = $getRoot();
             const last = root.getLastDescendant();
-            // add ZeroWidthNode at the end of the editor
+            // add PlaceholderNode at the end of the editor
             if ($isDecoratorNode(last)) {
-              $nodesOfType(ZeroWidthNode).forEach((node) => node.remove()); // cleanup
-              last.insertAfter($createZeroWidthNode(textContent));
+              $nodesOfType(PlaceholderNode).forEach((node) => node.remove()); // cleanup
+              last.insertAfter($createPlaceholderNode());
             }
-            // add ZeroWidthNode before each line break
+            // add PlaceholderNode before each line break
             $nodesOfType(LineBreakNode).forEach((node) => {
               const prev = node.getPreviousSibling();
               if ($isDecoratorNode(prev)) {
-                node.insertBefore($createZeroWidthNode(textContent));
+                node.insertBefore($createPlaceholderNode());
               }
             });
           },
@@ -73,17 +57,17 @@ export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
       editor.registerCommand(
         KEY_DOWN_COMMAND,
         (event) => {
-          // prevent the unnecessary removal of the zero-width space, since this
-          // would lead to the insertion of another zero-width space and thus break
+          // prevent the unnecessary removal of the PlaceholderNode, since this
+          // would lead to the insertion of another PlaceholderNode and thus break
           // undo with Ctrl+z
           if (event.ctrlKey || event.metaKey || event.altKey) {
             return false;
           }
-          // remove the zero-width space if the user starts typing
+          // remove the PlaceholderNode if the user starts typing
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
-            const node = selection.anchor.getNode();
-            if ($isZeroWidthNode(node)) {
+            const [node] = selection.getNodes();
+            if ($isPlaceholderNode(node)) {
               node.remove();
             }
           }
@@ -95,11 +79,11 @@ export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
         SELECTION_CHANGE_COMMAND,
         () => {
           // select the previous node to avoid an error that occurs when the
-          // user tries to insert a node directly after the zero-width space
+          // user tries to insert a node directly after the PlaceholderNode
           const selection = $getSelection();
           if ($isRangeSelection(selection) && selection.isCollapsed()) {
-            const node = selection.anchor.getNode();
-            if ($isZeroWidthNode(node)) {
+            const [node] = selection.getNodes();
+            if ($isPlaceholderNode(node)) {
               node.selectPrevious();
             }
           }
@@ -108,7 +92,7 @@ export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
         COMMAND_PRIORITY_HIGH,
       ),
     );
-  }, [editor, textContent]);
+  }, [editor]);
 
   return null;
 }

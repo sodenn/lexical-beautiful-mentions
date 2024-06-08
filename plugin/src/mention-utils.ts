@@ -82,18 +82,8 @@ export function $getSelectionInfo(
 
   const anchor = selection.anchor;
   const focus = selection.focus;
-  const nodes = selection.getNodes();
-  if (
-    anchor.key !== focus.key ||
-    anchor.offset !== focus.offset ||
-    nodes.length === 0
-  ) {
-    return;
-  }
-
-  const [_node] = nodes;
-  const node = $isZeroWidthNode(_node) ? _node.getPreviousSibling() : _node;
-  if (!node) {
+  const [node] = selection.getNodes();
+  if (anchor.key !== focus.key || anchor.offset !== focus.offset || !node) {
     return;
   }
 
