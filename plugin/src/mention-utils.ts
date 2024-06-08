@@ -140,6 +140,9 @@ export function $getSelectionInfo(
   }
 }
 
+/**
+ * TODO replace with Node#getPreviousSibling after ZeroWidthNode was removed.
+ */
 export function getNextSibling(node: LexicalNode) {
   let nextSibling = node.getNextSibling();
   while (nextSibling !== null && $isZeroWidthNode(nextSibling)) {
@@ -148,6 +151,9 @@ export function getNextSibling(node: LexicalNode) {
   return nextSibling;
 }
 
+/**
+ * TODO replace with Node#getPreviousSibling after ZeroWidthNode was removed.
+ */
 export function getPreviousSibling(node: LexicalNode) {
   let previousSibling = node.getPreviousSibling();
   while (previousSibling !== null && $isZeroWidthNode(previousSibling)) {
@@ -156,6 +162,9 @@ export function getPreviousSibling(node: LexicalNode) {
   return previousSibling;
 }
 
+/**
+ * TODO replace with Node#getTextContent after ZeroWidthNode was removed.
+ */
 export function getTextContent(node: LexicalNode) {
   if ($isZeroWidthNode(node)) {
     return "";
