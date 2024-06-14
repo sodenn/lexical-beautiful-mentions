@@ -45,7 +45,7 @@
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "autoprefixer": "10.4.19",
-    "eslint-config-next": "14.2.3",
+    "eslint-config-next": "14.2.4",
     "playwright": "1.44.1",
     "postcss": "8.4.38"
   }
