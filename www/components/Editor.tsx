@@ -21,9 +21,8 @@ import {
   BeautifulMentionsItem,
   BeautifulMentionsPlugin,
   BeautifulMentionsPluginProps,
-  ZERO_WIDTH_CHARACTER,
-  ZeroWidthPlugin,
 } from "lexical-beautiful-mentions";
+import { PlaceholderPlugin } from "lexical-beautiful-mentions/src/PlaceholderPlugin";
 import { useCallback, useMemo, useRef, useState } from "react";
 import "./Editor.css";
 
@@ -229,7 +228,7 @@ function Plugins() {
         {autoFocus !== "none" && (
           <AutoFocusPlugin defaultSelection={autoFocus} />
         )}
-        <ZeroWidthPlugin textContent={ZERO_WIDTH_CHARACTER} />
+        <PlaceholderPlugin />
         <BeautifulMentionsPlugin {...beautifulMentionsProps} />
       </div>
       <MentionsToolbarPlugin />

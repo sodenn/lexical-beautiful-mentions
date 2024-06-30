@@ -19,6 +19,9 @@ function convertZeroWidthElement(
   return null;
 }
 
+/**
+ * @deprecated Use `PlaceholderNode` instead. This Node will be removed in a future version.
+ */
 /* eslint @typescript-eslint/no-unused-vars: "off" */
 export class ZeroWidthNode extends TextNode {
   static getType(): string {

@@ -5,7 +5,7 @@ import { $createParagraphNode, $getRoot } from "lexical";
 import {
   $convertToMentionNodes,
   BeautifulMentionNode,
-  ZeroWidthNode,
+  PlaceholderNode,
   createBeautifulMentionNode,
 } from "lexical-beautiful-mentions";
 
@@ -42,7 +42,7 @@ const editorConfig = (
     ...(customMentionNode
       ? [CustomBeautifulMentionNode, replacement]
       : [BeautifulMentionNode]),
-    ZeroWidthNode,
+    PlaceholderNode,
   ],
 });
 
