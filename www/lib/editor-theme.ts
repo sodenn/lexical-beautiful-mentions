@@ -9,8 +9,8 @@ const beautifulMentionsTheme: BeautifulMentionsTheme = {
   "@Focused": `${mentionsStyleFocused} dark:ring-green-500 ring-green-600 ring-offset-background`,
   "#": `${mentionsStyle} dark:bg-blue-400 bg-blue-600 text-accent`,
   "#Focused": `${mentionsStyleFocused} dark:ring-blue-400 ring-blue-600 ring-offset-background`,
-  "due:": `${mentionsStyle} dark:bg-yellow-400 bg-yellow-600 text-accent`,
-  "due:Focused": `${mentionsStyleFocused} dark:ring-yellow-400 ring-yellow-600 ring-offset-background`,
+  "due\\s?": `${mentionsStyle} dark:bg-yellow-400 bg-yellow-600 text-accent`,
+  "due\\s?:Focused": `${mentionsStyleFocused} dark:ring-yellow-400 ring-yellow-600 ring-offset-background`,
   // 👇 use a configuration object if you need to apply different styles to trigger and value
   "rec:": {
     trigger: "text-blue-500",

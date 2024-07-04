@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { convertToMentionEntries } from "./mention-converter";
-import { DEFAULT_PUNCTUATION } from "./mention-utils";
+import { DEFAULT_PUNCTUATION, getTriggerRegExp } from "./mention-utils";
 
 describe("mention-utils", () => {
   it("should find mention entries in text", () => {
-    const triggers = ["@", "due:", "#"];
-    const text = "Hey @john, the task is #urgent and due:tomorrow";
+    const triggers = ["@", "due\\s?", "#"];
+    const text = "Hey @john, the task is #urgent and due tomorrow";
     const entries = convertToMentionEntries(
       text,
       triggers,
@@ -37,7 +37,8 @@ describe("mention-utils", () => {
 
     expect(entries[5].type).toBe("mention");
     if (entries[5].type === "mention") {
-      expect(entries[5].trigger).toBe("due:");
+      expect(entries[5].trigger).toBe("due ");
+      expect(entries[5].triggerRegExp).toBe("due\\s?");
       expect(entries[5].value).toBe("tomorrow");
     }
   });
@@ -120,5 +121,12 @@ describe("mention-utils", () => {
     }
     expect(entries[2].type).toBe("text");
     expect(entries[2].value).toBe(")");
+  });
+
+  it("should find matching regex from triggers", () => {
+    const triggers = ["@", "due\\s?", "#"];
+    const trigger = "due ";
+    const triggerRegExp = getTriggerRegExp(triggers, trigger);
+    expect(triggerRegExp).toBe("due\\s?");
   });
 });

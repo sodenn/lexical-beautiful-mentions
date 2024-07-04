@@ -16,6 +16,7 @@ import {
   getNextSibling,
   getPreviousSibling,
   getTextContent,
+  getTriggerRegExp,
 } from "./mention-utils";
 import {
   $createBeautifulMentionNode,
@@ -149,9 +150,11 @@ function $insertMentionOrTrigger(
     nextNode,
   } = selectionInfo;
 
+  const triggerRegExp = getTriggerRegExp(triggers, trigger);
+
   // Insert a mention node or a text node with the trigger to open the mention menu.
   const mentionNode = value
-    ? $createBeautifulMentionNode(trigger, value, data)
+    ? $createBeautifulMentionNode(trigger, value, triggerRegExp, data)
     : $createTextNode(trigger);
 
   // Insert a mention with a leading space

@@ -39,7 +39,7 @@ const mentionItems: Record<string, BeautifulMentionsItem[]> = {
     { value: "Gina", id: "2", avatar: "https://example.com/avatars/1.jpg" },
   ],
   "#": ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"],
-  "due:": ["Today", "Tomorrow", "01-01-2023"],
+  "due\\s?": ["Today", "Tomorrow", "01-01-2023"],
   "rec:": ["week", "month", "year"],
   "\\w+:": [],
 };

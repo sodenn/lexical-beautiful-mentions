@@ -236,3 +236,15 @@ export function $selectEnd() {
     $setSelection(newSelection);
   }
 }
+
+export function getTriggerRegExp(triggers: string[], trigger: string): string {
+  for (const triggerRegExp of triggers) {
+    const regex = new RegExp(triggerRegExp, "i");
+
+    if (regex.test(trigger)) {
+      return triggerRegExp;
+    }
+  }
+
+  throw new Error(`No trigger found for match string: ${trigger}`);
+}

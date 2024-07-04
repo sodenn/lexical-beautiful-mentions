@@ -27,6 +27,7 @@ export function createBeautifulMentionNode(
       with: (node: BeautifulMentionNode) => {
         return new CustomBeautifulMentionNode(
           node.getTrigger(),
+          node.getTriggerRegExp(),
           node.getValue(),
           node.getData(),
         );
@@ -45,6 +46,7 @@ function generateClass(
     static clone(node: CustomBeautifulMentionNode) {
       return new CustomBeautifulMentionNode(
         node.__trigger,
+        node.__triggerRegExp,
         node.__value,
         node.__data,
         node.__key,
@@ -53,6 +55,7 @@ function generateClass(
     static importJSON(serializedNode: SerializedBeautifulMentionNode) {
       return new CustomBeautifulMentionNode(
         serializedNode.trigger,
+        serializedNode.triggerRegExp,
         serializedNode.value,
         serializedNode.data,
       );
@@ -61,6 +64,7 @@ function generateClass(
       const data = this.__data;
       return {
         trigger: this.__trigger,
+        triggerRegExp: this.__triggerRegExp,
         value: this.__value,
         ...(data ? { data } : {}),
         type: "custom-beautifulMention",

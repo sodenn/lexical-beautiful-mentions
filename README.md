@@ -54,7 +54,7 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 const mentionItems = {
   "@": ["Anton", "Boris", "Catherine", "Dmitri", "Elena", "Felix", "Gina"],
   "#": ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"],
-  "due:": ["Today", "Tomorrow", "01-01-2023"],
+  "due\\s?:": ["Today", "Tomorrow", "01-01-2023"],
 };
 
 const editorConfig = {
@@ -89,7 +89,7 @@ const beautifulMentionsTheme: BeautifulMentionsTheme = {
   // 👇 add the "Focused" suffix to style the focused mention
   "@Focused": "outline-none shadow-md ...",
   // 👇 use a class configuration object for advanced styling
-  "due:": {
+  "due\\s?": {
     trigger: "text-blue-400 ...",
     value: "text-orange-400 ...",
     container: "px-1 mx-px ...",
@@ -379,3 +379,14 @@ The `punctuation` property allows you to specify the punctuation characters that
 #### PreTriggerChars
 
 The `preTriggerChars` property allows you to specify a set of characters that can appear directly before the trigger character. By default, only the open bracket is allowed (e.g. `(@Alice)`).
+
+
+#### Triggers with optional spaces between trigger and mention value
+
+To make spaces between the trigger and the mention value optional, append `\\s?` to the trigger. This way, the trigger will match with or without a space, while the mention node always retains the space.
+
+```tsx
+const mentionItems = {
+  "due\\s?": ["Today", "Tomorrow", "01-01-2023"],
+};
+```

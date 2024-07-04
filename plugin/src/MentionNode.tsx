@@ -22,6 +22,7 @@ import { BeautifulMentionsTheme } from "./theme";
 export type SerializedBeautifulMentionNode = Spread<
   {
     trigger: string;
+    triggerRegExp: string;
     value: string;
     data?: { [p: string]: BeautifulMentionsItemData };
   },
@@ -31,6 +32,9 @@ export type SerializedBeautifulMentionNode = Spread<
 function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
   const trigger = domNode.getAttribute(
     "data-lexical-beautiful-mention-trigger",
+  );
+  const triggerRegExp = domNode.getAttribute(
+    "data-lexical-beautiful-mention-trigger-regexp",
   );
   const value = domNode.getAttribute("data-lexical-beautiful-mention-value");
   let data: { [p: string]: BeautifulMentionsItemData } | undefined = undefined;
@@ -45,8 +49,13 @@ function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
       );
     }
   }
-  if (trigger != null && value !== null) {
-    const node = $createBeautifulMentionNode(trigger, value, data);
+  if (trigger != null && value !== null && triggerRegExp !== null) {
+    const node = $createBeautifulMentionNode(
+      trigger,
+      value,
+      triggerRegExp,
+      data,
+    );
     return { node };
   }
   return null;
@@ -57,6 +66,7 @@ function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
  */
 export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   __trigger: string;
+  __triggerRegExp: string;
   __value: string;
   __data?: { [p: string]: BeautifulMentionsItemData };
 
@@ -67,6 +77,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   static clone(node: BeautifulMentionNode): BeautifulMentionNode {
     return new BeautifulMentionNode(
       node.__trigger,
+      node.__triggerRegExp,
       node.__value,
       node.__data,
       node.__key,
@@ -75,12 +86,14 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
 
   constructor(
     trigger: string,
+    triggerRegExp: string,
     value: string,
     data?: { [p: string]: BeautifulMentionsItemData },
     key?: NodeKey,
   ) {
     super(key);
-    this.__trigger = trigger;
+    this.__trigger = applySpaceToTriggerIfNeeded(trigger, triggerRegExp);
+    this.__triggerRegExp = triggerRegExp;
     this.__value = value;
     this.__data = data;
   }
@@ -99,6 +112,11 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     element.setAttribute(
       "data-lexical-beautiful-mention-trigger",
       this.__trigger,
+    );
+
+    element.setAttribute(
+      "data-lexical-beautiful-mention-trigger-regexp",
+      this.__triggerRegExp,
     );
     element.setAttribute("data-lexical-beautiful-mention-value", this.__value);
     if (this.__data) {
@@ -130,6 +148,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   ): BeautifulMentionNode {
     return $createBeautifulMentionNode(
       serializedNode.trigger,
+      serializedNode.triggerRegExp,
       serializedNode.value,
       serializedNode.data,
     );
@@ -139,6 +158,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     const data = this.__data;
     return {
       trigger: this.__trigger,
+      triggerRegExp: this.__triggerRegExp,
       value: this.__value,
       ...(data ? { data } : {}),
       type: "beautifulMention",
@@ -154,6 +174,11 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   getTrigger(): string {
     const self = this.getLatest();
     return self.__trigger;
+  }
+
+  getTriggerRegExp(): string {
+    const self = this.getLatest();
+    return self.__triggerRegExp;
   }
 
   getValue(): string {
@@ -221,10 +246,16 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
 
 export function $createBeautifulMentionNode(
   trigger: string,
+  triggerRegExp: string,
   value: string,
   data?: { [p: string]: BeautifulMentionsItemData },
 ): BeautifulMentionNode {
-  const mentionNode = new BeautifulMentionNode(trigger, value, data);
+  const mentionNode = new BeautifulMentionNode(
+    trigger,
+    triggerRegExp,
+    value,
+    data,
+  );
   return $applyNodeReplacement(mentionNode);
 }
 
@@ -232,4 +263,11 @@ export function $isBeautifulMentionNode(
   node: LexicalNode | null | undefined,
 ): node is BeautifulMentionNode {
   return node instanceof BeautifulMentionNode;
+}
+
+function applySpaceToTriggerIfNeeded(trigger: string, triggerRegExp: string) {
+  if (triggerRegExp.endsWith("\\s?") && !trigger.endsWith(" ")) {
+    return `${trigger} `;
+  }
+  return trigger;
 }

@@ -10,7 +10,7 @@ import {
 } from "lexical-beautiful-mentions";
 
 export const defaultInitialValue =
-  "Hey @John, the task is #urgent and due:tomorrow";
+  "Hey @John, the task is #urgent and due tomorrow";
 
 function setEditorState(initialValue: string, triggers: string[]) {
   return () => {

@@ -10,6 +10,7 @@ import {
 interface MentionEntry {
   type: "mention";
   trigger: string;
+  triggerRegExp: string;
   value: string;
 }
 
@@ -64,6 +65,10 @@ export function convertToMentionEntries(
       new RegExp(trigger).test(value),
     );
 
+    if (!triggerRegExp) {
+      throw new Error("No trigger found for mention");
+    }
+
     const match = triggerRegExp && value.match(new RegExp(triggerRegExp));
     if (!match) {
       // should never happen since we only find mentions with the given triggers
@@ -75,6 +80,7 @@ export function convertToMentionEntries(
       type: "mention",
       value: value.substring(trigger.length),
       trigger,
+      triggerRegExp,
     });
     // Update lastIndex
     lastIndex = index + value.length;
@@ -106,7 +112,13 @@ export function $convertToMentionNodes(
     if (entry.type === "text") {
       nodes.push($createTextNode(entry.value));
     } else {
-      nodes.push($createBeautifulMentionNode(entry.trigger, entry.value));
+      nodes.push(
+        $createBeautifulMentionNode(
+          entry.trigger,
+          entry.triggerRegExp,
+          entry.value,
+        ),
+      );
     }
   }
   return nodes;
