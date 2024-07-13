@@ -1,14 +1,13 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
-  $getRoot,
   $getSelection,
   $isDecoratorNode,
   $isRangeSelection,
   $nodesOfType,
   COMMAND_PRIORITY_HIGH,
   KEY_DOWN_COMMAND,
-  LineBreakNode,
+  ParagraphNode,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import { useEffect } from "react";
@@ -35,18 +34,17 @@ export function PlaceholderPlugin() {
       editor.registerUpdateListener(() => {
         editor.update(
           () => {
-            const root = $getRoot();
-            const last = root.getLastDescendant();
-            // add PlaceholderNode at the end of the editor
-            if ($isDecoratorNode(last)) {
-              $nodesOfType(PlaceholderNode).forEach((node) => node.remove()); // cleanup
-              last.insertAfter($createPlaceholderNode());
-            }
-            // add PlaceholderNode before each line break
-            $nodesOfType(LineBreakNode).forEach((node) => {
-              const prev = node.getPreviousSibling();
-              if ($isDecoratorNode(prev)) {
-                node.insertBefore($createPlaceholderNode());
+            // insert a placeholder node at the end of each paragraph if the
+            // last node is a decorator node.
+            $nodesOfType(ParagraphNode).forEach((node) => {
+              const lastNode = node.getLastDescendant();
+              if ($isDecoratorNode(lastNode)) {
+                lastNode.insertAfter($createPlaceholderNode());
+              } else if (
+                $isPlaceholderNode(lastNode) &&
+                !$isDecoratorNode(lastNode.getPreviousSibling())
+              ) {
+                lastNode.remove();
               }
             });
           },
@@ -57,13 +55,21 @@ export function PlaceholderPlugin() {
       editor.registerCommand(
         KEY_DOWN_COMMAND,
         (event) => {
-          // prevent the unnecessary removal of the PlaceholderNode, since this
-          // would lead to the insertion of another PlaceholderNode and thus break
+          // prevent unnecessary removal of the placeholder nodes, since this
+          // would lead to insertion of another placeholder node and thus break
           // undo with Ctrl+z
-          if (event.ctrlKey || event.metaKey || event.altKey) {
+          if (
+            event.ctrlKey ||
+            event.metaKey ||
+            event.altKey ||
+            event.key === "Shift"
+          ) {
             return false;
           }
-          // remove the PlaceholderNode if the user starts typing
+          // if the user starts typing at the placeholder's position, remove
+          // the placeholder node. this makes the PlaceholderNode almost
+          // "invisible" and prevents issues when, for example, when checking
+          // for previous nodes in the code.
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
             const [node] = selection.getNodes();
