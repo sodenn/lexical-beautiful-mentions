@@ -456,6 +456,12 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ) {
         node.insertBefore($createTextNode(" "));
       }
+      // ^[|][Mention]
+      if ($isBeautifulMentionNode(node) && prevNode === null && offset === 0) {
+        const textNode = $createTextNode(" ");
+        node.insertBefore(textNode);
+        textNode.selectStart();
+      }
       // [Text][|][Mention]
       if (
         isTextNode &&

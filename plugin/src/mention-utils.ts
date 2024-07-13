@@ -98,7 +98,7 @@ export function $getSelectionInfo(
   }
 
   const isTextNode = $isTextNode(node) && node.isSimpleText();
-  const offset = anchor.type === "text" ? anchor.offset : 0;
+  const offset = anchor.offset;
   const textContent = getTextContent(node);
   const cursorAtStartOfNode = offset === 0;
   const cursorAtEndOfNode = textContent.length === offset;
