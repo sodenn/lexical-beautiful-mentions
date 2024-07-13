@@ -38,14 +38,14 @@
     "tailwindcss-animate": "1.0.7"
   },
   "devDependencies": {
-    "@babel/core": "7.24.7",
+    "@babel/core": "7.24.8",
     "@playwright/test": "1.45.1",
     "@types/dompurify": "3.0.5",
     "@types/node": "20.14.10",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "autoprefixer": "10.4.19",
-    "eslint-config-next": "14.2.4",
+    "eslint-config-next": "14.2.5",
     "playwright": "1.45.1",
     "postcss": "8.4.39"
   }
