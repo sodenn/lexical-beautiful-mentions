@@ -112,7 +112,7 @@ test.describe("mentions handling", () => {
     isMobile,
   }) => {
     test.skip(!!isMobile, "desktop only");
-    await testUtils(
+    const utils = await testUtils(
       { page, browserName },
       {
         initialValue: "@Catherine",
@@ -129,6 +129,8 @@ test.describe("mentions handling", () => {
     await expect(
       page.locator(`[data-beautiful-mention="@Catherine"]`),
     ).toHaveAttribute("data-state", "delayed-open");
+    await page.getByText("Remove Mention").click();
+    await utils.countMentions(0);
   });
 
   test("should insert a mention in brackets", async ({ page, browserName }) => {

@@ -9,7 +9,6 @@ import {
   $getSelection,
   $isNodeSelection,
   $isParagraphNode,
-  $nodesOfType,
   $setSelection,
   BLUR_COMMAND,
   BaseSelection,
@@ -48,6 +47,7 @@ import {
   RENAME_MENTIONS_COMMAND,
 } from "./mention-commands";
 import {
+  $findBeautifulMentionNodes,
   $getSelectionInfo,
   $selectEnd,
   DEFAULT_PUNCTUATION,
@@ -208,7 +208,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     const readyToAddCurrentMentions = !onSearch || (!loading && query !== null);
     if (readyToAddCurrentMentions && showCurrentMentionsAsSuggestions) {
       editor.getEditorState().read(() => {
-        const mentions = $nodesOfType(BeautifulMentionNode);
+        const mentions = $findBeautifulMentionNodes();
         for (const mention of mentions) {
           const value = mention.getValue();
           const data = mention.getData();

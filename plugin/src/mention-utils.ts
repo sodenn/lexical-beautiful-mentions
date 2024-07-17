@@ -6,6 +6,7 @@ import {
   $isElementNode,
   $isRangeSelection,
   $isTextNode,
+  $nodesOfType,
   $setSelection,
   ElementNode,
   LexicalNode,
@@ -14,7 +15,9 @@ import {
   TextNode,
 } from "lexical";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
+import { BeautifulMentionNode } from "./MentionNode";
 import { $isZeroWidthNode } from "./ZeroWidthNode";
+import { CustomBeautifulMentionNode } from "./createMentionNode";
 
 interface SelectionInfoBase {
   offset: number;
@@ -242,4 +245,8 @@ export function $selectEnd() {
     newSelection.focus.set(key, offset, type);
     $setSelection(newSelection);
   }
+}
+
+export function $findBeautifulMentionNodes() {
+  return $nodesOfType(CustomBeautifulMentionNode || BeautifulMentionNode);
 }

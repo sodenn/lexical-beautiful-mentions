@@ -2,7 +2,6 @@ import {
   $createTextNode,
   $isParagraphNode,
   $isTextNode,
-  $nodesOfType,
   $setSelection,
   createCommand,
   LexicalCommand,
@@ -11,6 +10,7 @@ import {
 } from "lexical";
 import { BeautifulMentionsItemData } from "./BeautifulMentionsPluginProps";
 import {
+  $findBeautifulMentionNodes,
   $getSelectionInfo,
   $selectEnd,
   getNextSibling,
@@ -194,7 +194,7 @@ export function $removeMention(trigger: string, value?: string, focus = true) {
   let removed = false;
   let prev: LexicalNode | null = null;
   let next: LexicalNode | null = null;
-  const mentions = $nodesOfType(BeautifulMentionNode);
+  const mentions = $findBeautifulMentionNodes();
   for (const mention of mentions) {
     const sameTrigger = mention.getTrigger() === trigger;
     const sameValue = mention.getValue() === value;
@@ -236,7 +236,7 @@ export function $renameMention(
   value?: string,
   focus = true,
 ) {
-  const mentions = $nodesOfType(BeautifulMentionNode);
+  const mentions = $findBeautifulMentionNodes();
   let renamedMention: BeautifulMentionNode | null = null;
   for (const mention of mentions) {
     const sameTrigger = mention.getTrigger() === trigger;
