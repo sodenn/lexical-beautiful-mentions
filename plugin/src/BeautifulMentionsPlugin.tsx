@@ -8,6 +8,7 @@ import {
   $createTextNode,
   $getSelection,
   $isNodeSelection,
+  $isParagraphNode,
   $nodesOfType,
   $setSelection,
   BLUR_COMMAND,
@@ -435,11 +436,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     (startsWithTriggerChar = false) => {
       const selectionInfo = $getSelectionInfo(triggers, punctuation);
       if (!selectionInfo) {
-        return false;
+        return;
       }
+
       const {
         node,
         offset,
+        type,
+        parentNode,
         isTextNode,
         textContent,
         prevNode,
@@ -448,6 +452,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         cursorAtStartOfNode,
         cursorAtEndOfNode,
       } = selectionInfo;
+
       // [Mention][|][Text]
       if (
         isTextNode &&
@@ -455,7 +460,23 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         $isBeautifulMentionNode(prevNode)
       ) {
         node.insertBefore($createTextNode(" "));
+        return;
       }
+
+      // ^[|][Mention]
+      if (
+        $isBeautifulMentionNode(node) &&
+        prevNode === null &&
+        $isParagraphNode(parentNode) &&
+        type === "element" &&
+        offset === 0
+      ) {
+        const textNode = $createTextNode(" ");
+        node.insertBefore(textNode);
+        textNode.selectStart();
+        return;
+      }
+
       // [Text][|][Mention]
       if (
         isTextNode &&
@@ -463,7 +484,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         $isBeautifulMentionNode(nextNode)
       ) {
         node.insertAfter($createTextNode(" "));
+        return;
       }
+
       // [Text][|][Word]
       if (isTextNode && startsWithTriggerChar && wordCharAfterCursor) {
         const content =
@@ -471,7 +494,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           " " +
           textContent.substring(offset);
         node.setTextContent(content);
+        return;
       }
+
       // [Mention][|]
       if ($isBeautifulMentionNode(node) && nextNode === null) {
         node.insertAfter($createTextNode(" "));

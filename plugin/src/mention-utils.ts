@@ -7,6 +7,7 @@ import {
   $isRangeSelection,
   $isTextNode,
   $setSelection,
+  ElementNode,
   LexicalNode,
   RangeSelection,
   RootNode,
@@ -17,10 +18,12 @@ import { $isZeroWidthNode } from "./ZeroWidthNode";
 
 interface SelectionInfoBase {
   offset: number;
+  type: "text" | "element";
   textContent: string;
   selection: RangeSelection;
   prevNode: LexicalNode | null;
   nextNode: LexicalNode | null;
+  parentNode: ElementNode | null;
   cursorAtStartOfNode: boolean;
   cursorAtEndOfNode: boolean;
   wordCharBeforeCursor: boolean;
@@ -98,7 +101,8 @@ export function $getSelectionInfo(
   }
 
   const isTextNode = $isTextNode(node) && node.isSimpleText();
-  const offset = anchor.type === "text" ? anchor.offset : 0;
+  const type = anchor.type;
+  const offset = anchor.offset;
   const textContent = getTextContent(node);
   const cursorAtStartOfNode = offset === 0;
   const cursorAtEndOfNode = textContent.length === offset;
@@ -118,15 +122,18 @@ export function $getSelectionInfo(
   const spaceAfterCursor = /\s/.test(charAfterCursor);
   const prevNode = getPreviousSibling(node);
   const nextNode = getNextSibling(node);
+  const parentNode = node.getParent();
 
   const props = {
     node,
+    type,
     offset,
     isTextNode,
     textContent,
     selection,
     prevNode,
     nextNode,
+    parentNode,
     cursorAtStartOfNode,
     cursorAtEndOfNode,
     wordCharBeforeCursor,
