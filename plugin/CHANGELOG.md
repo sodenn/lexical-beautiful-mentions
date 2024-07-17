@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.37
+
+### Patch Changes
+
+- f041caa: fix(): add space between text and mention when cursor is at line start and in front of mention
+- 2eddba3: fix(useBeautifulMentions): fix broken functions for custom mention node (removeMentions/renameMentions)
+
 ## 0.1.36
 
 ### Patch Changes
