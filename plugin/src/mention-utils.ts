@@ -1,5 +1,6 @@
 import {
   $createRangeSelection,
+  $getEditor,
   $getRoot,
   $getSelection,
   $isDecoratorNode,
@@ -9,6 +10,7 @@ import {
   $nodesOfType,
   $setSelection,
   ElementNode,
+  LexicalEditor,
   LexicalNode,
   RangeSelection,
   RootNode,
@@ -247,6 +249,10 @@ export function $selectEnd() {
   }
 }
 
-export function $findBeautifulMentionNodes() {
-  return $nodesOfType(CustomBeautifulMentionNode || BeautifulMentionNode);
+export function $findBeautifulMentionNodes(editor?: LexicalEditor) {
+  editor = editor || $getEditor();
+  if (editor.hasNodes([CustomBeautifulMentionNode])) {
+    return $nodesOfType(CustomBeautifulMentionNode);
+  }
+  return $nodesOfType(BeautifulMentionNode);
 }

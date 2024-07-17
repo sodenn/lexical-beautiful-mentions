@@ -53,7 +53,7 @@ export function useBeautifulMentions() {
   const hasMentions = useCallback(
     ({ value, trigger }: HasMentions) => {
       return editor.getEditorState().read(() => {
-        const mentions = $findBeautifulMentionNodes();
+        const mentions = $findBeautifulMentionNodes(editor);
         if (value) {
           return mentions.some(
             (mention) =>
@@ -80,7 +80,7 @@ export function useBeautifulMentions() {
    */
   const getMentions = useCallback(() => {
     return editor.getEditorState().read(() =>
-      $findBeautifulMentionNodes().map((node) => {
+      $findBeautifulMentionNodes(editor).map((node) => {
         const { trigger, value, data } = node.exportJSON();
         return { trigger, value, data };
       }),
