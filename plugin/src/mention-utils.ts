@@ -251,7 +251,10 @@ export function $selectEnd() {
 
 export function $findBeautifulMentionNodes(editor?: LexicalEditor) {
   editor = editor || $getEditor();
-  if (editor.hasNodes([CustomBeautifulMentionNode])) {
+  if (
+    CustomBeautifulMentionNode &&
+    editor.hasNodes([CustomBeautifulMentionNode])
+  ) {
     return $nodesOfType(CustomBeautifulMentionNode);
   }
   return $nodesOfType(BeautifulMentionNode);
