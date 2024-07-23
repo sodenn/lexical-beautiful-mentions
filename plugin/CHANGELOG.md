@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.38
+
+### Patch Changes
+
+- f481f85: fix($findBeautifulMentionNodes): add null check for CustomBeautifulMentionNode
+
 ## 0.1.37
 
 ### Patch Changes
