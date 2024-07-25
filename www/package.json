@@ -47,6 +47,6 @@
     "autoprefixer": "10.4.19",
     "eslint-config-next": "14.2.5",
     "playwright": "1.45.3",
-    "postcss": "8.4.39"
+    "postcss": "8.4.40"
   }
 }
