@@ -508,7 +508,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const { key, metaKey, ctrlKey } = event;
-      const simpleKey = key.length === 1;
+      const simpleKey = key?.length === 1;
       const isTrigger = triggers.some((trigger) => key === trigger);
       const wordChar = isWordChar(key, triggers, punctuation);
       if (!simpleKey || (!wordChar && !isTrigger) || metaKey || ctrlKey) {
