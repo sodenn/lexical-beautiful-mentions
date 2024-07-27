@@ -36,15 +36,20 @@ export function PlaceholderPlugin() {
           () => {
             // insert a placeholder node at the end of each paragraph if the
             // last node is a decorator node.
-            $nodesOfType(ParagraphNode).forEach((node) => {
-              const lastNode = node.getLastDescendant();
+            const placeholderNodes = $nodesOfType(PlaceholderNode);
+            $nodesOfType(ParagraphNode).forEach((paragraph) => {
+              const paragraphPlaceholders = placeholderNodes.filter((p) =>
+                paragraph.isParentOf(p),
+              );
+              const lastNode = paragraph.getLastDescendant();
               if ($isDecoratorNode(lastNode)) {
+                paragraphPlaceholders.forEach((p) => p.remove());
                 lastNode.insertAfter($createPlaceholderNode());
               } else if (
                 $isPlaceholderNode(lastNode) &&
                 !$isDecoratorNode(lastNode.getPreviousSibling())
               ) {
-                lastNode.remove();
+                paragraphPlaceholders.forEach((p) => p.remove());
               }
             });
           },

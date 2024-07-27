@@ -49,6 +49,10 @@ export class PlaceholderNode extends ElementNode {
     return $createPlaceholderNode();
   }
 
+  isInline(): boolean {
+    return true;
+  }
+
   exportJSON(): SerializedPlaceholderNode {
     return {
       ...super.exportJSON(),

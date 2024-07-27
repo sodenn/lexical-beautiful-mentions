@@ -523,6 +523,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           const selection = $getSelection();
           if (selection && !$isNodeSelection(selection)) {
             oldSelection.current = selection;
+          } else if (!selection) {
+            oldSelection.current = null;
           }
           return false;
         },
@@ -579,7 +581,15 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       ),
       editor.registerCommand(
         REMOVE_MENTIONS_COMMAND,
-        ({ trigger, value, focus }) => $removeMention(trigger, value, focus),
+        ({ trigger, value, focus }) => {
+          const removed = $removeMention(trigger, value, focus);
+          if (!focus) {
+            // remove oldSelection manually because the SELECTION_CHANGE_COMMAND
+            // listener is not called in this case.
+            oldSelection.current = null;
+          }
+          return removed;
+        },
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
