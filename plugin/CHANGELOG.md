@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.39
+
+### Patch Changes
+
+- 9ef8442: fix(): prevent error with apple pencil when key is undefined #575 [thanks, @circlingthesun]
+
 ## 0.1.38
 
 ### Patch Changes
