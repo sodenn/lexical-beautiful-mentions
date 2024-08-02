@@ -21,6 +21,7 @@ import {
   $createBeautifulMentionNode,
   BeautifulMentionNode,
 } from "./MentionNode";
+import { $isPlaceholderNode } from "./PlaceholderNode";
 
 export interface InsertMention {
   /**
@@ -214,7 +215,7 @@ export function $removeMention(trigger: string, value?: string, focus = true) {
       }
       // Remove trailing space
       if (
-        next === null &&
+        (next === null || $isPlaceholderNode(next)) &&
         $isTextNode(prev) &&
         getTextContent(prev).endsWith(" ")
       ) {

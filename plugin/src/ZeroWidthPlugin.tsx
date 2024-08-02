@@ -39,6 +39,8 @@ interface ZeroWidthPluginProps {
  * It also ensures that the cursor is correctly aligned with the line height in
  * all browsers.
  * {@link https://github.com/facebook/lexical/issues/4487}.
+ *
+ * @deprecated Use `PlaceholderPlugin` instead. This Plugin will be removed in a future version.
  */
 export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
   const [editor] = useLexicalComposerContext();
