@@ -19,17 +19,17 @@
   },
   "devDependencies": {
     "@changesets/cli": "2.27.7",
-    "@typescript-eslint/eslint-plugin": "7.17.0",
-    "@typescript-eslint/parser": "7.17.0",
+    "@typescript-eslint/eslint-plugin": "7.18.0",
+    "@typescript-eslint/parser": "7.18.0",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
-    "eslint-config-turbo": "2.0.9",
+    "eslint-config-turbo": "2.0.11",
     "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-hooks": "4.6.2",
     "prettier": "3.3.3",
     "prettier-plugin-organize-imports": "4.0.0",
     "prettier-plugin-tailwindcss": "0.6.5",
-    "turbo": "2.0.9",
+    "turbo": "2.0.11",
     "typescript": "5.5.4"
   },
   "packageManager": "npm@10.8.2"
