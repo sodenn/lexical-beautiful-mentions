@@ -42,10 +42,10 @@
     "@playwright/test": "1.46.1",
     "@types/dompurify": "3.0.5",
     "@types/node": "20.16.1",
-    "@types/react": "18.3.3",
+    "@types/react": "18.3.4",
     "@types/react-dom": "18.3.0",
     "autoprefixer": "10.4.20",
-    "eslint-config-next": "14.2.5",
+    "eslint-config-next": "14.2.6",
     "playwright": "1.46.1",
     "postcss": "8.4.41"
   }
