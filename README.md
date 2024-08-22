@@ -67,7 +67,7 @@ return (
     <RichTextPlugin // 👈 use the RichTextPlugin to get clipboard support for mentions
       contentEditable={/* ... */}
       placeholder={/* ... */}
-      errorBoundary={/* ... */}
+      ErrorBoundary={/* ... */}
     />
     <BeautifulMentionsPlugin // 👈 add the mentions plugin
       items={mentionItems}

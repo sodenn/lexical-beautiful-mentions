@@ -13,6 +13,21 @@ test.describe("Space handling", () => {
     await utils.hasText("");
   });
 
+  test("should add a character at line start and before a mention", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "start",
+        initialValue: "@catherine",
+      },
+    );
+    await utils.editor.press("x");
+    await utils.hasText("x [@catherine]");
+  });
+
   test("should add a character after the last mention", async ({
     page,
     browserName,

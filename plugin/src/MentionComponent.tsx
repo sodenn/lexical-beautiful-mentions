@@ -241,6 +241,7 @@ export default function BeautifulMentionComponent(
   if (Component) {
     return (
       <Component
+        // @ts-ignore
         ref={ref}
         trigger={trigger}
         value={value}
