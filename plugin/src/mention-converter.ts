@@ -1,4 +1,11 @@
-import { $createTextNode, LexicalNode } from "lexical";
+import {
+  $createTextNode,
+  $getRoot,
+  $isElementNode,
+  $isTextNode,
+  LexicalNode,
+  TextNode,
+} from "lexical";
 import { $createBeautifulMentionNode } from "./MentionNode";
 import {
   DEFAULT_PUNCTUATION,
@@ -90,24 +97,62 @@ export function convertToMentionEntries(
 }
 
 /**
- * Utility function that takes a string and converts it to a list of mention
- * and text nodes.<br>
- * 🚨 Only works for mentions without spaces. Make sure to disable spaces via
- * the `allowSpaces` prop.
+ * Utility function that takes a string or a text nodes and converts it to a
+ * list of mention and text nodes.
+ *
+ * 🚨 Only works for mentions without spaces. Ensure spaces are disabled
+ *  via the `allowSpaces` prop.
  */
 export function $convertToMentionNodes(
-  text: string,
+  textOrNode: string | TextNode,
   triggers: string[],
   punctuation = DEFAULT_PUNCTUATION,
 ) {
+  const text =
+    typeof textOrNode === "string" ? textOrNode : textOrNode.getTextContent();
   const entries = convertToMentionEntries(text, triggers, punctuation);
   const nodes: LexicalNode[] = [];
   for (const entry of entries) {
     if (entry.type === "text") {
-      nodes.push($createTextNode(entry.value));
+      const textNode = $createTextNode(entry.value);
+      if (typeof textOrNode !== "string") {
+        textNode.setFormat(textOrNode.getFormat());
+      }
+      nodes.push(textNode);
     } else {
       nodes.push($createBeautifulMentionNode(entry.trigger, entry.value));
     }
   }
   return nodes;
+}
+
+/**
+ * Transforms text nodes containing mention strings into mention nodes.
+ *
+ *  🚨 Only works for mentions without spaces. Ensure spaces are disabled
+ *  via the `allowSpaces` prop.
+ */
+export function $transformTextToMentionNodes(
+  triggers: string[],
+  punctuation = DEFAULT_PUNCTUATION,
+) {
+  const root = $getRoot();
+  const nodes = root.getChildren();
+
+  const traverseNodes = (nodes: LexicalNode[]) => {
+    for (const node of nodes) {
+      if ($isTextNode(node)) {
+        const newNodes = $convertToMentionNodes(node, triggers, punctuation);
+        if (newNodes.length > 1) {
+          const parent = node.getParent();
+          const index = node.getIndexWithinParent();
+          parent?.splice(index, 1, newNodes);
+        }
+      } else if ($isElementNode(node)) {
+        traverseNodes(node.getChildren());
+      }
+    }
+  };
+
+  traverseNodes(nodes);
 }

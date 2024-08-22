@@ -1,8 +1,24 @@
+import { CodeNode } from "@lexical/code";
+import { LinkNode } from "@lexical/link";
+import { ListItemNode, ListNode } from "@lexical/list";
+import {
+  $convertFromMarkdownString,
+  $convertToMarkdownString,
+  TRANSFORMERS,
+} from "@lexical/markdown";
+import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
+import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { $nodesOfType, createEditor, ParagraphNode, TextNode } from "lexical";
 import { describe, expect, it } from "vitest";
-import { convertToMentionEntries } from "./mention-converter";
+import {
+  $transformTextToMentionNodes,
+  convertToMentionEntries,
+} from "./mention-converter";
 import { DEFAULT_PUNCTUATION } from "./mention-utils";
+import { BeautifulMentionNode } from "./MentionNode";
+import { ZeroWidthNode } from "./ZeroWidthNode";
 
-describe("mention-utils", () => {
+describe("mention-converter", () => {
   it("should find mention entries in text", () => {
     const triggers = ["@", "due:", "#"];
     const text = "Hey @john, the task is #urgent and due:tomorrow";
@@ -120,5 +136,50 @@ describe("mention-utils", () => {
     }
     expect(entries[2].type).toBe("text");
     expect(entries[2].value).toBe(")");
+  });
+
+  it("should transform mention string to mention nodes", async () => {
+    const editor = createEditor({
+      nodes: [
+        BeautifulMentionNode,
+        ZeroWidthNode,
+        HorizontalRuleNode,
+        CodeNode,
+        HeadingNode,
+        LinkNode,
+        ListNode,
+        ListItemNode,
+        QuoteNode,
+      ],
+      onError(err) {
+        throw err;
+      },
+    });
+    editor.update(() => {
+      $convertFromMarkdownString(
+        "Hey @catherine, the **task** is #urgent",
+        TRANSFORMERS,
+      );
+      $transformTextToMentionNodes(["@", "#"]);
+
+      const paragraph = $nodesOfType(ParagraphNode);
+      const nodes = paragraph[0].getChildren();
+
+      expect(nodes[0]).toBeInstanceOf(TextNode);
+      expect(nodes[0].getTextContent()).toBe("Hey ");
+      expect(nodes[1]).toBeInstanceOf(BeautifulMentionNode);
+      expect(nodes[1].getTextContent()).toBe("@catherine");
+      expect(nodes[2]).toBeInstanceOf(TextNode);
+      expect(nodes[2].getTextContent()).toBe(", the ");
+      expect(nodes[3]).toBeInstanceOf(TextNode);
+      expect(nodes[3].getTextContent()).toBe("task");
+      expect(nodes[4]).toBeInstanceOf(TextNode);
+      expect(nodes[4].getTextContent()).toBe(" is ");
+      expect(nodes[5]).toBeInstanceOf(BeautifulMentionNode);
+      expect(nodes[5].getTextContent()).toBe("#urgent");
+
+      const markdown = $convertToMarkdownString(TRANSFORMERS);
+      expect(markdown).toBe("Hey @catherine, the **task** is #urgent");
+    });
   });
 });
