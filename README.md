@@ -379,3 +379,37 @@ The `punctuation` property allows you to specify the punctuation characters that
 #### PreTriggerChars
 
 The `preTriggerChars` property allows you to specify a set of characters that can appear directly before the trigger character. By default, only the open bracket is allowed (e.g. `(@Alice)`).
+
+### Utility Functions for Mention Conversion
+
+The plugin provides two utility functions to help with converting text to mention nodes:
+
+#### `$convertToMentionNodes`
+
+This function converts a string or a text node into a list of mention and text nodes.
+
+Usage example:
+
+```typescript
+import { $convertToMentionNodes } from 'lexical-beautiful-mentions';
+
+const text = "Hello @Alice and #world";
+const nodes = $convertToMentionNodes(text, ['@', '#']);
+// nodes will be an array of TextNodes and BeautifulMentionNodes
+```
+
+#### `$transformTextToMentionNodes`
+
+This function transforms text nodes in the editor that contain mention strings into mention nodes.
+
+Usage example:
+
+```typescript
+import { $transformTextToMentionNodes } from 'lexical-beautiful-mentions';
+
+editor.update(() => {
+  $transformTextToMentionNodes(['@', '#']);
+});
+```
+
+**Note:** Both functions only work for mentions without spaces. Ensure spaces are disabled via the `allowSpaces` prop.
