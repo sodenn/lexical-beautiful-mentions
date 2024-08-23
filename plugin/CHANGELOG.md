@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.40
+
+### Patch Changes
+
+- e71a286: feat($transformTextToMentionNodes): add utility function to transform text nodes to mention nodes
+
 ## 0.1.39
 
 ### Patch Changes
