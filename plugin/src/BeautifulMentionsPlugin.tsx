@@ -190,7 +190,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     if (!trigger) {
       return [];
     }
-    // Add options from the lookup service
+    // add options from the lookup service
     let opt = results.map((result) => {
       if (typeof result === "string") {
         return new MentionOption(trigger, result, result);
@@ -204,7 +204,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       opt = opt.slice(0, menuItemLimit);
     }
     // Add mentions from the editor. When a search function is provided, wait for the
-    // delayed search to prevent flickering.
+    // delayed search to prevent flickering
     const readyToAddCurrentMentions = !onSearch || (!loading && query !== null);
     if (readyToAddCurrentMentions && showCurrentMentionsAsSuggestions) {
       editor.getEditorState().read(() => {
@@ -223,7 +223,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         }
       });
     }
-    // Add option to create a new mention
+    // add option to create a new mention
     if (query && opt.every((o) => o.displayValue !== query)) {
       const displayValue =
         typeof creatable === "string"
@@ -308,7 +308,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
   const checkForMentionMatch = useCallback(
     (text: string) => {
-      // Don't show the menu if the next character is a word character
+      // don't show the menu if the next character is a word character
       const selectionInfo = $getSelectionInfo(triggers, punctuation);
       if (selectionInfo?.isTextNode && selectionInfo.wordCharAfterCursor) {
         return null;
@@ -453,7 +453,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         cursorAtEndOfNode,
       } = selectionInfo;
 
-      // [Mention][|][Text]
+      // [Mention][|][ Text]
       if (
         isTextNode &&
         cursorAtStartOfNode &&
@@ -477,7 +477,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         return;
       }
 
-      // [Text][|][Mention]
+      // [Text ][|][Mention]
       if (
         isTextNode &&
         cursorAtEndOfNode &&
@@ -487,7 +487,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         return;
       }
 
-      // [Text][|][Word]
+      // [Text ][|][Text]
       if (isTextNode && startsWithTriggerChar && wordCharAfterCursor) {
         const content =
           textContent.substring(0, offset) +
@@ -511,13 +511,16 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       const simpleKey = key?.length === 1;
       const isTrigger = triggers.some((trigger) => key === trigger);
       const wordChar = isWordChar(key, triggers, punctuation);
-      if (!simpleKey || (!wordChar && !isTrigger) || metaKey || ctrlKey) {
+      if (!simpleKey || metaKey || ctrlKey) {
         return false;
+      }
+      if (!wordChar && !isTrigger) {
+        return convertTextToMention();
       }
       insertSpaceIfNecessary(isTrigger);
       return false;
     },
-    [insertSpaceIfNecessary, punctuation, triggers],
+    [insertSpaceIfNecessary, punctuation, convertTextToMention, triggers],
   );
 
   const handlePaste = useCallback(
@@ -528,6 +531,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       const isPunctuation =
         firstChar && new RegExp(`[\\s${punctuation}]`).test(firstChar);
       if (isTrigger || !isPunctuation) {
+        // insert space before pasting if the content starts with a trigger character
         insertSpaceIfNecessary();
       }
       return false; // will be handled by the lexical clipboard module
