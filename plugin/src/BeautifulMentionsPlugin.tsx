@@ -367,7 +367,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       triggers,
       preTriggerChars,
       punctuation,
-      false,
+      allowSpaces,
     );
     if (queryMatch === null) {
       return false;
@@ -392,7 +392,15 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       { tag: "history-merge" },
     );
     return true;
-  }, [editor, options, preTriggerChars, punctuation, trigger, triggers]);
+  }, [
+    editor,
+    options,
+    preTriggerChars,
+    punctuation,
+    trigger,
+    triggers,
+    allowSpaces,
+  ]);
 
   const restoreSelection = useCallback(() => {
     const selection = $getSelection();
@@ -511,16 +519,23 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       const simpleKey = key?.length === 1;
       const isTrigger = triggers.some((trigger) => key === trigger);
       const wordChar = isWordChar(key, triggers, punctuation);
+      const isSpace = allowSpaces && /^\s$/.test(key);
       if (!simpleKey || metaKey || ctrlKey) {
         return false;
       }
-      if (!wordChar && !isTrigger) {
+      if (!wordChar && !isTrigger && !isSpace) {
         return convertTextToMention();
       }
       insertSpaceIfNecessary(isTrigger);
       return false;
     },
-    [insertSpaceIfNecessary, punctuation, convertTextToMention, triggers],
+    [
+      insertSpaceIfNecessary,
+      punctuation,
+      convertTextToMention,
+      triggers,
+      allowSpaces,
+    ],
   );
 
   const handlePaste = useCallback(
