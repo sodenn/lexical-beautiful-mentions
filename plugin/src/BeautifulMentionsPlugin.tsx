@@ -277,7 +277,14 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           selectedOption.data,
         );
         if (nodeToReplace) {
+          const nextSibling = nodeToReplace.getNextSibling();
           nodeToReplace.replace(mentionNode);
+          if (nextSibling instanceof TextNode) {
+            const nextSiblingTextContent = nextSibling.getTextContent();
+            if (!/\s/.test(nextSiblingTextContent)) {
+              nextSibling.remove();
+            }
+          }
         }
         closeMenu?.();
         justSelectedAnOption.current = true;
@@ -308,12 +315,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
   const checkForMentionMatch = useCallback(
     (text: string) => {
-      // don't show the menu if the next character is a word character
-      const selectionInfo = $getSelectionInfo(triggers, punctuation);
-      if (selectionInfo?.isTextNode && selectionInfo.wordCharAfterCursor) {
-        return null;
-      }
-
       const queryMatch = checkForMentions(
         text,
         triggers,
