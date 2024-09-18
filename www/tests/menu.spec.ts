@@ -34,6 +34,23 @@ test.describe("Mention Menu", () => {
     await utils.hasText("Hey [@Catherine], are you there?");
   });
 
+  test("should keep menu open when navigating back using the arrow key", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "start",
+        initialValue: "",
+      },
+    );
+    await utils.editorType("@Cather");
+    await page.keyboard.press("ArrowLeft");
+    await page.keyboard.press("Enter");
+    await utils.hasText("[@Catherine]");
+  });
+
   test("should filter suggestions after a new mention was added", async ({
     page,
     browserName,
