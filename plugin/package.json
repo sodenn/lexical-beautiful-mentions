@@ -1,6 +1,6 @@
 {
   "name": "lexical-beautiful-mentions",
-  "version": "0.1.40",
+  "version": "0.1.41",
   "license": "MIT",
   "description": "A mentions plugin for the lexical text editor.",
   "main": "src/index.ts",
