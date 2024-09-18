@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.41
+
+### Patch Changes
+
+- 9e795c1: feat(): show suggestions even if the cursor is in the middle of the query
+- fbf63cc: feat(): insert mention when pressing a non-word character
+
 ## 0.1.40
 
 ### Patch Changes
