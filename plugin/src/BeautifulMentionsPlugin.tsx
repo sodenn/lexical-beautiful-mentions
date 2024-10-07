@@ -444,7 +444,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
   const insertSpaceIfNecessary = useCallback(
     (startsWithTriggerChar = false) => {
-      if (autoSpace) {
+      if (!autoSpace) {
         return;
       }
 

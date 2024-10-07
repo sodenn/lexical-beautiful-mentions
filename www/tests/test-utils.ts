@@ -30,7 +30,7 @@ export async function testUtils(
     autofocus = "end",
     asynchronous = false,
     allowSpaces = false,
-    autoSpace = false,
+    autoSpace = true,
     creatable = false,
     insertOnBlur = false,
     commandFocus = true,

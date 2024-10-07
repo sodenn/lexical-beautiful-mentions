@@ -84,6 +84,7 @@ function Plugins() {
   const {
     asynchronous,
     autoFocus,
+    autoSpace,
     allowSpaces,
     creatable,
     insertOnBlur,
@@ -159,6 +160,7 @@ function Plugins() {
   const beautifulMentionsProps: BeautifulMentionsPluginProps = {
     mentionEnclosure,
     allowSpaces,
+    autoSpace,
     creatable,
     showMentionsOnDelete,
     ...(asynchronous
