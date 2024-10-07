@@ -149,6 +149,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const {
     items,
     onSearch,
+    autoSpace = true,
     searchDelay = props.onSearch ? 250 : 0,
     allowSpaces = true,
     insertOnBlur = true,
@@ -443,6 +444,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
   const insertSpaceIfNecessary = useCallback(
     (startsWithTriggerChar = false) => {
+      if (autoSpace) {
+        return;
+      }
+
       const selectionInfo = $getSelectionInfo(triggers, punctuation);
       if (!selectionInfo) {
         return;
@@ -511,7 +516,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         node.insertAfter($createTextNode(" "));
       }
     },
-    [punctuation, triggers],
+    [punctuation, triggers, autoSpace],
   );
 
   const handleKeyDown = useCallback(

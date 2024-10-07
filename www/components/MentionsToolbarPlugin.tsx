@@ -59,6 +59,7 @@ export function MentionsToolbarPlugin() {
     mentionEnclosure,
     showMentionsOnDelete,
     allowSpaces,
+    autoSpace,
     creatable,
     insertOnBlur,
     emptyComponent,
@@ -69,6 +70,7 @@ export function MentionsToolbarPlugin() {
     setComboboxAdditionalItems,
     setMentionEnclosure,
     setAllowSpaces,
+    setAutoSpace,
     setCreatable,
     setInsertOnBlur,
     setEmptyComponent,
@@ -140,6 +142,12 @@ export function MentionsToolbarPlugin() {
           checked={allowSpaces}
           helperText="Mentions can contain spaces."
           onCheckedChange={setAllowSpaces}
+        />
+        <ToolbarCheckbox
+          label="autoSpace"
+          checked={autoSpace}
+          helperText="Automatically adds spaces around mentions."
+          onCheckedChange={setAutoSpace}
         />
         <ToolbarCheckbox
           label="creatable"

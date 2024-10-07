@@ -29,7 +29,10 @@ function useConfigurationValue() {
     getQueryParam("async") === "true",
   );
   const [allowSpaces, _setAllowSpaces] = useState(
-    getQueryParam("space") === "true",
+    getQueryParam("aspace") === "true",
+  );
+  const [autoSpace, _setAutoSpace] = useState(
+    getQueryParam("ospace") === "true",
   );
   const [creatable, _setCreatable] = useState(getQueryParam("new") === "true");
   const [insertOnBlur, _setInsertOnBlur] = useState(
@@ -144,7 +147,15 @@ function useConfigurationValue() {
   const setAllowSpaces = useCallback(
     (allowSpaces: boolean) => {
       _setAllowSpaces(allowSpaces);
-      setQueryParams([{ name: "space", value: allowSpaces.toString() }]);
+      setQueryParams([{ name: "aspace", value: allowSpaces.toString() }]);
+    },
+    [setQueryParams],
+  );
+
+  const setAutoSpace = useCallback(
+    (autoSpace: boolean) => {
+      _setAutoSpace(autoSpace);
+      setQueryParams([{ name: "ospace", value: autoSpace.toString() }]);
     },
     [setQueryParams],
   );
@@ -177,6 +188,7 @@ function useConfigurationValue() {
     () => ({
       initialValue,
       autoFocus,
+      autoSpace,
       asynchronous,
       combobox,
       comboboxAdditionalItems,
@@ -190,6 +202,7 @@ function useConfigurationValue() {
       emptyComponent,
       setAsynchronous,
       setAllowSpaces,
+      setAutoSpace,
       setCreatable,
       setInsertOnBlur,
       setEmptyComponent,
@@ -201,6 +214,7 @@ function useConfigurationValue() {
     }),
     [
       allowSpaces,
+      autoSpace,
       asynchronous,
       autoFocus,
       combobox,
@@ -213,6 +227,7 @@ function useConfigurationValue() {
       emptyComponent,
       mentionEnclosure,
       setAllowSpaces,
+      setAutoSpace,
       setAsynchronous,
       setCombobox,
       setComboboxAdditionalItems,
