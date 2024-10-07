@@ -213,7 +213,7 @@ test.describe("Space handling", () => {
       { page, browserName },
       {
         initialValue: "Hey @catherine",
-        allowSpaces: false,
+        autoSpace: false,
       },
     );
     await utils.editor.press("x");
