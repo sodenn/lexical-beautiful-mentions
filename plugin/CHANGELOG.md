@@ -1,5 +1,37 @@
 # lexical-beautiful-mentions
 
+## 0.1.41
+
+### Patch Changes
+
+- 9e795c1: feat(): show suggestions even if the cursor is in the middle of the query
+- fbf63cc: feat(): insert mention when pressing a non-word character
+
+## 0.1.40
+
+### Patch Changes
+
+- e71a286: feat($transformTextToMentionNodes): add utility function to transform text nodes to mention nodes
+
+## 0.1.39
+
+### Patch Changes
+
+- 9ef8442: fix(): prevent error with apple pencil when key is undefined #575 [thanks, @circlingthesun]
+
+## 0.1.38
+
+### Patch Changes
+
+- f481f85: fix($findBeautifulMentionNodes): add null check for CustomBeautifulMentionNode
+
+## 0.1.37
+
+### Patch Changes
+
+- f041caa: fix(): add space between text and mention when cursor is at line start and in front of mention
+- 2eddba3: fix(useBeautifulMentions): fix broken functions for custom mention node (removeMentions/renameMentions)
+
 ## 0.1.36
 
 ### Patch Changes

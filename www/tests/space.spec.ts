@@ -13,6 +13,21 @@ test.describe("Space handling", () => {
     await utils.hasText("");
   });
 
+  test("should add a character at line start and before a mention", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "start",
+        initialValue: "@catherine",
+      },
+    );
+    await utils.editor.press("x");
+    await utils.hasText("x [@catherine]");
+  });
+
   test("should add a character after the last mention", async ({
     page,
     browserName,
@@ -188,5 +203,20 @@ test.describe("Space handling", () => {
     await expect(utils.mentionsMenu.getByText(`Add tag "xxx"`)).toBeVisible();
     await utils.editor.press("Space");
     await utils.hasText("[#xxx] ");
+  });
+
+  test("should not add a space after a mention when `autoSpace=false`", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        initialValue: "Hey @catherine",
+        autoSpace: false,
+      },
+    );
+    await utils.editor.press("x");
+    await utils.hasText("Hey [@catherine]x");
   });
 });

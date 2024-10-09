@@ -22,7 +22,7 @@ export function Menu({ loading, ...other }: BeautifulMentionsMenuProps) {
         scrollbarWidth: "none",
         msOverflowStyle: "none",
       }}
-      className="absolute top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+      className="absolute top-[2px] m-0 min-w-[8rem] overflow-hidden whitespace-nowrap rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
       {...other}
     />
   );

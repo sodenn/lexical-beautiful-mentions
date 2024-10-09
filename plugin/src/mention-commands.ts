@@ -2,7 +2,6 @@ import {
   $createTextNode,
   $isParagraphNode,
   $isTextNode,
-  $nodesOfType,
   $setSelection,
   createCommand,
   LexicalCommand,

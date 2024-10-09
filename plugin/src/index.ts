@@ -2,7 +2,7 @@ export * from "./BeautifulMentionsPlugin";
 export * from "./BeautifulMentionsPluginProps";
 export * from "./MentionNode";
 export * from "./PlaceholderNode";
-export * from "./PlaceholderNodePlugin";
+export * from "./PlaceholderPlugin";
 export * from "./createMentionNode";
 export * from "./mention-converter";
 export * from "./theme";

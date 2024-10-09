@@ -1,25 +1,33 @@
 import {
   $createRangeSelection,
+  $getEditor,
   $getRoot,
   $getSelection,
   $isDecoratorNode,
   $isElementNode,
   $isRangeSelection,
   $isTextNode,
+  $nodesOfType,
   $setSelection,
+  ElementNode,
+  LexicalEditor,
   LexicalNode,
   RangeSelection,
   RootNode,
   TextNode,
 } from "lexical";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
+import { BeautifulMentionNode } from "./MentionNode";
+import { CustomBeautifulMentionNode } from "./createMentionNode";
 
 interface SelectionInfoBase {
   offset: number;
+  type: "text" | "element";
   textContent: string;
   selection: RangeSelection;
   prevNode: LexicalNode | null;
   nextNode: LexicalNode | null;
+  parentNode: ElementNode | null;
   cursorAtStartOfNode: boolean;
   cursorAtEndOfNode: boolean;
   wordCharBeforeCursor: boolean;
@@ -87,7 +95,8 @@ export function $getSelectionInfo(
   }
 
   const isTextNode = $isTextNode(node) && node.isSimpleText();
-  const offset = anchor.type === "text" ? anchor.offset : 0;
+  const type = anchor.type;
+  const offset = anchor.offset;
   const textContent = node.getTextContent();
   const cursorAtStartOfNode = offset === 0;
   const cursorAtEndOfNode = textContent.length === offset;
@@ -107,15 +116,18 @@ export function $getSelectionInfo(
   const spaceAfterCursor = /\s/.test(charAfterCursor);
   const prevNode = node.getPreviousSibling();
   const nextNode = node.getNextSibling();
+  const parentNode = node.getParent();
 
   const props = {
     node,
+    type,
     offset,
     isTextNode,
     textContent,
     selection,
     prevNode,
     nextNode,
+    parentNode,
     cursorAtStartOfNode,
     cursorAtEndOfNode,
     wordCharBeforeCursor,
@@ -201,4 +213,15 @@ export function $selectEnd() {
     newSelection.focus.set(key, offset, type);
     $setSelection(newSelection);
   }
+}
+
+export function $findBeautifulMentionNodes(editor?: LexicalEditor) {
+  editor = editor || $getEditor();
+  if (
+    CustomBeautifulMentionNode &&
+    editor.hasNodes([CustomBeautifulMentionNode])
+  ) {
+    return $nodesOfType(CustomBeautifulMentionNode);
+  }
+  return $nodesOfType(BeautifulMentionNode);
 }

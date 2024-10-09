@@ -17,7 +17,7 @@ test.describe("mentions handling", () => {
     await utils.hasText("[due:2023-06-06]");
   });
 
-  test("should insert a new mention with spaces", async ({
+  test("should insert a new mention that contains spaces", async ({
     page,
     browserName,
     isMobile,
@@ -85,6 +85,21 @@ test.describe("mentions handling", () => {
     await utils.hasText(`[@C] `);
   });
 
+  test("should insert a new mention when pressing a non-word character", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        creatable: true,
+        mentionEnclosure: true,
+      },
+    );
+    await utils.editorType("Hello @John, how are you?");
+    await utils.hasText(`Hello [@John], how are you?`);
+  });
+
   test("should remove a mention via undo command (Ctrl/Cmd + Z)", async ({
     page,
     browserName,
@@ -112,7 +127,7 @@ test.describe("mentions handling", () => {
     isMobile,
   }) => {
     test.skip(!!isMobile, "desktop only");
-    await testUtils(
+    const utils = await testUtils(
       { page, browserName },
       {
         initialValue: "@Catherine",
@@ -129,6 +144,8 @@ test.describe("mentions handling", () => {
     await expect(
       page.locator(`[data-beautiful-mention="@Catherine"]`),
     ).toHaveAttribute("data-state", "delayed-open");
+    await page.getByText("Remove Mention").click();
+    await utils.countMentions(0);
   });
 
   test("should insert a mention in brackets", async ({ page, browserName }) => {

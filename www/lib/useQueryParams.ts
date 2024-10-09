@@ -6,7 +6,8 @@ interface QueryParams {
   focus: string; // autoFocus
   cf: string; // focus after insert
   async: string; // onSearch
-  space: string; // allowSpaces
+  aspace: string; // allowSpaces
+  ospace: string; // autoSpace
   new: string; // creatable
   blur: string; // insertOnBlur
   combobox: string; // combobox

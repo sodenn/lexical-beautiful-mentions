@@ -11,6 +11,12 @@ export type CustomBeautifulMentionNodeClass = ReturnType<typeof generateClass>;
 
 export let CustomBeautifulMentionNode: CustomBeautifulMentionNodeClass;
 
+export function setCustomBeautifulMentionNode(
+  BeautifulMentionNodeClass: CustomBeautifulMentionNodeClass,
+) {
+  CustomBeautifulMentionNode = BeautifulMentionNodeClass;
+}
+
 /**
  * Instead of using the default `BeautifulMentionNode` class, you can
  * extend it and use the mention component of your choice.

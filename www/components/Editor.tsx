@@ -21,8 +21,8 @@ import {
   BeautifulMentionsItem,
   BeautifulMentionsPlugin,
   BeautifulMentionsPluginProps,
-  PlaceholderPlugin,
 } from "lexical-beautiful-mentions";
+import { PlaceholderPlugin } from "lexical-beautiful-mentions/src/PlaceholderPlugin";
 import { useCallback, useMemo, useRef, useState } from "react";
 import "./Editor.css";
 
@@ -83,6 +83,7 @@ function Plugins() {
   const {
     asynchronous,
     autoFocus,
+    autoSpace,
     allowSpaces,
     creatable,
     insertOnBlur,
@@ -158,6 +159,7 @@ function Plugins() {
   const beautifulMentionsProps: BeautifulMentionsPluginProps = {
     mentionEnclosure,
     allowSpaces,
+    autoSpace,
     creatable,
     showMentionsOnDelete,
     ...(asynchronous

@@ -1,14 +1,13 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
-  $getRoot,
   $getSelection,
   $isDecoratorNode,
   $isRangeSelection,
   $nodesOfType,
   COMMAND_PRIORITY_HIGH,
   KEY_DOWN_COMMAND,
-  LineBreakNode,
+  ParagraphNode,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import { useEffect } from "react";
@@ -21,8 +20,6 @@ import {
 /**
  * This plugin serves as a patch to fix an incorrect cursor position in Safari.
  * {@link https://github.com/facebook/lexical/issues/4487}.
- *
- * @deprecated Use `PlaceholderPlugin` instead. This Plugin will be removed in a future version.
  */
 export function PlaceholderPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -37,18 +34,22 @@ export function PlaceholderPlugin() {
       editor.registerUpdateListener(() => {
         editor.update(
           () => {
-            const root = $getRoot();
-            const last = root.getLastDescendant();
-            // add PlaceholderNode at the end of the editor
-            if ($isDecoratorNode(last)) {
-              $nodesOfType(PlaceholderNode).forEach((node) => node.remove()); // cleanup
-              last.insertAfter($createPlaceholderNode());
-            }
-            // add PlaceholderNode before each line break
-            $nodesOfType(LineBreakNode).forEach((node) => {
-              const prev = node.getPreviousSibling();
-              if ($isDecoratorNode(prev)) {
-                node.insertBefore($createPlaceholderNode());
+            // insert a placeholder node at the end of each paragraph if the
+            // last node is a decorator node.
+            const placeholderNodes = $nodesOfType(PlaceholderNode);
+            $nodesOfType(ParagraphNode).forEach((paragraph) => {
+              const paragraphPlaceholders = placeholderNodes.filter((p) =>
+                paragraph.isParentOf(p),
+              );
+              const lastNode = paragraph.getLastDescendant();
+              if ($isDecoratorNode(lastNode)) {
+                paragraphPlaceholders.forEach((p) => p.remove());
+                lastNode.insertAfter($createPlaceholderNode());
+              } else if (
+                $isPlaceholderNode(lastNode) &&
+                !$isDecoratorNode(lastNode.getPreviousSibling())
+              ) {
+                paragraphPlaceholders.forEach((p) => p.remove());
               }
             });
           },
@@ -59,13 +60,21 @@ export function PlaceholderPlugin() {
       editor.registerCommand(
         KEY_DOWN_COMMAND,
         (event) => {
-          // prevent the unnecessary removal of the PlaceholderNode, since this
-          // would lead to the insertion of another PlaceholderNode and thus break
+          // prevent unnecessary removal of the placeholder nodes, since this
+          // would lead to insertion of another placeholder node and thus break
           // undo with Ctrl+z
-          if (event.ctrlKey || event.metaKey || event.altKey) {
+          if (
+            event.ctrlKey ||
+            event.metaKey ||
+            event.altKey ||
+            event.key === "Shift"
+          ) {
             return false;
           }
-          // remove the PlaceholderNode if the user starts typing
+          // if the user starts typing at the placeholder's position, remove
+          // the placeholder node. this makes the PlaceholderNode almost
+          // "invisible" and prevents issues when, for example, when checking
+          // for previous nodes in the code.
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
             const [node] = selection.getNodes();
