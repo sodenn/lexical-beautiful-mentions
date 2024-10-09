@@ -1,5 +1,14 @@
 # lexical-beautiful-mentions
 
+## 0.1.42
+
+### Patch Changes
+
+- bd1b143: feat: make mention auto-spacing configurable
+- 7e53fbd: refactor(): deprecate ZeroWidthPlugin and introduce PlaceholderPlugin
+  - Easier Maintenance: Without the need to handle ZeroWidthNode, the beautiful-mentions codebase becomes less complex, which can lead to fewer bugs and easier maintenance.
+  - Simplified Export: zero-width characters no longer need to be removed before exporting the content.
+
 ## 0.1.41
 
 ### Patch Changes
