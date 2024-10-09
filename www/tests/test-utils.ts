@@ -7,6 +7,7 @@ interface TestUtilsOptions {
   autofocus?: Autofocus;
   asynchronous?: boolean;
   allowSpaces?: boolean;
+  autoSpace?: boolean;
   creatable?: boolean;
   insertOnBlur?: boolean;
   commandFocus?: boolean;
@@ -29,6 +30,7 @@ export async function testUtils(
     autofocus = "end",
     asynchronous = false,
     allowSpaces = false,
+    autoSpace = true,
     creatable = false,
     insertOnBlur = false,
     commandFocus = true,
@@ -46,6 +48,7 @@ export async function testUtils(
     autofocus,
     asynchronous,
     allowSpaces,
+    autoSpace,
     creatable,
     insertOnBlur,
     commandFocus,
@@ -70,6 +73,7 @@ export class TestUtils {
     private autofocus: Autofocus,
     private asynchronous: boolean,
     private allowSpaces: boolean,
+    private autoSpace: boolean,
     private creatable: boolean,
     private insertOnBlur: boolean,
     private commandFocus: boolean,
@@ -182,7 +186,8 @@ export class TestUtils {
     url += `&combobox=${this._combobox}`;
     url += `&enclosure=${this.mentionEnclosure}`;
     url += `&mentions=${this.showMentionsOnDelete}`;
-    url += `&space=${this.allowSpaces}`;
+    url += `&aspace=${this.allowSpaces}`;
+    url += `&ospace=${this.autoSpace}`;
     url += `&new=${this.creatable}`;
     url += `&blur=${this.insertOnBlur}`;
     url += `&cf=${this.commandFocus}`;

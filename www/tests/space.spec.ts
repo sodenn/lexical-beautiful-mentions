@@ -204,4 +204,19 @@ test.describe("Space handling", () => {
     await utils.editor.press("Space");
     await utils.hasText("[#xxx] ");
   });
+
+  test("should not add a space after a mention when `autoSpace=false`", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        initialValue: "Hey @catherine",
+        autoSpace: false,
+      },
+    );
+    await utils.editor.press("x");
+    await utils.hasText("Hey [@catherine]x");
+  });
 });

@@ -158,6 +158,11 @@ interface BeautifulMentionsProps {
    */
   allowSpaces?: boolean;
   /**
+   * If `true`, spaces are automatically placed around mentions.
+   * @default true
+   */
+  autoSpace?: boolean;
+  /**
    * Only used if `allowSpaces` is `true`. The given characters are
    * used to enclose mentions if they contain spaces.
    */
