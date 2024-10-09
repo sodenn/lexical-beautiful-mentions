@@ -90,18 +90,8 @@ export function $getSelectionInfo(
 
   const anchor = selection.anchor;
   const focus = selection.focus;
-  const nodes = selection.getNodes();
-  if (
-    anchor.key !== focus.key ||
-    anchor.offset !== focus.offset ||
-    nodes.length === 0
-  ) {
-    return;
-  }
-
-  const [_node] = nodes;
-  const node = $isZeroWidthNode(_node) ? _node.getPreviousSibling() : _node;
-  if (!node) {
+  const [node] = selection.getNodes();
+  if (anchor.key !== focus.key || anchor.offset !== focus.offset || !node) {
     return;
   }
 
@@ -162,6 +152,9 @@ export function $getSelectionInfo(
   }
 }
 
+/**
+ * TODO replace with Node#getPreviousSibling after ZeroWidthNode was removed.
+ */
 export function getNextSibling(node: LexicalNode) {
   let nextSibling = node.getNextSibling();
   while (nextSibling !== null && $isZeroWidthNode(nextSibling)) {
@@ -170,6 +163,9 @@ export function getNextSibling(node: LexicalNode) {
   return nextSibling;
 }
 
+/**
+ * TODO replace with Node#getPreviousSibling after ZeroWidthNode was removed.
+ */
 export function getPreviousSibling(node: LexicalNode) {
   let previousSibling = node.getPreviousSibling();
   while (previousSibling !== null && $isZeroWidthNode(previousSibling)) {
@@ -178,6 +174,9 @@ export function getPreviousSibling(node: LexicalNode) {
   return previousSibling;
 }
 
+/**
+ * TODO replace with Node#getTextContent after ZeroWidthNode was removed.
+ */
 export function getTextContent(node: LexicalNode) {
   if ($isZeroWidthNode(node)) {
     return "";

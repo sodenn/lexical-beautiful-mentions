@@ -20,6 +20,23 @@ test.describe("Open Suggestions", () => {
     );
   });
 
+  test("should remove a mention and then open the menu", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        initialValue: "Hey @John, the task is #urgent and due:tomorrow",
+      },
+    );
+    await page.getByText("Remove Mention").click();
+    await utils.countMentions(2);
+    await expect(utils.mentionsMenu).not.toBeVisible();
+    await page.getByText("Open Suggestions").click();
+    await expect(utils.mentionsMenu).toBeVisible();
+  });
+
   test("should open the menu even if the editor was never focused", async ({
     page,
     browserName,
