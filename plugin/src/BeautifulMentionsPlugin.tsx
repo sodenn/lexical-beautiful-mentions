@@ -523,12 +523,22 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     (event: KeyboardEvent) => {
       const { key, metaKey, ctrlKey } = event;
       const simpleKey = key?.length === 1;
-      const isTrigger = triggers.some((trigger) => key === trigger);
       const wordChar = isWordChar(key, triggers, punctuation);
       const isSpace = allowSpaces && /^\s$/.test(key);
       if (!simpleKey || metaKey || ctrlKey) {
         return false;
       }
+
+      let combinedKey = key;
+      const selectionInfo = $getSelectionInfo(triggers, punctuation);
+      if (selectionInfo && selectionInfo.isTextNode) {
+        const { textContent, offset } = selectionInfo;
+        const last = textContent.substring(0, offset).split(/\s+/).at(-1) ?? "";
+        combinedKey = (last + key).trim();
+      }
+
+      const isTrigger = triggers.some((trigger) => combinedKey === trigger);
+
       if (!wordChar && !isTrigger && !isSpace) {
         return convertTextToMention();
       }
