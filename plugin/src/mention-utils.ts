@@ -18,7 +18,6 @@ import {
 } from "lexical";
 import { BeautifulMentionsPluginProps } from "./BeautifulMentionsPluginProps";
 import { BeautifulMentionNode } from "./MentionNode";
-import { $isZeroWidthNode } from "./ZeroWidthNode";
 import { CustomBeautifulMentionNode } from "./createMentionNode";
 
 interface SelectionInfoBase {
@@ -84,7 +83,7 @@ export function $getSelectionInfo(
   punctuation: string,
 ): SelectionInfo {
   const selection = $getSelection();
-  if (!selection || !$isRangeSelection(selection)) {
+  if (!selection || !$isRangeSelection(selection) || !selection.isCollapsed()) {
     return;
   }
 
@@ -98,7 +97,7 @@ export function $getSelectionInfo(
   const isTextNode = $isTextNode(node) && node.isSimpleText();
   const type = anchor.type;
   const offset = anchor.offset;
-  const textContent = getTextContent(node);
+  const textContent = node.getTextContent();
   const cursorAtStartOfNode = offset === 0;
   const cursorAtEndOfNode = textContent.length === offset;
   const charBeforeCursor = textContent.charAt(offset - 1);
@@ -115,8 +114,8 @@ export function $getSelectionInfo(
   );
   const spaceBeforeCursor = /\s/.test(charBeforeCursor);
   const spaceAfterCursor = /\s/.test(charAfterCursor);
-  const prevNode = getPreviousSibling(node);
-  const nextNode = getNextSibling(node);
+  const prevNode = node.getPreviousSibling();
+  const nextNode = node.getNextSibling();
   const parentNode = node.getParent();
 
   const props = {
@@ -150,38 +149,6 @@ export function $getSelectionInfo(
       node: node as LexicalNode,
     };
   }
-}
-
-/**
- * TODO replace with Node#getPreviousSibling after ZeroWidthNode was removed.
- */
-export function getNextSibling(node: LexicalNode) {
-  let nextSibling = node.getNextSibling();
-  while (nextSibling !== null && $isZeroWidthNode(nextSibling)) {
-    nextSibling = nextSibling.getNextSibling();
-  }
-  return nextSibling;
-}
-
-/**
- * TODO replace with Node#getPreviousSibling after ZeroWidthNode was removed.
- */
-export function getPreviousSibling(node: LexicalNode) {
-  let previousSibling = node.getPreviousSibling();
-  while (previousSibling !== null && $isZeroWidthNode(previousSibling)) {
-    previousSibling = previousSibling.getPreviousSibling();
-  }
-  return previousSibling;
-}
-
-/**
- * TODO replace with Node#getTextContent after ZeroWidthNode was removed.
- */
-export function getTextContent(node: LexicalNode) {
-  if ($isZeroWidthNode(node)) {
-    return "";
-  }
-  return node.getTextContent();
 }
 
 export function getCreatableProp(
@@ -237,7 +204,7 @@ export function $selectEnd() {
   const offset = $isElementNode(lastNode)
     ? lastNode.getChildrenSize()
     : $isTextNode(lastNode)
-      ? getTextContent(lastNode).length
+      ? lastNode.getTextContent().length
       : 0;
   const type = $isElementNode(lastNode) ? "element" : "text";
   if (key) {
