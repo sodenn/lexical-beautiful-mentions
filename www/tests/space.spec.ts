@@ -219,4 +219,19 @@ test.describe("Space handling", () => {
     await utils.editor.press("x");
     await utils.hasText("Hey [@catherine]x");
   });
+
+  test("should add space after mention with multi-character trigger", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        initialValue: "Hey",
+        autofocus: "start",
+      },
+    );
+    await utils.editorType("due:");
+    await utils.hasText("due: Hey");
+  });
 });
