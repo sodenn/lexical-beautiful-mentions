@@ -16,7 +16,6 @@ import {
 } from "./mention-converter";
 import { DEFAULT_PUNCTUATION } from "./mention-utils";
 import { BeautifulMentionNode } from "./MentionNode";
-import { ZeroWidthNode } from "./ZeroWidthNode";
 
 describe("mention-converter", () => {
   it("should find mention entries in text", () => {
@@ -142,7 +141,6 @@ describe("mention-converter", () => {
     const editor = createEditor({
       nodes: [
         BeautifulMentionNode,
-        ZeroWidthNode,
         HorizontalRuleNode,
         CodeNode,
         HeadingNode,
