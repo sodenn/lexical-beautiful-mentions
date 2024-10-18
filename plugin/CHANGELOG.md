@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.43
+
+### Patch Changes
+
+- f3153a0: fix(): ensure space is added after multi-character trigger mention
+
 ## 0.1.42
 
 ### Patch Changes
