@@ -42,7 +42,7 @@
     "@testing-library/react": "16.0.1",
     "fast-glob": "3.3.2",
     "happy-dom": "15.7.4",
-    "npm-run-all2": "6.2.3",
+    "npm-run-all2": "6.2.4",
     "rimraf": "6.0.1",
     "vite": "5.4.9",
     "vitest": "2.1.3"
