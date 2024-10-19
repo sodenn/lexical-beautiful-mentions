@@ -85,7 +85,7 @@ test.describe("mentions handling", () => {
     await utils.hasText(`[@C] `);
   });
 
-  test.only("should prevent text deletion after inserting a mention if text comes directly after it", async ({
+  test("should prevent text deletion after inserting a mention if text comes directly after it", async ({
     page,
     browserName,
   }) => {
