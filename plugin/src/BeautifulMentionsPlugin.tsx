@@ -281,8 +281,13 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           const nextSibling = nodeToReplace.getNextSibling();
           nodeToReplace.replace(mentionNode);
           if (nextSibling instanceof TextNode) {
+            // prevent that the text directly after the cursor remains in the
+            // editor if the user moved back with the cursor when selecting a mention
             const nextSiblingTextContent = nextSibling.getTextContent();
-            if (!/\s/.test(nextSiblingTextContent)) {
+            if (
+              !/\s/.test(nextSiblingTextContent) &&
+              value.includes(nextSiblingTextContent)
+            ) {
               nextSibling.remove();
             }
           }
@@ -529,6 +534,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         return false;
       }
 
+      // since the key must not be the same as the trigger, we try to build the trigger
+      // by combining the key with the last word before the cursor
       let combinedKey = key;
       const selectionInfo = $getSelectionInfo(triggers, punctuation);
       if (selectionInfo && selectionInfo.isTextNode) {
