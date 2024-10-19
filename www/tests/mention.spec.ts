@@ -85,6 +85,23 @@ test.describe("mentions handling", () => {
     await utils.hasText(`[@C] `);
   });
 
+  test.only("should prevent text deletion after inserting a mention if text comes directly after it", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autoSpace: false,
+        initialValue: "Test",
+        autofocus: "start",
+      },
+    );
+    await utils.editorType("@C");
+    await utils.mentionsMenu.getByText("Catherine").click();
+    await utils.hasText(`[@Catherine]Test`);
+  });
+
   test("should insert a new mention when pressing a non-word character", async ({
     page,
     browserName,
