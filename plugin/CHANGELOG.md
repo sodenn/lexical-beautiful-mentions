@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.43
+
+### Patch Changes
+
+- df15d2f: fix(): prevent unintended deletion of text after inserting a mention
+- f3153a0: fix(): ensure space is added after multi-character trigger mention
+
 ## 0.1.42
 
 ### Patch Changes
