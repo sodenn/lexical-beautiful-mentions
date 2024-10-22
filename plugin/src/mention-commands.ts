@@ -123,8 +123,9 @@ export function $insertMentionAtSelection(
   trigger: string,
   value: string,
   data?: { [key: string]: BeautifulMentionsItemData },
+  autoSpace?: boolean,
 ) {
-  return $insertMentionOrTrigger(triggers, punctuation, trigger, value, data);
+  return $insertMentionOrTrigger(triggers, punctuation, trigger, value, data, autoSpace);
 }
 
 function $insertMentionOrTrigger(
@@ -133,6 +134,7 @@ function $insertMentionOrTrigger(
   trigger: string,
   value?: string,
   data?: { [key: string]: BeautifulMentionsItemData },
+  autoSpace?: boolean,
 ) {
   const selectionInfo = $getSelectionInfo(triggers, punctuation);
   if (!selectionInfo) {
@@ -155,24 +157,28 @@ function $insertMentionOrTrigger(
     ? $createBeautifulMentionNode(trigger, value, data)
     : $createTextNode(trigger);
 
+  const nodes: LexicalNode[] = [];
   // Insert a mention with a leading space
   if (!($isParagraphNode(node) && cursorAtStartOfNode) && !$isTextNode(node)) {
-    selection.insertNodes([$createTextNode(" "), mentionNode]);
+    if (autoSpace) nodes.push($createTextNode(" "))
+    nodes.push(mentionNode)
+    selection.insertNodes(nodes);
     return true;
   }
 
   let spaceNode: TextNode | null = null;
-  const nodes: LexicalNode[] = [];
   if (
+    autoSpace && (
     wordCharBeforeCursor ||
-    (cursorAtStartOfNode && prevNode !== null && !$isTextNode(prevNode))
+    (cursorAtStartOfNode && prevNode !== null && !$isTextNode(prevNode)))
   ) {
     nodes.push($createTextNode(" "));
   }
   nodes.push(mentionNode);
   if (
+    autoSpace && (
     wordCharAfterCursor ||
-    (cursorAtEndOfNode && nextNode !== null && !$isTextNode(nextNode))
+    (cursorAtEndOfNode && nextNode !== null && !$isTextNode(nextNode)))
   ) {
     spaceNode = $createTextNode(" ");
     nodes.push(spaceNode);

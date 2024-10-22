@@ -638,6 +638,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             trigger,
             value,
             data,
+            autoSpace
           );
           if (!focus) {
             $setSelection(null);
