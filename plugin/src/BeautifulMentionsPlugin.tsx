@@ -284,6 +284,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
 
   const handleClose = useCallback(() => {
     setTrigger(null);
+    setSelectedBeautifulMentionNode(null);
   }, []);
 
   const handleSelectOption = useCallback(
@@ -356,7 +357,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       _nodeToReplace: TextNode | null,
       closeMenu?: () => void,
     ) => {
-      if (!trigger) {
+      if (!selectedBeautifulMentionNode) {
         return;
       }
       handleSelectMenuItem(
@@ -373,10 +374,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       restoreSelection,
     ],
   );
-  const handleCloseEdit = useCallback(() => {
-    setTrigger(null);
-    setSelectedBeautifulMentionNode(null);
-  }, []);
 
   const checkForMentionMatch = useCallback(
     (text: string) => {
@@ -701,8 +698,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           if (selection && $isBeautifulMentionNode(selection[0])) {
             setSelectedBeautifulMentionNode(selection[0]);
             setTrigger(selection[0].getTrigger());
-          } else {
-            setSelectedBeautifulMentionNode(null);
           }
 
           return false;
@@ -874,7 +869,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
           options={optionsForEditation}
           menuRenderFn={menuRenderFn}
           onSelectOption={handleSelectMenuItemAsEdit}
-          onClose={handleCloseEdit}
+          onClose={handleClose}
           nodeKey={selectedBeautifulMentionNode.getKey()}
         />
       )}
