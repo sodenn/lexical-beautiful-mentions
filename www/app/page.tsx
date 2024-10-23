@@ -1,10 +1,13 @@
-import { ConfigurationProviderWrapper } from "@/components/ConfigurationProviderWrapper";
+import ConfigurationProvider from "@/components/ConfigurationProvider";
 import Editor from "@/components/Editor";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <ConfigurationProviderWrapper>
-      <Editor />
-    </ConfigurationProviderWrapper>
+    <Suspense>
+      <ConfigurationProvider>
+        <Editor />
+      </ConfigurationProvider>
+    </Suspense>
   );
 }
