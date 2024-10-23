@@ -2,7 +2,6 @@ import { MenuTextMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { $getSelection, $isRangeSelection, TextNode } from "lexical";
 import { MutableRefObject } from "react";
 import { BeautifulMentionsItemData } from "./BeautifulMentionsPluginProps";
-import { getTextContent } from "./mention-utils";
 
 export class MenuOption {
   /**
@@ -61,7 +60,7 @@ export function $splitNodeContainingQuery(
     return null;
   }
   const selectionOffset = anchor.offset;
-  const textContent = getTextContent(anchorNode).slice(0, selectionOffset);
+  const textContent = anchorNode.getTextContent().slice(0, selectionOffset);
   const characterOffset = match.replaceableString.length;
   const queryOffset = getFullMatchOffset(
     textContent,
