@@ -1,8 +1,10 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { LexicalNodeMenuPlugin } from "@lexical/react/LexicalNodeMenuPlugin";
 import {
   LexicalTypeaheadMenuPlugin,
   MenuTextMatch,
 } from "@lexical/react/LexicalTypeaheadMenuPlugin";
+import { MenuRenderFn } from "@lexical/react/shared/LexicalMenu";
 import { mergeRegister } from "@lexical/utils";
 import {
   $createTextNode,
@@ -65,6 +67,7 @@ import { useMentionLookupService } from "./useMentionLookupService";
 
 class MentionOption extends MenuOption {
   readonly menuItem: BeautifulMentionsMenuItem;
+
   constructor(
     public readonly trigger: string,
     value: string,
@@ -175,6 +178,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
   const [trigger, setTrigger] = useState<string | null>(null);
+  const [selectedBeautifulMentionNode, setSelectedBeautifulMentionNode] =
+    useState<BeautifulMentionNode | null>(null);
   const { results, loading, query } = useMentionLookupService({
     queryString,
     searchDelay,
@@ -249,6 +254,32 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     showCurrentMentionsAsSuggestions,
   ]);
 
+  const optionsForEditation = useMemo(() => {
+    const selectedOption = options.find(
+      (option) => option.value === selectedBeautifulMentionNode?.__value,
+    );
+    if (selectedOption) {
+      return [
+        ...options.filter((option) => option != selectedOption),
+        selectedOption,
+      ];
+    }
+    return options;
+  }, [options, selectedBeautifulMentionNode]);
+
+  const restoreSelection = useCallback(() => {
+    const selection = $getSelection();
+    if ((!selection || $isNodeSelection(selection)) && oldSelection.current) {
+      const newSelection = oldSelection.current.clone();
+      $setSelection(newSelection);
+    } else if (!selection) {
+      $selectEnd();
+    }
+    if (oldSelection.current) {
+      oldSelection.current = null;
+    }
+  }, []);
+
   const open = !!options.length || loading;
 
   const handleClose = useCallback(() => {
@@ -258,7 +289,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const handleSelectOption = useCallback(
     (
       selectedOption: MenuOption,
-      nodeToReplace: TextNode | null,
+      nodeToReplace: TextNode | BeautifulMentionNode | null,
       closeMenu?: () => void,
     ) => {
       editor.update(() => {
@@ -302,7 +333,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const handleSelectMenuItem = useCallback(
     (
       selectedOption: MenuOption,
-      nodeToReplace: TextNode | null,
+      nodeToReplace: TextNode | BeautifulMentionNode | null,
       closeMenu?: () => void,
     ) => {
       if (!trigger) {
@@ -318,6 +349,34 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     },
     [handleSelectOption, onMenuItemSelect, trigger],
   );
+
+  const handleSelectMenuItemAsEdit = useCallback(
+    (
+      selectedOption: MenuOption,
+      _nodeToReplace: TextNode | null,
+      closeMenu?: () => void,
+    ) => {
+      if (!trigger) {
+        return;
+      }
+      handleSelectMenuItem(
+        selectedOption,
+        selectedBeautifulMentionNode,
+        closeMenu,
+      );
+      restoreSelection();
+    },
+    [
+      trigger,
+      selectedBeautifulMentionNode,
+      handleSelectMenuItem,
+      restoreSelection,
+    ],
+  );
+  const handleCloseEdit = useCallback(() => {
+    setTrigger(null);
+    setSelectedBeautifulMentionNode(null);
+  }, []);
 
   const checkForMentionMatch = useCallback(
     (text: string) => {
@@ -408,19 +467,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     triggers,
     allowSpaces,
   ]);
-
-  const restoreSelection = useCallback(() => {
-    const selection = $getSelection();
-    if ((!selection || $isNodeSelection(selection)) && oldSelection.current) {
-      const newSelection = oldSelection.current.clone();
-      $setSelection(newSelection);
-    } else if (!selection) {
-      $selectEnd();
-    }
-    if (oldSelection.current) {
-      oldSelection.current = null;
-    }
-  }, []);
 
   const handleDeleteMention = useCallback(
     (event: KeyboardEvent) => {
@@ -577,6 +623,70 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     [insertSpaceIfNecessary, triggers, punctuation],
   );
 
+  const menuRenderFn: MenuRenderFn<MentionOption> = (
+    anchorElementRef,
+    { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex, options },
+  ) => {
+    selectedMenuIndexRef.current = selectedIndex;
+    if (
+      anchorElementRef.current &&
+      options.length === 0 &&
+      query &&
+      !loading &&
+      isEditorFocused &&
+      EmptyComponent
+    ) {
+      return ReactDOM.createPortal(
+        <EmptyComponent />,
+        anchorElementRef.current,
+      );
+    }
+    return anchorElementRef.current && open
+      ? ReactDOM.createPortal(
+          <MenuComponent
+            loading={loading}
+            role="menu"
+            aria-label="Choose a mention"
+            aria-hidden={!open}
+            aria-activedescendant={
+              !IS_MOBILE && selectedIndex !== null && !!options[selectedIndex]
+                ? options[selectedIndex].displayValue
+                : ""
+            }
+          >
+            {options.map((option, i) => (
+              <MenuItemComponent
+                key={option.key}
+                tabIndex={-1}
+                selected={!IS_MOBILE && selectedIndex === i}
+                ref={option.setRefElement}
+                role="menuitem"
+                aria-selected={!IS_MOBILE && selectedIndex === i}
+                aria-label={`Choose ${option.value}`}
+                item={option.menuItem}
+                itemValue={option.value}
+                label={option.displayValue}
+                {...option.data}
+                onClick={() => {
+                  setHighlightedIndex(i);
+                  selectOptionAndCleanUp(option);
+                }}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                }}
+                onMouseEnter={() => {
+                  setHighlightedIndex(i);
+                }}
+              >
+                {option.displayValue}
+              </MenuItemComponent>
+            ))}
+          </MenuComponent>,
+          anchorElementRef.current,
+        )
+      : null;
+  };
+
   useEffect(() => {
     if (!editor.hasNodes([BeautifulMentionNode])) {
       throw new Error(
@@ -584,6 +694,21 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       );
     }
     return mergeRegister(
+      editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        () => {
+          const selection = $getSelection()?.getNodes();
+          if (selection && $isBeautifulMentionNode(selection[0])) {
+            setSelectedBeautifulMentionNode(selection[0]);
+            setTrigger(selection[0].getTrigger());
+          } else {
+            setSelectedBeautifulMentionNode(null);
+          }
+
+          return false;
+        },
+        COMMAND_PRIORITY_NORMAL,
+      ),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         () => {
@@ -732,79 +857,27 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   }
 
   return (
-    <LexicalTypeaheadMenuPlugin<MenuOption>
-      commandPriority={COMMAND_PRIORITY_NORMAL}
-      onQueryChange={setQueryString}
-      onSelectOption={handleSelectMenuItem}
-      triggerFn={checkForMentionMatch}
-      options={options}
-      anchorClassName={menuAnchorClassName}
-      onClose={handleClose}
-      menuRenderFn={(
-        anchorElementRef,
-        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
-      ) => {
-        selectedMenuIndexRef.current = selectedIndex;
-        if (
-          anchorElementRef.current &&
-          options.length === 0 &&
-          query &&
-          !loading &&
-          isEditorFocused &&
-          EmptyComponent
-        ) {
-          return ReactDOM.createPortal(
-            <EmptyComponent />,
-            anchorElementRef.current,
-          );
-        }
-        return anchorElementRef.current && open
-          ? ReactDOM.createPortal(
-              <MenuComponent
-                loading={loading}
-                role="menu"
-                aria-label="Choose a mention"
-                aria-hidden={!open}
-                aria-activedescendant={
-                  !IS_MOBILE &&
-                  selectedIndex !== null &&
-                  !!options[selectedIndex]
-                    ? options[selectedIndex].displayValue
-                    : ""
-                }
-              >
-                {options.map((option, i) => (
-                  <MenuItemComponent
-                    key={option.key}
-                    tabIndex={-1}
-                    selected={!IS_MOBILE && selectedIndex === i}
-                    ref={option.setRefElement}
-                    role="menuitem"
-                    aria-selected={!IS_MOBILE && selectedIndex === i}
-                    aria-label={`Choose ${option.value}`}
-                    item={option.menuItem}
-                    itemValue={option.value}
-                    label={option.displayValue}
-                    {...option.data}
-                    onClick={() => {
-                      setHighlightedIndex(i);
-                      selectOptionAndCleanUp(option);
-                    }}
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                    }}
-                    onMouseEnter={() => {
-                      setHighlightedIndex(i);
-                    }}
-                  >
-                    {option.displayValue}
-                  </MenuItemComponent>
-                ))}
-              </MenuComponent>,
-              anchorElementRef.current,
-            )
-          : null;
-      }}
-    />
+    <>
+      <LexicalTypeaheadMenuPlugin<MentionOption>
+        commandPriority={COMMAND_PRIORITY_NORMAL}
+        onQueryChange={setQueryString}
+        onSelectOption={handleSelectMenuItem}
+        triggerFn={checkForMentionMatch}
+        options={options}
+        anchorClassName={menuAnchorClassName}
+        onClose={handleClose}
+        menuRenderFn={menuRenderFn}
+      />
+      {selectedBeautifulMentionNode && (
+        <LexicalNodeMenuPlugin<MentionOption>
+          key={selectedBeautifulMentionNode.getKey()}
+          options={optionsForEditation}
+          menuRenderFn={menuRenderFn}
+          onSelectOption={handleSelectMenuItemAsEdit}
+          onClose={handleCloseEdit}
+          nodeKey={selectedBeautifulMentionNode.getKey()}
+        />
+      )}
+    </>
   );
 }
