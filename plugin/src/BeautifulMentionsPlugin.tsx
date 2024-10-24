@@ -680,6 +680,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     editor,
     triggers,
     punctuation,
+    autoSpace,
     allowSpaces,
     insertOnBlur,
     creatable,
