@@ -695,7 +695,11 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         SELECTION_CHANGE_COMMAND,
         () => {
           const selection = $getSelection()?.getNodes();
-          if (selection && $isBeautifulMentionNode(selection[0])) {
+          if (
+            selection &&
+            $isBeautifulMentionNode(selection[0]) &&
+            selection[0]?.isSelected()
+          ) {
             setSelectedBeautifulMentionNode(selection[0]);
             setTrigger(selection[0].getTrigger());
           }
