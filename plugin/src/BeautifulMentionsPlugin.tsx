@@ -326,6 +326,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         }
         closeMenu?.();
         justSelectedAnOption.current = true;
+        mentionNode.selectNext();
       });
     },
     [editor, trigger, creatable, mentionEnclosure],
@@ -365,14 +366,8 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         selectedBeautifulMentionNode,
         closeMenu,
       );
-      restoreSelection();
     },
-    [
-      trigger,
-      selectedBeautifulMentionNode,
-      handleSelectMenuItem,
-      restoreSelection,
-    ],
+    [selectedBeautifulMentionNode, handleSelectMenuItem],
   );
 
   const checkForMentionMatch = useCallback(
