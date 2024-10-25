@@ -1,7 +1,6 @@
 "use client"; // prettier-ignore
 import { defaultInitialValue } from "@/lib/editor-config";
 import useQueryParams, { QueryParam } from "@/lib/useQueryParams";
-import DOMPurify from "dompurify";
 import {
   createContext,
   PropsWithChildren,
@@ -10,8 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-
-const domPurify = DOMPurify();
+import sanitizeHtml from "sanitize-html";
 
 const ConfigurationCtx =
   createContext<ReturnType<typeof useConfigurationValue>>(undefined);
@@ -61,7 +59,7 @@ function useConfigurationValue() {
   const valueParam = getQueryParam("value");
   const hasValue = hasQueryParams("value");
   const initialValue =
-    domPurify.sanitize(valueParam) || (hasValue ? "" : defaultInitialValue);
+    sanitizeHtml(valueParam) || (hasValue ? "" : defaultInitialValue);
   const autoFocus: "rootStart" | "rootEnd" | "none" =
     focusParam === "start"
       ? "rootStart"
