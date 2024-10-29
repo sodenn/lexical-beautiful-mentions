@@ -638,6 +638,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
             trigger,
             value,
             data,
+            autoSpace,
           );
           if (!focus) {
             $setSelection(null);
@@ -669,7 +670,12 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         OPEN_MENTION_MENU_COMMAND,
         ({ trigger }) => {
           restoreSelection();
-          return $insertTriggerAtSelection(triggers, punctuation, trigger);
+          return $insertTriggerAtSelection(
+            triggers,
+            punctuation,
+            trigger,
+            autoSpace,
+          );
         },
         COMMAND_PRIORITY_LOW,
       ),
@@ -679,6 +685,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     editor,
     triggers,
     punctuation,
+    autoSpace,
     allowSpaces,
     insertOnBlur,
     creatable,
