@@ -39,6 +39,7 @@ import { useIsFocused } from "./useIsFocused";
 interface ComboboxPluginProps
   extends Pick<
       BeautifulMentionsPluginProps,
+      | "autoSpace"
       | "comboboxOpen"
       | "onComboboxItemSelect"
       | "comboboxAdditionalItems"
@@ -202,6 +203,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     onSelectOption,
     triggers,
     punctuation,
+    autoSpace,
     loading,
     triggerFn,
     onQueryChange,
@@ -370,7 +372,12 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           nodeToReplace.replace(textNode);
           textNode.select();
         } else {
-          $insertTriggerAtSelection(triggers, punctuation, option.value);
+          $insertTriggerAtSelection(
+            triggers,
+            punctuation,
+            option.value,
+            autoSpace,
+          );
         }
       });
       setTriggerMatch(null);
@@ -385,6 +392,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
       triggerMatch,
       triggers,
       punctuation,
+      autoSpace,
     ],
   );
 
