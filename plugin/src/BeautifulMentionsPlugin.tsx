@@ -790,8 +790,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     aria-selected={!IS_MOBILE && selectedIndex === i}
                     aria-label={`Choose ${option.value}`}
                     item={option.menuItem}
-                    itemValue={option.value}
-                    label={option.displayValue}
                     {...option.data}
                     onClick={() => {
                       setHighlightedIndex(i);
