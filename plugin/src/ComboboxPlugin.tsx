@@ -33,7 +33,6 @@ import {
 import { $splitNodeContainingQuery, MenuOption } from "./Menu";
 import { CAN_USE_DOM, IS_MOBILE } from "./environment";
 import { $insertTriggerAtSelection } from "./mention-commands";
-import { getTextContent } from "./mention-utils";
 import { useIsFocused } from "./useIsFocused";
 
 interface ComboboxPluginProps
@@ -108,7 +107,7 @@ function getTextUpToAnchor(selection: RangeSelection): string | null {
     return null;
   }
   const anchorOffset = anchor.offset;
-  return getTextContent(anchorNode).slice(0, anchorOffset);
+  return anchorNode.getTextContent().slice(0, anchorOffset);
 }
 
 function isCharacterKey(event: KeyboardEvent) {

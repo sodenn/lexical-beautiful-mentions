@@ -26,7 +26,6 @@ import {
 } from "./BeautifulMentionsPluginProps";
 import { $isBeautifulMentionNode } from "./MentionNode";
 import { IS_IOS } from "./environment";
-import { getNextSibling, getPreviousSibling } from "./mention-utils";
 import { BeautifulMentionsCssClassNames } from "./theme";
 import { useIsFocused } from "./useIsFocused";
 
@@ -93,7 +92,7 @@ export default function BeautifulMentionComponent(
         return false;
       }
       let handled = false;
-      const nodeToSelect = getPreviousSibling(node);
+      const nodeToSelect = node.getPreviousSibling();
       if ($isElementNode(nodeToSelect)) {
         nodeToSelect.selectEnd();
         handled = true;
@@ -125,7 +124,7 @@ export default function BeautifulMentionComponent(
         return false;
       }
       let handled = false;
-      const nodeToSelect = getNextSibling(node);
+      const nodeToSelect = node.getNextSibling();
       if ($isElementNode(nodeToSelect)) {
         nodeToSelect.selectStart();
         handled = true;
