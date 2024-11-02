@@ -91,6 +91,7 @@ export function $getSelectionInfo(
   const anchor = selection.anchor;
   const focus = selection.focus;
   const [node] = selection.getNodes();
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (anchor.key !== focus.key || anchor.offset !== focus.offset || !node) {
     return;
   }
@@ -141,13 +142,13 @@ export function $getSelectionInfo(
     return {
       ...props,
       isTextNode: true,
-      node: node as TextNode,
+      node,
     };
   } else {
     return {
       ...props,
       isTextNode: false,
-      node: node as LexicalNode,
+      node,
     };
   }
 }
@@ -233,7 +234,7 @@ function getLastNode(root: RootNode) {
 export function $selectEnd() {
   const root = $getRoot();
   const lastNode = getLastNode(root);
-  const key = lastNode && lastNode.getKey();
+  const key = lastNode?.getKey();
   const offset = $isElementNode(lastNode)
     ? lastNode.getChildrenSize()
     : $isTextNode(lastNode)
@@ -249,8 +250,9 @@ export function $selectEnd() {
 }
 
 export function $findBeautifulMentionNodes(editor?: LexicalEditor) {
-  editor = editor || $getEditor();
+  editor = editor ?? $getEditor();
   if (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     CustomBeautifulMentionNode &&
     editor.hasNodes([CustomBeautifulMentionNode])
   ) {

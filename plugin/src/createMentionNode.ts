@@ -25,6 +25,7 @@ export function createBeautifulMentionNode(
   mentionComponent: ElementType<BeautifulMentionComponentProps>,
 ): [CustomBeautifulMentionNodeClass, LexicalNodeReplacement] {
   CustomBeautifulMentionNode =
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     CustomBeautifulMentionNode || generateClass(mentionComponent);
   return [
     CustomBeautifulMentionNode,

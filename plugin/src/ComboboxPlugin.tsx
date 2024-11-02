@@ -73,7 +73,7 @@ class ComboboxOption extends MenuOption {
     public readonly itemType: "trigger" | "value" | "additional",
     value: string,
     displayValue: string,
-    data: { [key: string]: BeautifulMentionsItemData } = {},
+    data: Record<string, BeautifulMentionsItemData> = {},
   ) {
     super(value, displayValue, data);
     this.comboboxItem = {
@@ -128,7 +128,7 @@ export function useAnchorRef(
 ) {
   const [editor] = useLexicalComposerContext();
   const [anchor, setAnchor] = useState<HTMLElement | null>(
-    comboboxAnchor || null,
+    comboboxAnchor ?? null,
   );
   const [anchorChild, setAnchorChild] = useState<HTMLElement | null>(null);
 
@@ -156,7 +156,7 @@ export function useAnchorRef(
       return;
     }
     const { height } = anchor.getBoundingClientRect();
-    const newAnchorChild = anchorChild || document.createElement("div");
+    const newAnchorChild = anchorChild ?? document.createElement("div");
     newAnchorChild.style.position = "absolute";
     newAnchorChild.style.left = "0";
     newAnchorChild.style.right = "0";
@@ -170,7 +170,7 @@ export function useAnchorRef(
     });
     anchorObserver.observe(anchor);
     setTimeout(() => {
-      newAnchorChild.className = comboboxAnchorClassName || "";
+      newAnchorChild.className = comboboxAnchorClassName ?? "";
     });
     return () => {
       anchorObserver.disconnect();
@@ -185,7 +185,7 @@ export function checkForTriggers(
   text: string,
   triggers: string[],
 ): MenuTextMatch | null {
-  const last = text.split(/\s/).pop() || text;
+  const last = text.split(/\s/).pop() ?? text;
   const offset = text !== last ? text.lastIndexOf(last) : 0;
   const match = triggers.some((t) => t.startsWith(last) && t !== last);
   if (match) {
@@ -261,7 +261,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
     triggers,
     triggerQueryString,
   ]);
-  const [open, setOpen] = useState(props.comboboxOpen || false);
+  const [open, setOpen] = useState(props.comboboxOpen ?? false);
   const anchor = useAnchorRef(open, comboboxAnchor, comboboxAnchorClassName);
 
   const highlightOption = useCallback((index: number | null) => {
@@ -434,7 +434,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   const handleBackspace = useCallback(() => {
     const text = getQueryTextForSearch(editor);
     const newText = text ? text.substring(0, text.length - 1) : undefined;
-    if (!newText || !newText.trim()) {
+    if (!newText?.trim()) {
       highlightOption(null);
     }
     return false;
@@ -575,7 +575,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
         const valueMatch = triggerFn(text, editor);
         setValueMatch(valueMatch);
         onQueryChange(valueMatch ? valueMatch.matchingString : null);
-        if (valueMatch && valueMatch.matchingString) {
+        if (valueMatch?.matchingString) {
           setTriggerQueryString(valueMatch.matchingString);
           return;
         }
@@ -586,7 +586,7 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
   }, [editor, triggerFn, onQueryChange, onReset, triggers]);
 
   useEffect(() => {
-    setOpen(props.comboboxOpen || false);
+    setOpen(props.comboboxOpen ?? false);
   }, [props.comboboxOpen]);
 
   // call open/close callbacks when open state changes
@@ -656,10 +656,16 @@ export function ComboboxPlugin(props: ComboboxPluginProps) {
           aria-label={`Choose ${option.value}`}
           item={option.comboboxItem}
           ref={option.setRefElement}
-          onClick={() => handleClick(index)}
-          onMouseEnter={() => handleMouseEnter(index)}
+          onClick={() => {
+            handleClick(index);
+          }}
+          onMouseEnter={() => {
+            handleMouseEnter(index);
+          }}
           onMouseLeave={handleMouseLeave}
-          onMouseDown={(e) => e.preventDefault()}
+          onMouseDown={(e) => {
+            e.preventDefault();
+          }}
         >
           {option.displayValue}
         </ComboboxItemComponent>

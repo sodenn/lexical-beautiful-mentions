@@ -69,7 +69,7 @@ class MentionOption extends MenuOption {
     public readonly trigger: string,
     value: string,
     displayValue: string,
-    data?: { [key: string]: BeautifulMentionsItemData },
+    data?: Record<string, BeautifulMentionsItemData>,
   ) {
     super(value, displayValue, data);
     this.menuItem = {
@@ -169,7 +169,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const justSelectedAnOption = useRef(false);
   const isEditorFocused = useIsFocused();
   const triggers = useMemo(
-    () => props.triggers || Object.keys(items || {}),
+    () => props.triggers ?? Object.keys(items ?? {}),
     [props.triggers, items],
   );
   const [editor] = useLexicalComposerContext();
@@ -357,6 +357,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         ? options[selectedMenuIndex]
         : undefined;
     const newMention = options.find((o) => o.value !== o.displayValue);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (newMention && (IS_MOBILE || option === null)) {
       option = newMention;
     }
@@ -364,7 +365,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       return false;
     }
     const selectionInfo = $getSelectionInfo(triggers, punctuation);
-    if (!trigger || !selectionInfo || !selectionInfo.isTextNode) {
+    if (!trigger || !selectionInfo?.isTextNode) {
       return false;
     }
     const node = selectionInfo.node;
@@ -527,7 +528,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const { key, metaKey, ctrlKey } = event;
-      const simpleKey = key?.length === 1;
+      const simpleKey = key.length === 1;
       const wordChar = isWordChar(key, triggers, punctuation);
       const isSpace = allowSpaces && /^\s$/.test(key);
       if (!simpleKey || metaKey || ctrlKey) {
@@ -538,7 +539,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       // by combining the key with the last word before the cursor
       let combinedKey = key;
       const selectionInfo = $getSelectionInfo(triggers, punctuation);
-      if (selectionInfo && selectionInfo.isTextNode) {
+      if (selectionInfo?.isTextNode) {
         const { textContent, offset } = selectionInfo;
         const last = textContent.substring(0, offset).split(/\s+/).at(-1) ?? "";
         combinedKey = (last + key).trim();
@@ -564,7 +565,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const handlePaste = useCallback(
     (event: ClipboardEvent) => {
       const text = event.clipboardData?.getData("text/plain");
-      const firstChar = text && text.charAt(0);
+      const firstChar = text?.charAt(0);
       const isTrigger = triggers.some((trigger) => firstChar === trigger);
       const isPunctuation =
         firstChar && new RegExp(`[\\s${punctuation}]`).test(firstChar);
@@ -719,7 +720,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         loading={loading}
         onQueryChange={setQueryString}
         onSelectOption={handleSelectOption}
-        onReset={() => setTrigger(null)}
+        onReset={() => {
+          setTrigger(null);
+        }}
         triggerFn={checkForMentionMatch}
         triggers={triggers}
         punctuation={punctuation}

@@ -7,10 +7,7 @@ const items = {
   "\\w+:": ["today", "tomorrow"],
 };
 
-const queryFn = async (
-  trigger: string,
-  queryString?: string | null | undefined,
-) => {
+const queryFn = async (trigger: string, queryString?: string | null) => {
   await new Promise((resolve) => setTimeout(resolve, 100));
   const mentions = Object.entries(items).find(([key]) => {
     return new RegExp(key).test(trigger);

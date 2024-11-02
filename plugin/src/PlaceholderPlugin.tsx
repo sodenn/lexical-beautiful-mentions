@@ -43,13 +43,17 @@ export function PlaceholderPlugin() {
               );
               const lastNode = paragraph.getLastDescendant();
               if ($isDecoratorNode(lastNode)) {
-                paragraphPlaceholders.forEach((p) => p.remove());
+                paragraphPlaceholders.forEach((p) => {
+                  p.remove();
+                });
                 lastNode.insertAfter($createPlaceholderNode());
               } else if (
                 $isPlaceholderNode(lastNode) &&
                 !$isDecoratorNode(lastNode.getPreviousSibling())
               ) {
-                paragraphPlaceholders.forEach((p) => p.remove());
+                paragraphPlaceholders.forEach((p) => {
+                  p.remove();
+                });
               }
             });
           },

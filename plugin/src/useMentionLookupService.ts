@@ -25,7 +25,7 @@ export function useMentionLookupService(options: MentionsLookupServiceOptions) {
   } = options;
   const debouncedQueryString = useDebounce(queryString, searchDelay);
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<Array<BeautifulMentionsItem>>([]);
+  const [results, setResults] = useState<BeautifulMentionsItem[]>([]);
   const [query, setQuery] = useState<string | null>(null);
 
   // lookup in items (no search function)
@@ -67,8 +67,12 @@ export function useMentionLookupService(options: MentionsLookupServiceOptions) {
     setLoading(true);
     setQuery(debouncedQueryString);
     onSearch(trigger, justSelectedAnOption?.current ? "" : debouncedQueryString)
-      .then((result) => setResults(result))
-      .finally(() => setLoading(false));
+      .then((result) => {
+        setResults(result);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
     if (justSelectedAnOption?.current) {
       justSelectedAnOption.current = false;

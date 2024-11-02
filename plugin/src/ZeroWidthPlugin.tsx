@@ -55,7 +55,10 @@ export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
             const last = root.getLastDescendant();
             // add ZeroWidthNode at the end of the editor
             if ($isDecoratorNode(last)) {
-              $nodesOfType(ZeroWidthNode).forEach((node) => node.remove()); // cleanup
+              // eslint-disable-next-line @typescript-eslint/no-deprecated
+              $nodesOfType(ZeroWidthNode).forEach((node) => {
+                node.remove();
+              }); // cleanup
               last.insertAfter($createZeroWidthNode(textContent));
             }
             // add ZeroWidthNode before each line break
