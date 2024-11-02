@@ -34,7 +34,7 @@ interface BeautifulMentionComponentProps {
   nodeKey: NodeKey;
   trigger: string;
   value: string;
-  data?: { [p: string]: BeautifulMentionsItemData };
+  data?: Record<string, BeautifulMentionsItemData>;
   component?: ElementType<CustomBeautifulMentionComponentProps> | null;
   className?: string;
   classNameFocused?: string;
@@ -58,6 +58,7 @@ export default function BeautifulMentionComponent(
   const isEditorFocused = useIsFocused();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ref = useRef<any>(null);
   const mention = trigger + value;
 
@@ -89,7 +90,7 @@ export default function BeautifulMentionComponent(
   const onArrowLeftPress = useCallback(
     (event: KeyboardEvent) => {
       const node = $getNodeByKey(nodeKey);
-      if (!node || !node.isSelected()) {
+      if (!node?.isSelected()) {
         return false;
       }
       let handled = false;
@@ -121,7 +122,7 @@ export default function BeautifulMentionComponent(
   const onArrowRightPress = useCallback(
     (event: KeyboardEvent) => {
       const node = $getNodeByKey(nodeKey);
-      if (!node || !node.isSelected()) {
+      if (!node?.isSelected()) {
         return false;
       }
       let handled = false;
@@ -154,6 +155,7 @@ export default function BeautifulMentionComponent(
     (event: MouseEvent) => {
       if (
         event.target === ref.current ||
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
         ref.current?.contains(event.target as Node)
       ) {
         if (!event.shiftKey) {
@@ -169,7 +171,7 @@ export default function BeautifulMentionComponent(
 
   const onBlur = useCallback(() => {
     const node = $getNodeByKey(nodeKey);
-    if (!node || !node.isSelected()) {
+    if (!node?.isSelected()) {
       return false;
     }
 

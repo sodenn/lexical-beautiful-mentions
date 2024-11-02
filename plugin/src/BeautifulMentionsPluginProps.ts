@@ -20,7 +20,7 @@ export interface BeautifulMentionsMenuItem {
   /**
    * Additional data belonging to the mention.
    */
-  data?: { [key: string]: BeautifulMentionsItemData };
+  data?: Record<string, BeautifulMentionsItemData>;
 }
 
 /**
@@ -44,7 +44,7 @@ export interface BeautifulMentionsComboboxItem {
   /**
    * Additional data belonging to the mention.
    */
-  data?: { [key: string]: BeautifulMentionsItemData };
+  data?: Record<string, BeautifulMentionsItemData>;
 }
 
 export type BeautifulMentionsItemData = string | boolean | number | null;
@@ -65,6 +65,7 @@ export type BeautifulMentionsItem =
  * Props for BeautifulMentionsMenu component. This component is used to render
  * the menu that shows the suggestions for a mention.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
   /**
    * If `true`, the `onSearch` function is currently running.
@@ -77,6 +78,7 @@ export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
  * render a menu item.
  */
 export type BeautifulMentionsMenuItemProps = Omit<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ComponentPropsWithRef<any>,
   "selected" | "label"
 > & {
@@ -105,6 +107,7 @@ export type BeautifulMentionsMenuItemProps = Omit<
  * render the combobox that shows the available triggers and mentions.
  */
 export interface BeautifulMentionsComboboxProps
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   extends ComponentPropsWithRef<any> {
   /**
    * If `true`, the `onSearch` function is currently running.
@@ -121,6 +124,7 @@ export interface BeautifulMentionsComboboxProps
  * render a combobox item.
  */
 export type BeautifulMentionsComboboxItemProps = Omit<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ComponentPropsWithRef<any>,
   "selected" | "option"
 > & {
@@ -358,7 +362,8 @@ export type BeautifulMentionsPluginProps =
  * a mention in the editor.
  */
 export interface BeautifulMentionComponentProps<
-  T extends { [p: string]: BeautifulMentionsItemData } = {},
+  T extends Record<string, BeautifulMentionsItemData> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 > extends Omit<ComponentPropsWithRef<any>, "value" | "data"> {
   /**
    * The trigger of the mention.

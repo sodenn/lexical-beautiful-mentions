@@ -13,13 +13,14 @@ const editorConfig: CreateEditorArgs = {
 export function exportJSON(
   trigger: string,
   value: string,
-  data?: { [p: string]: BeautifulMentionsItemData },
+  data?: Record<string, BeautifulMentionsItemData>,
 ) {
   let node: BeautifulMentionNode | undefined = undefined;
   const editor = createEditor(editorConfig);
   editor.update(() => {
     node = $createBeautifulMentionNode(trigger, value, data);
   });
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!node) {
     throw new Error("Node is undefined");
   }

@@ -23,7 +23,7 @@ export type SerializedBeautifulMentionNode = Spread<
   {
     trigger: string;
     value: string;
-    data?: { [p: string]: BeautifulMentionsItemData };
+    data?: Record<string, BeautifulMentionsItemData>;
   },
   SerializedLexicalNode
 >;
@@ -33,11 +33,11 @@ function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
     "data-lexical-beautiful-mention-trigger",
   );
   const value = domNode.getAttribute("data-lexical-beautiful-mention-value");
-  let data: { [p: string]: BeautifulMentionsItemData } | undefined = undefined;
+  let data: Record<string, BeautifulMentionsItemData> | undefined = undefined;
   const dataStr = domNode.getAttribute("data-lexical-beautiful-mention-data");
   if (dataStr) {
     try {
-      data = JSON.parse(dataStr);
+      data = JSON.parse(dataStr) as Record<string, BeautifulMentionsItemData>;
     } catch (e) {
       console.warn(
         "Failed to parse data attribute of beautiful mention node",
@@ -58,7 +58,7 @@ function convertElement(domNode: HTMLElement): DOMConversionOutput | null {
 export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   __trigger: string;
   __value: string;
-  __data?: { [p: string]: BeautifulMentionsItemData };
+  __data?: Record<string, BeautifulMentionsItemData>;
 
   static getType(): string {
     return "beautifulMention";
@@ -76,7 +76,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   constructor(
     trigger: string,
     value: string,
-    data?: { [p: string]: BeautifulMentionsItemData },
+    data?: Record<string, BeautifulMentionsItemData>,
     key?: NodeKey,
   ) {
     super(key);
@@ -166,12 +166,12 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
     self.__value = value;
   }
 
-  getData(): { [p: string]: BeautifulMentionsItemData } | undefined {
+  getData(): Record<string, BeautifulMentionsItemData> | undefined {
     const self = this.getLatest();
     return self.__data;
   }
 
-  setData(data?: { [p: string]: BeautifulMentionsItemData }) {
+  setData(data?: Record<string, BeautifulMentionsItemData>) {
     const self = this.getWritable();
     self.__data = data;
   }
@@ -198,12 +198,13 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
   }
 
   getCssClassesFromTheme(config: EditorConfig) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const theme: BeautifulMentionsTheme = config.theme.beautifulMentions || {};
     const themeEntry = Object.entries(theme).find(([trigger]) =>
       new RegExp(trigger).test(this.__trigger),
     );
-    const key = themeEntry && themeEntry[0];
-    const value = themeEntry && themeEntry[1];
+    const key = themeEntry?.[0] ?? "";
+    const value = themeEntry?.[1];
     const className = typeof value === "string" ? value : undefined;
     const classNameFocused =
       className && typeof theme[key + "Focused"] === "string"
@@ -222,7 +223,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
 export function $createBeautifulMentionNode(
   trigger: string,
   value: string,
-  data?: { [p: string]: BeautifulMentionsItemData },
+  data?: Record<string, BeautifulMentionsItemData>,
 ): BeautifulMentionNode {
   const mentionNode = new BeautifulMentionNode(trigger, value, data);
   return $applyNodeReplacement(mentionNode);

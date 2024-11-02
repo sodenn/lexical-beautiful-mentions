@@ -71,7 +71,7 @@ export function convertToMentionEntries(
       new RegExp(trigger).test(value),
     );
 
-    const match = triggerRegExp && value.match(new RegExp(triggerRegExp));
+    const match = triggerRegExp && new RegExp(triggerRegExp).exec(value);
     if (!match) {
       // should never happen since we only find mentions with the given triggers
       throw new Error("No trigger found for mention");

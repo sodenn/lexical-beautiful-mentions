@@ -35,7 +35,7 @@
     "publish:lib": "node publish-lib.js",
     "release": "run-s build publish:lib",
     "test": "vitest --run",
-    "lint": "eslint . --max-warnings=0 --ext .ts,.tsx",
+    "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -28,9 +28,10 @@ export class MenuOption {
     /**
      * Additional data belonging to the option. For example: `{ id: 1 }`.
      */
-    public readonly data?: { [key: string]: BeautifulMentionsItemData },
+    public readonly data?: Record<string, BeautifulMentionsItemData>,
   ) {
     this.key = !data ? value : JSON.stringify({ ...data, value });
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     this.displayValue = displayValue ?? value;
     this.ref = { current: null };
     this.setRefElement = this.setRefElement.bind(this);

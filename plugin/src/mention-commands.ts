@@ -40,7 +40,7 @@ export interface InsertMention {
   /**
    * The data to associate with the mention.
    */
-  data?: { [key: string]: BeautifulMentionsItemData };
+  data?: Record<string, BeautifulMentionsItemData>;
 }
 
 export interface RemoveMentions {
@@ -130,7 +130,7 @@ export function $insertMentionAtSelection(
   punctuation: string,
   trigger: string,
   value: string,
-  data?: { [key: string]: BeautifulMentionsItemData },
+  data?: Record<string, BeautifulMentionsItemData>,
   autoSpace?: boolean,
 ) {
   return $insertMentionOrTrigger(
@@ -148,7 +148,7 @@ function $insertMentionOrTrigger(
   punctuation: string,
   trigger: string,
   value?: string,
-  data?: { [key: string]: BeautifulMentionsItemData },
+  data?: Record<string, BeautifulMentionsItemData>,
   autoSpace?: boolean,
 ) {
   const selectionInfo = $getSelectionInfo(triggers, punctuation);
