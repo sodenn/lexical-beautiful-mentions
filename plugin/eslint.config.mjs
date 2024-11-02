@@ -30,7 +30,8 @@ export default [
       "@typescript-eslint/restrict-plus-operands": "off",
       "@typescript-eslint/restrict-template-expressions": "off",
       "@typescript-eslint/unbound-method": "off",
-      "@typescript-eslint/no-empty-object-type": "off"
+      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/ban-ts-comment": "off"
     },
   },
 ];
