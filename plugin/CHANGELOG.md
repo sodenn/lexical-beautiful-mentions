@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.44
+
+### Patch Changes
+
+- 68c908e: feat(): insertMention function use autoSpace of config
+
 ## 0.1.43
 
 ### Patch Changes
