@@ -138,7 +138,7 @@ describe("mention-converter", () => {
     expect(entries[2].value).toBe(")");
   });
 
-  // Temp. disabling this test. For uknown reason it fails after udpate to Vite 6.0.0
+  // Temp. disabling this test. For unknown reason, it fails after update to Vite 6.0.0
   it.skip("should transform mention string to mention nodes", () => {
     const editor = createEditor({
       nodes: [
