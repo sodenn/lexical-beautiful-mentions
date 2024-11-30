@@ -16,6 +16,7 @@
     "composite": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "downlevelIteration": true,
     "inlineSources": false,
     "isolatedModules": true,
     "noUnusedLocals": false,

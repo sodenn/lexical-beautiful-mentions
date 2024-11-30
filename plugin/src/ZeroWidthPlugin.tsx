@@ -5,7 +5,6 @@ import {
   $getSelection,
   $isDecoratorNode,
   $isRangeSelection,
-  $nodesOfType,
   COMMAND_PRIORITY_HIGH,
   KEY_DOWN_COMMAND,
   LineBreakNode,
@@ -17,6 +16,7 @@ import {
   $isZeroWidthNode,
   ZeroWidthNode,
 } from "./ZeroWidthNode";
+import { $nodesOfType } from "./mention-utils";
 
 export const ZERO_WIDTH_CHARACTER = "​"; // 🚨 contains a zero-width space (U+200B)
 

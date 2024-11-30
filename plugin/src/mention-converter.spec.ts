@@ -8,13 +8,13 @@ import {
 } from "@lexical/markdown";
 import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
-import { $nodesOfType, createEditor, ParagraphNode, TextNode } from "lexical";
+import { createEditor, ParagraphNode, TextNode } from "lexical";
 import { describe, expect, it } from "vitest";
 import {
   $transformTextToMentionNodes,
   convertToMentionEntries,
 } from "./mention-converter";
-import { DEFAULT_PUNCTUATION } from "./mention-utils";
+import { $nodesOfType, DEFAULT_PUNCTUATION } from "./mention-utils";
 import { BeautifulMentionNode } from "./MentionNode";
 import { PlaceholderNode } from "./PlaceholderNode";
 

@@ -4,7 +4,6 @@ import {
   $getSelection,
   $isDecoratorNode,
   $isRangeSelection,
-  $nodesOfType,
   COMMAND_PRIORITY_HIGH,
   KEY_DOWN_COMMAND,
   ParagraphNode,
@@ -16,6 +15,7 @@ import {
   $isPlaceholderNode,
   PlaceholderNode,
 } from "./PlaceholderNode";
+import { $nodesOfType } from "./mention-utils";
 
 /**
  * This plugin serves as a patch to fix an incorrect cursor position in Safari.

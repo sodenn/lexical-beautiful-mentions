@@ -261,7 +261,7 @@ export function $findBeautifulMentionNodes() {
   return $nodesOfType(BeautifulMentionNode);
 }
 
-function $nodesOfType<T extends LexicalNode>(klass: Klass<T>) {
+export function $nodesOfType<T extends LexicalNode>(klass: Klass<T>) {
   const nodes = new Map<string, T>();
   const editor = $getEditor();
   const unregister = editor.registerMutationListener(
