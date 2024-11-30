@@ -36,7 +36,9 @@ export function PlaceholderPlugin() {
           () => {
             // insert a placeholder node at the end of each paragraph if the
             // last node is a decorator node.
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             const placeholderNodes = $nodesOfType(PlaceholderNode);
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             $nodesOfType(ParagraphNode).forEach((paragraph) => {
               const paragraphPlaceholders = placeholderNodes.filter((p) =>
                 paragraph.isParentOf(p),
