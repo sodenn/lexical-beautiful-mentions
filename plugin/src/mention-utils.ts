@@ -1,16 +1,16 @@
 import {
   $createRangeSelection,
   $getEditor,
+  $getNodeByKey,
   $getRoot,
   $getSelection,
   $isDecoratorNode,
   $isElementNode,
   $isRangeSelection,
   $isTextNode,
-  $nodesOfType,
   $setSelection,
   ElementNode,
-  LexicalEditor,
+  Klass,
   LexicalNode,
   RangeSelection,
   RootNode,
@@ -249,8 +249,8 @@ export function $selectEnd() {
   }
 }
 
-export function $findBeautifulMentionNodes(editor?: LexicalEditor) {
-  editor = editor ?? $getEditor();
+export function $findBeautifulMentionNodes() {
+  const editor = $getEditor();
   if (
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     CustomBeautifulMentionNode &&
@@ -259,4 +259,27 @@ export function $findBeautifulMentionNodes(editor?: LexicalEditor) {
     return $nodesOfType(CustomBeautifulMentionNode);
   }
   return $nodesOfType(BeautifulMentionNode);
+}
+
+function $nodesOfType<T extends LexicalNode>(klass: Klass<T>) {
+  const nodes = new Map<string, T>();
+  const editor = $getEditor();
+  const unregister = editor.registerMutationListener(
+    klass,
+    (mutatedNodes) => {
+      editor.getEditorState().read(() => {
+        for (const [nodeKey] of mutatedNodes) {
+          const node = $getNodeByKey<T>(nodeKey);
+          if (node) {
+            nodes.set(nodeKey, node);
+          }
+        }
+      });
+    },
+    {
+      skipInitialization: false,
+    },
+  );
+  unregister();
+  return Array.from(nodes.values());
 }

@@ -52,8 +52,8 @@ export function useBeautifulMentions() {
    */
   const hasMentions = useCallback(
     ({ value, trigger }: HasMentions) => {
-      return editor.getEditorState().read(() => {
-        const mentions = $findBeautifulMentionNodes(editor);
+      return editor.read(() => {
+        const mentions = $findBeautifulMentionNodes();
         if (value) {
           return mentions.some(
             (mention) =>
@@ -79,8 +79,8 @@ export function useBeautifulMentions() {
    * Returns all mentions used in the editor.
    */
   const getMentions = useCallback(() => {
-    return editor.getEditorState().read(() =>
-      $findBeautifulMentionNodes(editor).map((node) => {
+    return editor.read(() =>
+      $findBeautifulMentionNodes().map((node) => {
         const { trigger, value, data } = node.exportJSON();
         return { trigger, value, data };
       }),

@@ -209,7 +209,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     const readyToAddCurrentMentions = !onSearch || (!loading && query !== null);
     if (readyToAddCurrentMentions && showCurrentMentionsAsSuggestions) {
       editor.getEditorState().read(() => {
-        const mentions = $findBeautifulMentionNodes(editor);
+        const mentions = $findBeautifulMentionNodes();
         for (const mention of mentions) {
           const value = mention.getValue();
           const data = mention.getData();
