@@ -163,6 +163,7 @@ describe("mention-converter", () => {
       );
       $transformTextToMentionNodes(["@", "#"]);
 
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       const paragraph = $nodesOfType(ParagraphNode);
       const nodes = paragraph[0].getChildren();
 

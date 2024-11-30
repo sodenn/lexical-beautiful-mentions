@@ -62,6 +62,7 @@ export function ZeroWidthPlugin({ textContent }: ZeroWidthPluginProps) {
               last.insertAfter($createZeroWidthNode(textContent));
             }
             // add ZeroWidthNode before each line break
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             $nodesOfType(LineBreakNode).forEach((node) => {
               const prev = node.getPreviousSibling();
               if ($isDecoratorNode(prev)) {
