@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useMemo, useState } from "react";
+import { RefObject, useEffect, useMemo, useState } from "react";
 import { BeautifulMentionsItem } from "./BeautifulMentionsPluginProps";
 import { useDebounce } from "./useDebounce";
 
@@ -11,7 +11,7 @@ interface MentionsLookupServiceOptions {
     trigger: string,
     queryString?: string | null,
   ) => Promise<BeautifulMentionsItem[]>;
-  justSelectedAnOption?: MutableRefObject<boolean>;
+  justSelectedAnOption?: RefObject<boolean>;
 }
 
 export function useMentionLookupService(options: MentionsLookupServiceOptions) {
