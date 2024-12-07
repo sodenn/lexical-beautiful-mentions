@@ -183,7 +183,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     onSearch,
     justSelectedAnOption,
   });
-  const selectedMenuIndexRef = useRef<number | null>();
+  const selectedMenuIndexRef = useRef<number | null>(null);
   const oldSelection = useRef<BaseSelection | null>(null);
   const creatable = getCreatableProp(props.creatable, trigger);
   const menuItemLimit = getMenuItemLimitProp(props.menuItemLimit, trigger);

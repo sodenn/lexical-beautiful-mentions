@@ -1,6 +1,6 @@
 import { MenuTextMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { $getSelection, $isRangeSelection, TextNode } from "lexical";
-import { MutableRefObject } from "react";
+import { RefObject } from "react";
 import { BeautifulMentionsItemData } from "./BeautifulMentionsPluginProps";
 import { getTextContent } from "./mention-utils";
 
@@ -13,7 +13,7 @@ export class MenuOption {
   /**
    * Ref to the DOM element of the option.
    */
-  ref?: MutableRefObject<HTMLElement | null>;
+  ref?: RefObject<HTMLElement | null>;
 
   constructor(
     /**
