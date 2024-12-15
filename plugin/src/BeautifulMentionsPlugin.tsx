@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-deprecated: 0 */
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   LexicalTypeaheadMenuPlugin,
