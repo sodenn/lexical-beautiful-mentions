@@ -18,6 +18,31 @@ test.describe("Mention Menu", () => {
     await expect(utils.mentionsMenu).not.toBeVisible();
   });
 
+  test("should not open the menu if no results found", async ({
+    page,
+    browserName,
+  }) => {
+    const utils = await testUtils(
+      { page, browserName },
+      {
+        autofocus: "end",
+        initialValue: "",
+        allowSpaces: true,
+        asynchronous: true,
+      },
+    );
+
+    await utils.editorType("@an");
+    await expect(page.getByText("Anton")).toBeVisible();
+
+    await utils.editorType(" ");
+    await expect(page.getByText("Loading...")).toBeVisible();
+    await expect(page.getByText("Loading...")).not.toBeVisible();
+
+    await utils.editorType("x");
+    await utils.expectNotVisibleFor(page.getByText("Loading..."), 1000);
+  });
+
   test("should open the menu before a comma", async ({ page, browserName }) => {
     const utils = await testUtils(
       { page, browserName },

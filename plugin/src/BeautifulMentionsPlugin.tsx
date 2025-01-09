@@ -250,7 +250,10 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     showCurrentMentionsAsSuggestions,
   ]);
 
-  const open = !!options.length || loading;
+  const queryWithoutResults =
+    !!onSearch && !options.length && !!queryString && /\s+/.test(queryString);
+
+  const open = !!options.length || (loading && !queryWithoutResults);
 
   const handleClose = useCallback(() => {
     setTrigger(null);

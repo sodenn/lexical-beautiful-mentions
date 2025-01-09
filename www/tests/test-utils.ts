@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+import { Locator } from "playwright";
 
 type Autofocus = "none" | "start" | "end";
 
@@ -143,8 +144,8 @@ export class TestUtils {
     return this.page.getByRole("textbox");
   }
 
-  async editorType(text: string) {
-    await this.editor.pressSequentially(text, { delay: 50 });
+  async editorType(text: string, delay = 50) {
+    await this.editor.pressSequentially(text, { delay });
     await this.sleep(this.browserName === "webkit" ? 200 : 100);
   }
 
@@ -172,6 +173,21 @@ export class TestUtils {
 
   sleep(ms: number) {
     return this.page.waitForTimeout(ms);
+  }
+
+  async expectNotVisibleFor(
+    locator: Locator,
+    duration: number,
+    interval: number = 100,
+  ): Promise<void> {
+    const startTime = Date.now();
+    while (Date.now() - startTime < duration) {
+      const isVisible = await locator.isVisible();
+      if (isVisible) {
+        throw new Error("Element became visible during the period");
+      }
+      await new Promise((resolve) => setTimeout(resolve, interval));
+    }
   }
 
   private setInitialValue(initialValue: string) {
