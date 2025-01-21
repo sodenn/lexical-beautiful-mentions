@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.45
+
+### Patch Changes
+
+- 4346b4d: fix(mentions): avoid opening the mention menu if no matching results are found #681
+
 ## 0.1.44
 
 ### Patch Changes
