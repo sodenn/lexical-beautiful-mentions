@@ -34,40 +34,40 @@ async function createModulePackages({ from, to }) {
         path.resolve(path.dirname(packageJsonPath), "../cjs")
       );
 
-      const packageJson = {
-        module: "./index.js",
-        main: topLevelPathImportsAreEcmaScriptModules
+      const packageJsonExports = {
+        types: "./index.d.ts",
+        import: "./index.js",
+        require: topLevelPathImportsAreEcmaScriptModules
           ? path.posix.join("../cjs", directoryPackage, "index.js")
           : "./index.js",
-        types: "./index.d.ts",
       };
 
       const [typingsEntryExist, moduleEntryExists, mainEntryExists] =
         await Promise.all([
           exists(
-            path.resolve(path.dirname(packageJsonPath), packageJson.types)
+            path.resolve(path.dirname(packageJsonPath), packageJsonExports.types)
           ),
           exists(
-            path.resolve(path.dirname(packageJsonPath), packageJson.module)
+            path.resolve(path.dirname(packageJsonPath), packageJsonExports.import)
           ),
-          exists(path.resolve(path.dirname(packageJsonPath), packageJson.main)),
-          writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2)),
+          exists(path.resolve(path.dirname(packageJsonPath), packageJsonExports.require)),
+          writeFile(packageJsonPath, JSON.stringify(packageJsonExports, null, 2)),
         ]);
 
       const manifestErrorMessages = [];
       if (!typingsEntryExist) {
         manifestErrorMessages.push(
-          `'types' entry '${packageJson.types}' does not exist`
+          `'types' entry '${packageJsonExports.types}' does not exist`
         );
       }
       if (!moduleEntryExists) {
         manifestErrorMessages.push(
-          `'module' entry '${packageJson.module}' does not exist`
+          `'module' entry '${packageJsonExports.import}' does not exist`
         );
       }
       if (!mainEntryExists) {
         manifestErrorMessages.push(
-          `'main' entry '${packageJson.main}' does not exist`
+          `'main' entry '${packageJsonExports.require}' does not exist`
         );
       }
       if (manifestErrorMessages.length > 0) {
@@ -99,9 +99,11 @@ async function createPackageFile() {
 
   const newPackageData = {
     ...packageDataOther,
-    main: "./cjs/index.js",
-    module: "./index.js",
-    types: "./index.d.ts",
+    exports: {
+      types: "./index.d.ts",
+      import: "./index.js",
+      require: "./cjs/index.js",
+    },
   };
 
   const targetPath = path.resolve(libPath, "./package.json");
