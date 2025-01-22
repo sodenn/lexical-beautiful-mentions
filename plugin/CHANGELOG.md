@@ -1,5 +1,11 @@
 # lexical-beautiful-mentions
 
+## 0.1.46
+
+### Patch Changes
+
+- 7e5c094: fix: use condition exports based on import type
+
 ## 0.1.45
 
 ### Patch Changes
