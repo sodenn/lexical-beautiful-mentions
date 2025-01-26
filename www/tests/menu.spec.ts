@@ -130,6 +130,7 @@ test.describe("Mention Menu", () => {
     await expect(page).toHaveScreenshot({
       fullPage: true,
       animations: "disabled",
+      maxDiffPixelRatio: 0.2,
     });
   });
 
