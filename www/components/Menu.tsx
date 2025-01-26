@@ -11,7 +11,7 @@ import { forwardRef } from "react";
 export function Menu({ loading, ...other }: BeautifulMentionsMenuProps) {
   if (loading) {
     return (
-      <div className="top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-2.5 text-sm text-popover-foreground shadow-md">
+      <div className="bg-popover text-popover-foreground top-[2px] m-0 min-w-[8rem] overflow-hidden rounded-md border p-2.5 text-sm shadow-md">
         Loading...
       </div>
     );
@@ -22,7 +22,7 @@ export function Menu({ loading, ...other }: BeautifulMentionsMenuProps) {
         scrollbarWidth: "none",
         msOverflowStyle: "none",
       }}
-      className="absolute top-[2px] m-0 min-w-[8rem] overflow-hidden whitespace-nowrap rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+      className="bg-popover text-popover-foreground absolute top-[2px] z-1 m-0 min-w-[8rem] overflow-hidden rounded-md border p-1 whitespace-nowrap shadow-md"
       {...other}
     />
   );
@@ -38,7 +38,7 @@ export const MenuItem = forwardRef<
   <li
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none",
+      "relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
       selected && "bg-accent text-accent-foreground",
     )}
     {...props}

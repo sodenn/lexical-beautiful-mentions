@@ -217,8 +217,8 @@ function Plugins() {
                 !combobox && "min-h-[5rem]",
                 focused &&
                   !combobox &&
-                  "outline-none ring-2 ring-ring ring-offset-2",
-                focused && combobox && "outline-none",
+                  "outline-hidden ring-2 ring-ring ring-offset-2",
+                focused && combobox && "outline-hidden",
               )}
             />
           }

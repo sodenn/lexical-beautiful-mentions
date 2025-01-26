@@ -33,7 +33,7 @@
     "globals": "15.14.0",
     "prettier": "3.4.2",
     "prettier-plugin-organize-imports": "4.1.0",
-    "prettier-plugin-tailwindcss": "0.6.10",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "turbo": "2.3.3",
@@ -46,5 +46,8 @@
     "react": "$react",
     "react-dom": "$react-dom"
   },
-  "packageManager": "npm@11.0.0"
+  "packageManager": "npm@11.0.0",
+  "dependencies": {
+    "tailwindcss": "^4.0.0"
+  }
 }
