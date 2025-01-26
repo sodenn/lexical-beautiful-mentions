@@ -34,7 +34,7 @@ function useConfigurationValue() {
   );
   const [creatable, _setCreatable] = useState(getQueryParam("new") === "true");
   const [insertOnBlur, _setInsertOnBlur] = useState(
-    getQueryParam("blur-sm") === "true",
+    getQueryParam("blur") === "true",
   );
   const [emptyComponent, _setEmptyComponent] = useState(
     getQueryParam("empty") === "true",
@@ -83,7 +83,7 @@ function useConfigurationValue() {
       ];
       if (combobox && insertOnBlur) {
         _setInsertOnBlur(false);
-        newParams.push({ name: "blur-sm", value: "false" });
+        newParams.push({ name: "blur", value: "false" });
       }
       if (combobox && emptyComponent) {
         _setEmptyComponent(false);
@@ -169,7 +169,7 @@ function useConfigurationValue() {
   const setInsertOnBlur = useCallback(
     (insertOnBlur: boolean) => {
       _setInsertOnBlur(insertOnBlur);
-      setQueryParams([{ name: "blur-sm", value: insertOnBlur.toString() }]);
+      setQueryParams([{ name: "blur", value: insertOnBlur.toString() }]);
     },
     [setQueryParams],
   );
