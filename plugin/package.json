@@ -31,8 +31,8 @@
     "build:cjs": "tsc -p tsconfig.build.json --m commonjs --outDir lib/cjs -t es2015",
     "build:esm": "tsc -p tsconfig.build.json --m esnext --outDir lib -t es6",
     "clean": "rimraf lib",
-    "copy": "node copy-files.js",
-    "publish:lib": "node publish-lib.js",
+    "copy": "node copy-files.mjs",
+    "publish:lib": "node publish-lib.mjs",
     "release": "run-s build publish:lib",
     "test": "vitest --run",
     "lint": "eslint .",
@@ -53,5 +53,10 @@
     "lexical": ">=0.11.0",
     "react": ">=17.x",
     "react-dom": ">=17.x"
+  },
+  "exports": {
+    "types": "./index.d.ts",
+    "import": "./index.js",
+    "require": "./cjs/index.js"
   }
 }
