@@ -3,13 +3,18 @@
   "version": "0.1.46",
   "license": "MIT",
   "description": "A mentions plugin for the lexical text editor.",
-  "main": "src/index.ts",
+  "type": "module",
+  "files": [
+    "lib",
+    "LICENSE",
+    "README.md"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sodenn/lexical-beautiful-mentions.git",
+    "url": "git+https://github.com/sodenn/lexical-beautiful-mentions.git",
     "directory": "packages/lexical-beautiful-mentions"
   },
   "keywords": [
@@ -31,8 +36,8 @@
     "build:cjs": "tsc -p tsconfig.build.json --m commonjs --outDir lib/cjs -t es2015",
     "build:esm": "tsc -p tsconfig.build.json --m esnext --outDir lib -t es6",
     "clean": "rimraf lib",
-    "copy": "node copy-files.mjs",
-    "publish:lib": "node publish-lib.mjs",
+    "copy": "node copy-files.js",
+    "publish:lib": "node publish-lib.js",
     "release": "run-s build publish:lib",
     "test": "vitest --run",
     "lint": "eslint .",
@@ -55,8 +60,8 @@
     "react-dom": ">=17.x"
   },
   "exports": {
-    "types": "./index.d.ts",
-    "import": "./index.js",
-    "require": "./cjs/index.js"
+    "types": "./lib/index.d.ts",
+    "import": "./lib/index.js",
+    "require": "./lib/cjs/index.js"
   }
 }
