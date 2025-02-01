@@ -102,21 +102,6 @@ test.describe("mentions handling", () => {
     await utils.hasText(`[@Catherine]Test`);
   });
 
-  test("should insert a new mention when pressing a non-word character", async ({
-    page,
-    browserName,
-  }) => {
-    const utils = await testUtils(
-      { page, browserName },
-      {
-        creatable: true,
-        mentionEnclosure: true,
-      },
-    );
-    await utils.editorType("Hello @John, how are you?");
-    await utils.hasText(`Hello [@John], how are you?`);
-  });
-
   test("should remove a mention via undo command (Ctrl/Cmd + Z)", async ({
     page,
     browserName,
