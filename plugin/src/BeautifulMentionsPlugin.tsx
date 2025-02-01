@@ -552,18 +552,13 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       const isTrigger = triggers.some((trigger) => combinedKey === trigger);
 
       if (!wordChar && !isTrigger && !isSpace) {
-        return convertTextToMention();
+        return false;
       }
+
       insertSpaceIfNecessary(isTrigger);
       return false;
     },
-    [
-      insertSpaceIfNecessary,
-      punctuation,
-      convertTextToMention,
-      triggers,
-      allowSpaces,
-    ],
+    [insertSpaceIfNecessary, punctuation, triggers, allowSpaces],
   );
 
   const handlePaste = useCallback(
