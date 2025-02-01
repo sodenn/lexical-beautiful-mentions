@@ -3,13 +3,18 @@
   "version": "0.1.46",
   "license": "MIT",
   "description": "A mentions plugin for the lexical text editor.",
-  "main": "src/index.ts",
+  "type": "module",
+  "files": [
+    "lib",
+    "LICENSE",
+    "README.md"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sodenn/lexical-beautiful-mentions.git",
+    "url": "git+https://github.com/sodenn/lexical-beautiful-mentions.git",
     "directory": "packages/lexical-beautiful-mentions"
   },
   "keywords": [
@@ -53,5 +58,10 @@
     "lexical": ">=0.11.0",
     "react": ">=17.x",
     "react-dom": ">=17.x"
+  },
+  "exports": {
+    "types": "./lib/index.d.ts",
+    "import": "./lib/index.js",
+    "require": "./lib/cjs/index.js"
   }
 }

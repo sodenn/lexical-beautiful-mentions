@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "plugins": [{ "name": "next" }],

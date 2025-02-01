@@ -1,5 +1,5 @@
-const path = require("path");
-const { execSync } = require("child_process");
+import { execSync } from "node:child_process";
+import path from "node:path";
 
 const libPath = path.join(__dirname, "./lib");
 

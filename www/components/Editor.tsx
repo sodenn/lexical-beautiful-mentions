@@ -21,8 +21,8 @@ import {
   BeautifulMentionsItem,
   BeautifulMentionsPlugin,
   BeautifulMentionsPluginProps,
+  PlaceholderPlugin,
 } from "lexical-beautiful-mentions";
-import { PlaceholderPlugin } from "lexical-beautiful-mentions/src/PlaceholderPlugin";
 import { useCallback, useMemo, useRef, useState } from "react";
 import "./Editor.css";
 
@@ -213,11 +213,11 @@ function Plugins() {
             <ContentEditable
               style={{ tabSize: 1 }}
               className={cn(
-                "z-1 relative w-full flex-1 rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground",
+                "border-input bg-background ring-offset-background placeholder:text-muted-foreground relative z-1 w-full flex-1 rounded-md border px-3 py-2",
                 !combobox && "min-h-[5rem]",
                 focused &&
                   !combobox &&
-                  "outline-hidden ring-2 ring-ring ring-offset-2",
+                  "ring-ring ring-2 ring-offset-2 outline-hidden",
                 focused && combobox && "outline-hidden",
               )}
             />
