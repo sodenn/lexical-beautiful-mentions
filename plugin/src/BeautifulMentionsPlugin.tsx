@@ -354,104 +354,6 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
     [preTriggerChars, allowSpaces, punctuation, triggers],
   );
 
-  const convertTextToMention = useCallback(() => {
-    const selectedMenuIndex = selectedMenuIndexRef.current;
-    let option =
-      typeof selectedMenuIndex === "number"
-        ? options[selectedMenuIndex]
-        : undefined;
-    const newMention = options.find((o) => o.value !== o.displayValue);
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (newMention && (IS_MOBILE || option === null)) {
-      option = newMention;
-    }
-    if (!option) {
-      return false;
-    }
-    const selectionInfo = $getSelectionInfo(triggers, punctuation);
-    if (!trigger || !selectionInfo?.isTextNode) {
-      return false;
-    }
-    const node = selectionInfo.node;
-    const textContent = getTextContent(node);
-    const queryMatch = checkForMentions(
-      textContent,
-      triggers,
-      preTriggerChars,
-      punctuation,
-      allowSpaces,
-    );
-    if (queryMatch === null) {
-      return false;
-    }
-    const textEndIndex = textContent.search(
-      new RegExp(`${queryMatch.replaceableString}\\s?$`),
-    );
-    if (textEndIndex === -1) {
-      return false;
-    }
-    const mentionNode = $createBeautifulMentionNode(
-      trigger,
-      option.value,
-      option.data,
-    );
-    editor.update(
-      () => {
-        node.setTextContent(textContent.substring(0, textEndIndex));
-        node.insertAfter(mentionNode);
-        mentionNode.selectNext();
-      },
-      { tag: "history-merge" },
-    );
-    return true;
-  }, [
-    editor,
-    options,
-    preTriggerChars,
-    punctuation,
-    trigger,
-    triggers,
-    allowSpaces,
-  ]);
-
-  const restoreSelection = useCallback(() => {
-    const selection = $getSelection();
-    if ((!selection || $isNodeSelection(selection)) && oldSelection.current) {
-      const newSelection = oldSelection.current.clone();
-      $setSelection(newSelection);
-    } else if (!selection) {
-      $selectEnd();
-    }
-    if (oldSelection.current) {
-      oldSelection.current = null;
-    }
-  }, []);
-
-  const handleDeleteMention = useCallback(
-    (event: KeyboardEvent) => {
-      if (!showMentionsOnDelete) {
-        return false;
-      }
-      const selectionInfo = $getSelectionInfo(triggers, punctuation);
-      if (selectionInfo) {
-        const { node, prevNode, offset } = selectionInfo;
-        const mentionNode = $isBeautifulMentionNode(node)
-          ? node
-          : $isBeautifulMentionNode(prevNode) && offset === 0
-            ? prevNode
-            : null;
-        if (mentionNode) {
-          const trigger = mentionNode.getTrigger();
-          mentionNode.replace($createTextNode(trigger));
-          event.preventDefault();
-          return true;
-        }
-      }
-      return false;
-    },
-    [showMentionsOnDelete, triggers, punctuation],
-  );
-
   const insertSpaceIfNecessary = useCallback(
     (startsWithTriggerChar = false) => {
       if (!autoSpace) {
@@ -527,6 +429,117 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
       }
     },
     [punctuation, triggers, autoSpace],
+  );
+
+  const convertTextToMention = useCallback(
+    (refocusAfterInsert = false) => {
+      const selectedMenuIndex = selectedMenuIndexRef.current;
+      let option =
+        typeof selectedMenuIndex === "number"
+          ? options[selectedMenuIndex]
+          : undefined;
+      const newMention = options.find((o) => o.value !== o.displayValue);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (newMention && (IS_MOBILE || option === null)) {
+        option = newMention;
+      }
+      if (!option) {
+        return false;
+      }
+      const selectionInfo = $getSelectionInfo(triggers, punctuation);
+      if (!trigger || !selectionInfo?.isTextNode) {
+        return false;
+      }
+      const node = selectionInfo.node;
+      const textContent = getTextContent(node);
+      const queryMatch = checkForMentions(
+        textContent,
+        triggers,
+        preTriggerChars,
+        punctuation,
+        allowSpaces,
+      );
+      if (queryMatch === null) {
+        return false;
+      }
+      const textEndIndex = textContent.search(
+        new RegExp(`${queryMatch.replaceableString}\\s?$`),
+      );
+      if (textEndIndex === -1) {
+        return false;
+      }
+      const mentionNode = $createBeautifulMentionNode(
+        trigger,
+        option.value,
+        option.data,
+      );
+      editor.update(
+        () => {
+          node.setTextContent(textContent.substring(0, textEndIndex));
+          node.insertAfter(mentionNode);
+          mentionNode.selectNext();
+        },
+        { tag: "history-merge" },
+      );
+      if (refocusAfterInsert) {
+        const selection = $getSelection();
+        setTimeout(() => {
+          editor.update(() => {
+            if (selection) {
+              $setSelection(selection.clone());
+            }
+          });
+        });
+      }
+      return true;
+    },
+    [
+      options,
+      triggers,
+      punctuation,
+      trigger,
+      preTriggerChars,
+      allowSpaces,
+      editor,
+    ],
+  );
+
+  const restoreSelection = useCallback(() => {
+    const selection = $getSelection();
+    if ((!selection || $isNodeSelection(selection)) && oldSelection.current) {
+      const newSelection = oldSelection.current.clone();
+      $setSelection(newSelection);
+    } else if (!selection) {
+      $selectEnd();
+    }
+    if (oldSelection.current) {
+      oldSelection.current = null;
+    }
+  }, []);
+
+  const handleDeleteMention = useCallback(
+    (event: KeyboardEvent) => {
+      if (!showMentionsOnDelete) {
+        return false;
+      }
+      const selectionInfo = $getSelectionInfo(triggers, punctuation);
+      if (selectionInfo) {
+        const { node, prevNode, offset } = selectionInfo;
+        const mentionNode = $isBeautifulMentionNode(node)
+          ? node
+          : $isBeautifulMentionNode(prevNode) && offset === 0
+            ? prevNode
+            : null;
+        if (mentionNode) {
+          const trigger = mentionNode.getTrigger();
+          mentionNode.replace($createTextNode(trigger));
+          event.preventDefault();
+          return true;
+        }
+      }
+      return false;
+    },
+    [showMentionsOnDelete, triggers, punctuation],
   );
 
   const handleKeyDown = useCallback(
@@ -611,7 +624,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
         BLUR_COMMAND,
         () => {
           if (insertOnBlur) {
-            return convertTextToMention();
+            return convertTextToMention(true);
           }
           return false;
         },
