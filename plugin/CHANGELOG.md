@@ -1,5 +1,12 @@
 # lexical-beautiful-mentions
 
+## 0.1.47
+
+### Patch Changes
+
+- 6c47650: chore: mark PlaceholderPlugin as deprecated, no longer needed
+- 5644f09: fix(): insert mentions via the keyboard only by enter key
+
 ## 0.1.46
 
 ### Patch Changes
