@@ -46,9 +46,9 @@
     "@types/react-dom": "19.0.3",
     "@types/sanitize-html": "2.13.0",
     "autoprefixer": "10.4.20",
-    "eslint-config-next": "15.1.6",
+    "eslint-config-next": "15.1.7",
     "playwright": "1.50.1",
-    "postcss": "8.5.1",
-    "@tailwindcss/postcss": "4.0.4"
+    "postcss": "8.5.2",
+    "@tailwindcss/postcss": "4.0.6"
   }
 }
