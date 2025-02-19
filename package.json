@@ -18,13 +18,13 @@
     "release": "turbo run release && changeset tag"
   },
   "devDependencies": {
-    "@changesets/cli": "2.27.12",
+    "@changesets/cli": "2.28.0",
     "@eslint/compat": "1.2.6",
     "@eslint/eslintrc": "3.2.0",
     "@eslint/js": "9.20.0",
     "@types/eslint__js": "8.42.3",
-    "@types/react": "19.0.8",
-    "@types/react-dom": "19.0.3",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
     "eslint": "9.20.1",
     "eslint-config-prettier": "10.0.1",
     "eslint-config-turbo": "2.4.2",
@@ -38,7 +38,7 @@
     "react-dom": "19.0.0",
     "turbo": "2.4.2",
     "typescript": "5.7.3",
-    "typescript-eslint": "8.24.0"
+    "typescript-eslint": "8.24.1"
   },
   "overrides": {
     "@types/react": "$@types/react",

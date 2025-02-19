@@ -42,13 +42,13 @@
     "@playwright/test": "1.50.1",
     "@types/dompurify": "3.2.0",
     "@types/node": "22.13.4",
-    "@types/react": "19.0.8",
-    "@types/react-dom": "19.0.3",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
     "@types/sanitize-html": "2.13.0",
     "autoprefixer": "10.4.20",
     "eslint-config-next": "15.1.7",
     "playwright": "1.50.1",
     "postcss": "8.5.2",
-    "@tailwindcss/postcss": "4.0.6"
+    "@tailwindcss/postcss": "4.0.7"
   }
 }
