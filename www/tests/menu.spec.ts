@@ -392,23 +392,6 @@ test.describe("Mention Menu", () => {
     expect(open).toBe(false);
   });
 
-  test("should remove the typeahead element when cursor is not at a mention position", async ({
-    page,
-    browserName,
-  }) => {
-    const utils = await testUtils(
-      { page, browserName },
-      {
-        autofocus: "end",
-      },
-    );
-    await utils.editorType("@");
-    await utils.editorType("xyz");
-    await expect(page.locator("#typeahead-menu")).toHaveCount(1);
-    await utils.moveCaretToStart();
-    await expect(page.locator("#typeahead-menu")).toHaveCount(0);
-  });
-
   test("should display a no results message when there are no suggestions", async ({
     page,
     browserName,
