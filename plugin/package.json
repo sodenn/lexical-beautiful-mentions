@@ -41,7 +41,7 @@
   "devDependencies": {
     "@testing-library/react": "16.2.0",
     "fast-glob": "3.3.3",
-    "happy-dom": "17.1.1",
+    "happy-dom": "17.1.2",
     "npm-run-all2": "7.0.2",
     "rimraf": "6.0.1",
     "vite": "6.1.1",
