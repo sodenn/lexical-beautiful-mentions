@@ -40,10 +40,9 @@
     "typescript-eslint": "8.25.0"
   },
   "overrides": {
-    "@types/react": "$@types/react",
-    "@types/react-dom": "$@types/react-dom",
-    "react": "$react",
-    "react-dom": "$react-dom"
+    "typescript-eslint": {
+      "typescript": "$typescript"
+    }
   },
   "packageManager": "npm@11.1.0"
 }
