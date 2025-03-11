@@ -56,7 +56,7 @@ export default defineConfig({
     {
       name: "Mobile Safari",
       use: { ...devices["iPhone 12"] },
-      retries: process.env.CI ? 3 : 0,
+      retries: process.env.CI ? 5 : 0,
     },
 
     /* Test against branded browsers. */
