@@ -199,7 +199,7 @@ export class BeautifulMentionNode extends DecoratorNode<React.JSX.Element> {
 
   getCssClassesFromTheme(config: EditorConfig) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const theme: BeautifulMentionsTheme = config.theme.beautifulMentions || {};
+    const theme: BeautifulMentionsTheme = config.theme.beautifulMentions ?? {};
     const themeEntry = Object.entries(theme).find(([trigger]) =>
       new RegExp(trigger).test(this.__trigger),
     );
