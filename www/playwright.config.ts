@@ -1,4 +1,3 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
 import { defineConfig, devices } from "@playwright/test";
 
 /**
@@ -56,7 +55,7 @@ export default defineConfig({
     {
       name: "Mobile Safari",
       use: { ...devices["iPhone 12"] },
-      retries: process.env.CI ? 5 : 0,
+      testMatch: process.env.CI ? [] : ["**/*.spec.ts"],
     },
 
     /* Test against branded browsers. */
