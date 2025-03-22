@@ -41,11 +41,11 @@
   "devDependencies": {
     "@testing-library/react": "16.2.0",
     "fast-glob": "3.3.3",
-    "happy-dom": "17.4.3",
+    "happy-dom": "17.4.4",
     "npm-run-all2": "7.0.2",
     "rimraf": "6.0.1",
-    "vite": "6.2.1",
-    "vitest": "3.0.8"
+    "vite": "6.2.2",
+    "vitest": "3.0.9"
   },
   "peerDependencies": {
     "@lexical/react": ">=0.11.0",
