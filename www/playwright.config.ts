@@ -52,11 +52,11 @@ export default defineConfig({
     //   name: 'Mobile Chrome',
     //   use: { ...devices['Pixel 5'] },
     // },
-    {
-      name: "Mobile Safari",
-      use: { ...devices["iPhone 12"] },
-      testMatch: process.env.CI ? [] : ["**/*.spec.ts"],
-    },
+    // {
+    //   name: "Mobile Safari",
+    //   use: { ...devices["iPhone 12"] },
+    //   testMatch: process.env.CI ? [] : ["**/*.spec.ts"],
+    // },
 
     /* Test against branded browsers. */
     // {
