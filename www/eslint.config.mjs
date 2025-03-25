@@ -1,5 +1,6 @@
 import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
+import playwright from "eslint-plugin-playwright";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -13,6 +14,10 @@ const compat = new FlatCompat({
 
 export default [
   ...compat.extends("next"),
+  {
+    ...playwright.configs["flat/recommended"],
+    files: ["tests/**"],
+  },
   {
     rules: {
       "@next/next/no-html-link-for-pages": "off",

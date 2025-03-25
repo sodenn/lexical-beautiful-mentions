@@ -146,7 +146,7 @@ export class TestUtils {
 
   async editorType(text: string, delay = 50) {
     await this.editor.pressSequentially(text, { delay });
-    await this.sleep(this.browserName === "webkit" ? 200 : 100);
+    await this.sleep(200);
   }
 
   get mentionsMenu() {
@@ -158,13 +158,13 @@ export class TestUtils {
   }
 
   async isMenuOrComboboxOpen() {
-    await this.sleep(this.browserName === "webkit" ? 1000 : 0);
+    await this.sleep(200);
     const text = await this.page.getByTestId("menu-combobox-open").innerText();
     return text === "true";
   }
 
   async isComboboxItemSelected() {
-    await this.sleep(this.browserName === "webkit" ? 1000 : 0);
+    await this.sleep(200);
     const text = await this.page
       .getByTestId("combobox-item-selected")
       .innerText();
@@ -172,6 +172,7 @@ export class TestUtils {
   }
 
   sleep(ms: number) {
+    // eslint-disable-next-line playwright/no-wait-for-timeout
     return this.page.waitForTimeout(ms);
   }
 
@@ -195,7 +196,6 @@ export class TestUtils {
   }
 
   private async goto() {
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
     const host = process.env.HOST || "localhost";
     let url = `http://${host}:3000?focus=${this.autofocus}`;
     url += `&async=${this.asynchronous}`;
