@@ -44,7 +44,7 @@
     "happy-dom": "17.4.4",
     "npm-run-all2": "7.0.2",
     "rimraf": "6.0.1",
-    "vite": "6.2.2",
+    "vite": "6.2.3",
     "vitest": "3.0.9"
   },
   "peerDependencies": {
