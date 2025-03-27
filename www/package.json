@@ -50,6 +50,6 @@
     "eslint-plugin-playwright": "2.2.0",
     "playwright": "1.51.1",
     "postcss": "8.5.3",
-    "@tailwindcss/postcss": "4.0.16"
+    "@tailwindcss/postcss": "4.0.17"
   }
 }
