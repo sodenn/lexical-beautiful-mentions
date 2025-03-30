@@ -44,7 +44,7 @@
     "@types/node": "22.13.14",
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
-    "@types/sanitize-html": "2.13.0",
+    "@types/sanitize-html": "2.15.0",
     "autoprefixer": "10.4.21",
     "eslint-config-next": "15.2.4",
     "eslint-plugin-playwright": "2.2.0",
