@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.26.10",
-    "@playwright/test": "1.51.1",
+    "@playwright/test": "1.52.0",
     "@types/dompurify": "3.2.0",
     "@types/node": "22.14.1",
     "@types/react": "19.1.1",
@@ -48,7 +48,7 @@
     "autoprefixer": "10.4.21",
     "eslint-config-next": "15.3.0",
     "eslint-plugin-playwright": "2.2.0",
-    "playwright": "1.51.1",
+    "playwright": "1.52.0",
     "postcss": "8.5.3",
     "@tailwindcss/postcss": "4.1.3"
   }
