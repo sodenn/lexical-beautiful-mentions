@@ -41,7 +41,7 @@
     "@babel/core": "7.26.10",
     "@playwright/test": "1.52.0",
     "@types/dompurify": "3.2.0",
-    "@types/node": "22.15.2",
+    "@types/node": "22.15.3",
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
     "@types/sanitize-html": "2.15.0",
