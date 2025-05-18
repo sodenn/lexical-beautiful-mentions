@@ -545,7 +545,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const { key, metaKey, ctrlKey } = event;
-      const simpleKey = key.length === 1;
+      const simpleKey = key?.length === 1; // key is undefined for Apple Pencil keyboard events
       const wordChar = isWordChar(key, triggers, punctuation);
       const isSpace = allowSpaces && /^\s$/.test(key);
       if (!simpleKey || metaKey || ctrlKey) {
