@@ -42,7 +42,7 @@
     "@playwright/test": "1.52.0",
     "@types/dompurify": "3.2.0",
     "@types/node": "22.15.18",
-    "@types/react": "19.1.4",
+    "@types/react": "19.1.5",
     "@types/react-dom": "19.1.5",
     "@types/sanitize-html": "2.16.0",
     "autoprefixer": "10.4.21",
