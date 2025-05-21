@@ -44,5 +44,5 @@
       "typescript": "$typescript"
     }
   },
-  "packageManager": "npm@11.4.0"
+  "packageManager": "npm@11.4.1"
 }
