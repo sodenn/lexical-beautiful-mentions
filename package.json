@@ -22,22 +22,22 @@
     "@eslint/compat": "1.2.9",
     "@eslint/eslintrc": "3.3.1",
     "@eslint/js": "9.27.0",
-    "@types/react": "19.1.5",
+    "@types/react": "19.1.6",
     "@types/react-dom": "19.1.5",
     "eslint": "9.27.0",
     "eslint-config-prettier": "10.1.5",
-    "eslint-config-turbo": "2.5.3",
+    "eslint-config-turbo": "2.5.4",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "5.2.0",
     "globals": "16.2.0",
     "prettier": "3.5.3",
     "prettier-plugin-organize-imports": "4.1.0",
-    "prettier-plugin-tailwindcss": "0.6.11",
+    "prettier-plugin-tailwindcss": "0.6.12",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "turbo": "2.5.3",
+    "turbo": "2.5.4",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.32.1"
+    "typescript-eslint": "8.33.0"
   },
   "overrides": {
     "typescript-eslint": {
