@@ -343,6 +343,16 @@ Hide the menu item that allows users to create new mentions:
 />
 ```
 
+Hide the menu item that allows users to create new mentions for specific triggers, while enabling it for other triggers:
+
+```tsx
+
+<BeautifulMentionsPlugin
+  items={mentionItems}
+  creatable={{ "@": `Add user "{{name}}"`, "#": false }} // 👈 allow creating "@" mentions but not "#" mentions
+/>
+```
+
 ### Async query function
 
 ```tsx
