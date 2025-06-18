@@ -545,6 +545,7 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const { key, metaKey, ctrlKey } = event;
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       const simpleKey = key?.length === 1; // key is undefined for Apple Pencil keyboard events
       const wordChar = isWordChar(key, triggers, punctuation);
       const isSpace = allowSpaces && /^\s$/.test(key);
