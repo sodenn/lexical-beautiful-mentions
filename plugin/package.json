@@ -45,7 +45,7 @@
     "npm-run-all2": "8.0.4",
     "rimraf": "6.0.1",
     "vite": "6.3.5",
-    "vitest": "3.2.3"
+    "vitest": "3.2.4"
   },
   "peerDependencies": {
     "@lexical/react": ">=0.11.0",
