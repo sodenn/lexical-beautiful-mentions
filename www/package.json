@@ -46,7 +46,7 @@
     "@types/react-dom": "19.1.6",
     "@types/sanitize-html": "2.16.0",
     "autoprefixer": "10.4.21",
-    "eslint-config-next": "15.4.2",
+    "eslint-config-next": "15.4.4",
     "eslint-plugin-playwright": "2.2.0",
     "playwright": "1.54.1",
     "postcss": "8.5.6",
