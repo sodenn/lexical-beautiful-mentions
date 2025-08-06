@@ -38,6 +38,7 @@ export function createBeautifulMentionNode(
           node.getData(),
         );
       },
+      withKlass: CustomBeautifulMentionNode
     },
   ];
 }
