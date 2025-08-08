@@ -7,7 +7,7 @@ import {
   SerializedBeautifulMentionNode,
 } from "./MentionNode";
 
-export type CustomBeautifulMentionNodeClass = ReturnType<typeof generateClass>;
+export type CustomBeautifulMentionNodeClass = typeof BeautifulMentionNode;
 
 export let CustomBeautifulMentionNode: CustomBeautifulMentionNodeClass;
 
