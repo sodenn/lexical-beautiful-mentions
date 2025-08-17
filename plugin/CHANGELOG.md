@@ -1,5 +1,13 @@
 # lexical-beautiful-mentions
 
+## 0.1.48
+
+### Patch Changes
+
+- 265c6f9: fix: prevent error with Apple Pencil when key is undefined
+- eedeb27: chore(): improve return type of createBeautifulMentionNode
+- 1cb250c: fix(createMentionNode): Add 'withKlass' to lexical node replacement
+
 ## 0.1.47
 
 ### Patch Changes
@@ -227,11 +235,9 @@
 - 2ff69af: fix(): do not close combobox when editor focus is lost
 - 2ff69af: feat(Combobox): allow to add additional combobox items
 - 4ce0123: - refactor(): remove `open` prop from Menu component
-
   - refactor(): called `onComboboxFocusChange` with a `BeautifulMentionsComboboxItem` instead of a string
 
   **BREAKING**
-
   - `open` prop has been removed from `BeautifulMentionsMenuProps`
   - `onComboboxFocusChange` now receives a `BeautifulMentionsComboboxItem` instead of a string
 
@@ -251,7 +257,6 @@
 - 5760567: feat(): more reliable information about the state of the menu / combobox
 
   **BREAKING**:
-
   - Renamed `openMentionsMenu` to `openMentionMenu`
   - Removed the `isMentionsMenuOpen` and `isTriggersMenuOpen` functions from the `useBeautifulMentions` hook in favor of the new `onMenuOpen`, `onMenuClose`, `onComboboxOpen`, `onComboboxClose` and `onComboboxItemSelect` props of the `BeautifulMentionsPlugin` component. This leads to a more reliable information about the state of the menu / combobox, since it is no longer determined by DOM elements.
 
