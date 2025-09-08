@@ -110,11 +110,9 @@ test.describe("mentions handling", () => {
     test.skip(!!isMobile, "desktop only");
     const utils = await testUtils({ page, browserName });
     const undoCommand = process.platform === "darwin" ? "Meta+Z" : "Control+Z";
-    await utils.editorType("@Catherine");
+    await utils.editorType("@C", 1000);
     await utils.editor.press("Enter");
     await utils.hasText("[@Catherine]");
-    await utils.editor.press(undoCommand);
-    await utils.hasText("@Catherine");
     await utils.editor.press(undoCommand);
     await utils.hasText("@C");
     await utils.editor.press(undoCommand);
