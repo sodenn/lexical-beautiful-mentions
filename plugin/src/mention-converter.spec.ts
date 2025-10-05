@@ -6,7 +6,6 @@ import {
   $convertToMarkdownString,
   TRANSFORMERS,
 } from "@lexical/markdown";
-import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { $nodesOfType, createEditor, ParagraphNode, TextNode } from "lexical";
 import { describe, expect, it } from "vitest";
@@ -144,7 +143,6 @@ describe("mention-converter", () => {
       nodes: [
         BeautifulMentionNode,
         PlaceholderNode,
-        HorizontalRuleNode,
         CodeNode,
         HeadingNode,
         LinkNode,
