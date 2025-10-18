@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 "use client"; // prettier-ignore
 import { Combobox, ComboboxItem } from "@/components/Combobox";
 import { useConfiguration } from "@/components/ConfigurationProvider";
