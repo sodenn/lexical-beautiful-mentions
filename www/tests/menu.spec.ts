@@ -15,7 +15,7 @@ test.describe("Mention Menu", () => {
     );
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.blur();
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
   });
 
   test("should not open the menu if no results found", async ({
@@ -37,7 +37,7 @@ test.describe("Mention Menu", () => {
 
     await utils.editorType(" ");
     await expect(page.getByText("Loading...")).toBeVisible();
-    await expect(page.getByText("Loading...")).not.toBeVisible();
+    await expect(page.getByText("Loading...")).toBeHidden();
 
     await utils.editorType("x");
     await utils.expectNotVisibleFor(page.getByText("Loading..."), 1000);
@@ -71,8 +71,11 @@ test.describe("Mention Menu", () => {
       },
     );
     await utils.editorType("@Cather");
+    await page.waitForTimeout(200);
     await page.keyboard.press("ArrowLeft");
+    await page.waitForTimeout(200);
     await page.keyboard.press("Enter");
+    await page.waitForTimeout(200);
     await utils.hasText("[@Catherine]");
   });
 
@@ -102,7 +105,7 @@ test.describe("Mention Menu", () => {
     await utils.editorType("@Anton");
     await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(1);
     await expect(utils.mentionsMenu.getByText("Anton")).toBeVisible();
-    await expect(utils.mentionsMenu.getByText(`Add "ant"`)).not.toBeVisible();
+    await expect(utils.mentionsMenu.getByText(`Add "ant"`)).toBeHidden();
   });
 
   test("should not show the option to add a new mention if disabled", async ({
@@ -147,7 +150,7 @@ test.describe("Mention Menu", () => {
     );
     await utils.editorType("@abc");
     await utils.editor.blur();
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await utils.hasText("[@abc]");
   });
 
@@ -170,7 +173,7 @@ test.describe("Mention Menu", () => {
       "Gina",
     );
     await utils.editor.blur();
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await utils.hasText("[@Gina]");
   });
 
@@ -193,7 +196,7 @@ test.describe("Mention Menu", () => {
       "",
     );
     await utils.editor.blur();
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await utils.hasText("[@Gi]");
   });
 
@@ -207,7 +210,7 @@ test.describe("Mention Menu", () => {
     await utils.editorType("@b");
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.press("Enter");
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await utils.hasText("[@Boris]");
   });
 
@@ -220,7 +223,7 @@ test.describe("Mention Menu", () => {
     const utils = await testUtils({ page, browserName });
     await utils.editorType("@");
     await utils.editor.press("Tab");
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await utils.hasText("[@Anton]");
   });
 
@@ -234,7 +237,7 @@ test.describe("Mention Menu", () => {
     await utils.editorType("@");
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.editor.press("Escape");
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
   });
 
   test("should not insert the entered text as mention when the editor is blurred", async ({
@@ -247,7 +250,7 @@ test.describe("Mention Menu", () => {
     );
     await utils.editorType("@abc");
     await utils.editor.blur();
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await utils.hasText("@abc");
     await utils.focusEnd();
     await utils.editorType(" abc");
@@ -261,7 +264,7 @@ test.describe("Mention Menu", () => {
     const utils = await testUtils({ page, browserName });
     await utils.editorType("@");
     await utils.editor.blur();
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await utils.hasText("@");
   });
 
@@ -295,7 +298,7 @@ test.describe("Mention Menu", () => {
     await utils.editorType("@");
     await expect(page.getByText("Loading...")).toBeVisible();
     await expect(utils.mentionsMenu.getByRole("menuitem")).toHaveCount(5);
-    await expect(page.getByText("Loading...")).not.toBeVisible();
+    await expect(page.getByText("Loading...")).toBeHidden();
   });
 
   test("should list existing mentions from the editor as suggestions", async ({
@@ -349,7 +352,7 @@ test.describe("Mention Menu", () => {
     );
     await utils.editor.press("Backspace");
     await utils.sleep(200);
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
   });
 
   test("should display the mention menu after deleting a mention in the middle of a sentence", async ({
@@ -403,7 +406,7 @@ test.describe("Mention Menu", () => {
         emptyComponent: true,
       },
     );
-    await expect(page.getByText("No results found")).not.toBeVisible();
+    await expect(page.getByText("No results found")).toBeHidden();
     await utils.editorType("@unknown");
     await expect(page.getByText("No results found")).toBeVisible();
   });
