@@ -22,7 +22,7 @@ import {
   BeautifulMentionsPlugin,
   BeautifulMentionsPluginProps,
 } from "lexical-beautiful-mentions";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import "./Editor.css";
 
 const mentionItems: Record<string, BeautifulMentionsItem[]> = {
@@ -95,6 +95,7 @@ function Plugins() {
   const comboboxAnchor = useRef<HTMLDivElement>(null);
   const [menuOrComboboxOpen, setMenuOrComboboxOpen] = useState(false);
   const [comboboxItemSelected, setComboboxItemSelected] = useState(false);
+  const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(null);
   const focused = useIsFocused();
   const triggers = useMemo(
     () =>
@@ -116,6 +117,10 @@ function Plugins() {
         : [],
     [_comboboxAdditionalItems],
   );
+
+  useEffect(() => {
+    setAnchorElement(comboboxAnchor.current);
+  }, []);
 
   const handleChange = useCallback((editorState: EditorState) => {
     editorState.read(() => {
@@ -155,46 +160,68 @@ function Plugins() {
     [],
   );
 
-  const beautifulMentionsProps: BeautifulMentionsPluginProps = {
-    mentionEnclosure,
-    allowSpaces,
-    autoSpace,
-    creatable,
-    showMentionsOnDelete,
-    ...(asynchronous
-      ? {
-          onSearch: handleSearch,
-          searchDelay: 250,
-          triggers,
-        }
-      : {
-          items: mentionItems,
-        }),
-    ...(combobox
-      ? {
-          combobox,
-          triggers,
-          comboboxOpen: menuOrComboboxOpen,
-          comboboxAnchor: comboboxAnchor.current,
-          comboboxAnchorClassName:
-            "ring-2 ring-ring ring-offset-2 ring-offset-background rounded-md",
-          comboboxComponent: Combobox,
-          comboboxItemComponent: ComboboxItem,
-          onComboboxOpen: handleMenuOrComboboxOpen,
-          onComboboxClose: handleMenuOrComboboxClose,
-          onComboboxFocusChange: handleComboboxFocusChange,
-          comboboxAdditionalItems,
-          onComboboxItemSelect: handleComboboxItemSelect,
-        }
-      : {
-          menuComponent: Menu,
-          menuItemComponent: MenuItem,
-          emptyComponent: emptyComponent ? Empty : undefined,
-          onMenuOpen: handleMenuOrComboboxOpen,
-          onMenuClose: handleMenuOrComboboxClose,
-          insertOnBlur,
-        }),
-  };
+  const beautifulMentionsProps: BeautifulMentionsPluginProps = useMemo(
+    () => ({
+      mentionEnclosure,
+      allowSpaces,
+      autoSpace,
+      creatable,
+      showMentionsOnDelete,
+      ...(asynchronous
+        ? {
+            onSearch: handleSearch,
+            searchDelay: 250,
+            triggers,
+          }
+        : {
+            items: mentionItems,
+          }),
+      ...(combobox
+        ? {
+            combobox,
+            triggers,
+            comboboxOpen: menuOrComboboxOpen,
+            comboboxAnchor: anchorElement,
+            comboboxAnchorClassName:
+              "ring-2 ring-ring ring-offset-2 ring-offset-background rounded-md",
+            comboboxComponent: Combobox,
+            comboboxItemComponent: ComboboxItem,
+            onComboboxOpen: handleMenuOrComboboxOpen,
+            onComboboxClose: handleMenuOrComboboxClose,
+            onComboboxFocusChange: handleComboboxFocusChange,
+            comboboxAdditionalItems,
+            onComboboxItemSelect: handleComboboxItemSelect,
+          }
+        : {
+            menuComponent: Menu,
+            menuItemComponent: MenuItem,
+            emptyComponent: emptyComponent ? Empty : undefined,
+            onMenuOpen: handleMenuOrComboboxOpen,
+            onMenuClose: handleMenuOrComboboxClose,
+            insertOnBlur,
+          }),
+    }),
+    [
+      mentionEnclosure,
+      allowSpaces,
+      autoSpace,
+      creatable,
+      showMentionsOnDelete,
+      asynchronous,
+      handleSearch,
+      triggers,
+      combobox,
+      menuOrComboboxOpen,
+      anchorElement,
+      handleMenuOrComboboxOpen,
+      handleMenuOrComboboxClose,
+      handleComboboxFocusChange,
+      comboboxAdditionalItems,
+      handleComboboxItemSelect,
+      emptyComponent,
+      insertOnBlur,
+    ],
+  );
 
   return (
     <>

@@ -12,7 +12,7 @@ test.describe("Open Suggestions", () => {
         initialValue: "Hey @John, the task is #urgent and due:tomorrow",
       },
     );
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await page.getByText("Open Suggestions").click();
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.hasText(
@@ -32,7 +32,7 @@ test.describe("Open Suggestions", () => {
     );
     await page.getByText("Remove Mention").click();
     await utils.countMentions(2);
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await page.getByText("Open Suggestions").click();
     await expect(utils.mentionsMenu).toBeVisible();
   });
@@ -48,7 +48,7 @@ test.describe("Open Suggestions", () => {
         initialValue: "Hey",
       },
     );
-    await expect(utils.mentionsMenu).not.toBeVisible();
+    await expect(utils.mentionsMenu).toBeHidden();
     await page.getByText("Open Suggestions").click();
     await expect(utils.mentionsMenu).toBeVisible();
     await utils.hasText("Hey @");
