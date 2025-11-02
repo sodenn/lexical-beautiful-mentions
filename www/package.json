@@ -7,7 +7,7 @@
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit --incremental false",
     "e2e": "playwright test --reporter=line",
     "e2e:update": "playwright test --reporter=line -g \"should dynamically position the menu\" --update-snapshots",
@@ -40,6 +40,7 @@
   "devDependencies": {
     "@babel/core": "7.28.5",
     "@playwright/test": "1.56.1",
+    "@tailwindcss/postcss": "4.1.16",
     "@types/dompurify": "3.2.0",
     "@types/node": "24.9.2",
     "@types/react": "19.2.2",
@@ -49,7 +50,6 @@
     "eslint-config-next": "16.0.1",
     "eslint-plugin-playwright": "2.3.0",
     "playwright": "1.56.1",
-    "postcss": "8.5.6",
-    "@tailwindcss/postcss": "4.1.16"
+    "postcss": "8.5.6"
   }
 }
