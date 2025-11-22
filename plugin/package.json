@@ -43,9 +43,9 @@
     "fast-glob": "3.3.3",
     "happy-dom": "20.0.10",
     "npm-run-all2": "8.0.4",
-    "rimraf": "6.1.0",
-    "vite": "7.2.2",
-    "vitest": "4.0.9"
+    "rimraf": "6.1.2",
+    "vite": "7.2.4",
+    "vitest": "4.0.13"
   },
   "peerDependencies": {
     "@lexical/react": ">=0.11.0",
