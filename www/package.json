@@ -43,12 +43,12 @@
     "@tailwindcss/postcss": "4.1.17",
     "@types/dompurify": "3.2.0",
     "@types/node": "24.10.1",
-    "@types/react": "19.2.6",
+    "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@types/sanitize-html": "2.16.0",
     "autoprefixer": "10.4.22",
-    "eslint-config-next": "16.0.3",
-    "eslint-plugin-playwright": "2.3.0",
+    "eslint-config-next": "16.0.5",
+    "eslint-plugin-playwright": "2.4.0",
     "playwright": "1.57.0",
     "postcss": "8.5.6"
   }
