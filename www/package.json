@@ -34,7 +34,7 @@
     "react-dom": "19.2.3",
     "sanitize-html": "2.17.0",
     "tailwind-merge": "3.4.0",
-    "tailwindcss": "4.1.17",
+    "tailwindcss": "4.1.18",
     "tailwindcss-animate": "1.0.7"
   },
   "devDependencies": {
