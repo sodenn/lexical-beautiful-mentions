@@ -34,6 +34,7 @@ export default [
       "playwright/no-conditional-expect": "off",
       "playwright/valid-title": "off",
       "playwright/expect-expect": "off",
+      "playwright/no-wait-for-timeout": "off",
       "react-hooks/refs": "off",
     },
   }, 
