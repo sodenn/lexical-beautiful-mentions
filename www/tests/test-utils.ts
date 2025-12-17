@@ -172,7 +172,6 @@ export class TestUtils {
   }
 
   sleep(ms: number) {
-    // eslint-disable-next-line playwright/no-wait-for-timeout
     return this.page.waitForTimeout(ms);
   }
 
