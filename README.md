@@ -80,6 +80,7 @@ return (
 ### Customize mention style
 
 <img src="https://raw.githubusercontent.com/sodenn/lexical-beautiful-mentions/main/resources/screenshot1.png" width="200"/><br>
+
 ```tsx
 import { BeautifulMentionsTheme } from "lexical-beautiful-mentions";
 // ...
@@ -117,6 +118,7 @@ return (
 ### Custom mention node and component
 
 If applying styles via the theme is not enough, you can replace the BeautifulMentionNode by using the lexical [Node Overrides](https://lexical.dev/docs/concepts/node-replacement) API. This allows you to change the default behavior of the mention node:
+
 ```tsx
 export class CustomMentionsNode extends BeautifulMentionNode {
   static getType() {
@@ -146,7 +148,7 @@ const editorConfig = {
     // Don't forget to register your custom node separately!
     CustomMentionsNode,
     {
-      replace: BeautifulMentionNode, 
+      replace: BeautifulMentionNode,
       with: (node: BeautifulMentionNode) => {
         return new CustomMentionsNode(
           node.getTrigger(),
@@ -178,9 +180,10 @@ const editorConfig = {
 };
 ```
 
-###  Custom menu and menu item component
+### Custom menu and menu item component
 
 <img src="https://raw.githubusercontent.com/sodenn/lexical-beautiful-mentions/main/resources/screenshot2.png" width="500"/><br>
+
 ```tsx
 function CustomMenu({ loading, ...props }: BeautifulMentionsMenuProps) {
   <ul
@@ -224,29 +227,30 @@ const mentionItems = {
 ```
 
 Serializes to the following lexical nodes:
+
 ```json
- [
-   {
-     "trigger": "@",
-     "value": "Catherine",
-     "data": {
-       "id": "1",
-       "email": "catherine.a@example.com"
-     },
-     "type": "beautifulMention",
-     "version": 1
-   },
-   {
-     "trigger": "@",
-     "value": "Catherine",
-     "data": {
-       "id": "2",
-       "email": "catherine.b@example.com"
-     },
-     "type": "beautifulMention",
-     "version": 1
-   }
- ]
+[
+  {
+    "trigger": "@",
+    "value": "Catherine",
+    "data": {
+      "id": "1",
+      "email": "catherine.a@example.com"
+    },
+    "type": "beautifulMention",
+    "version": 1
+  },
+  {
+    "trigger": "@",
+    "value": "Catherine",
+    "data": {
+      "id": "2",
+      "email": "catherine.b@example.com"
+    },
+    "type": "beautifulMention",
+    "version": 1
+  }
+]
 ```
 
 All additional metadata are available as props of the `BeautifulMentionsMenuItem` component:
@@ -268,7 +272,7 @@ The plugin allows you to display a custom component when the mention menu is emp
 
 ```tsx
 const Empty = () => (
-  <div className="top-[2px] m-0 min-w-[10rem] overflow-hidden ...">
+  <div className="top-0.5 m-0 min-w-40 overflow-hidden ...">
     No results found.
   </div>
 );

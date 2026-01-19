@@ -186,6 +186,10 @@ export function checkForTriggers(
   triggers: string[],
 ): MenuTextMatch | null {
   const last = text.split(/\s/).pop() ?? text;
+  // Don't match if last part is empty (e.g., text ends with whitespace)
+  if (!last) {
+    return null;
+  }
   const offset = text !== last ? text.lastIndexOf(last) : 0;
   const match = triggers.some((t) => t.startsWith(last) && t !== last);
   if (match) {

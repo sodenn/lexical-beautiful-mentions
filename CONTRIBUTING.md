@@ -1,4 +1,5 @@
 # Contributing to lexical-beautiful-mentions
+
 Here is a quick guide to doing code contributions to lexical-beautiful-mentions.
 
 ## Pull Requests
@@ -21,7 +22,11 @@ Here is a quick guide to doing code contributions to lexical-beautiful-mentions.
    npm run e2e
    npm run build
    ```
-7. If you've changed APIs, update the documentation.
-8. Push your branch.
-9. Submit a pull request to the upstream [lexical-beautiful-mentions repository](https://github.com/sodenn/lexical-beautiful-mentions/pulls).<br>
-> Maintainers will merge the pull request by squashing all commits and editing the commit message if necessary.
+7. Add a changeset and describe your changes:
+   ```sh
+   npx @changesets/cli
+   ```
+8. If you've changed APIs, update the documentation.
+9. Push your branch.
+10. Submit a pull request to the upstream [lexical-beautiful-mentions repository](https://github.com/sodenn/lexical-beautiful-mentions/pulls).<br>
+    > Maintainers will merge the pull request by squashing all commits and editing the commit message if necessary.
