@@ -80,22 +80,12 @@ export interface BeautifulMentionsMenuProps extends ComponentPropsWithRef<any> {
 export type BeautifulMentionsMenuItemProps = Omit<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ComponentPropsWithRef<any>,
-  "selected" | "label"
+  "selected"
 > & {
   /**
    * If `true`, the menu item is selected.
    */
   selected: boolean;
-  /**
-   * The label of the menu item.
-   * @deprecated Use `item` instead.
-   */
-  label: string;
-  /**
-   * The value of the menu item.
-   * @deprecated Use `item` instead.
-   */
-  itemValue: string;
   /**
    * Contains information about the menu item.
    */
