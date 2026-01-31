@@ -27,7 +27,7 @@
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.8",
-    "eslint-config-turbo": "2.8.0",
+    "eslint-config-turbo": "2.8.1",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
     "globals": "17.2.0",
@@ -36,7 +36,7 @@
     "prettier-plugin-tailwindcss": "0.7.2",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "turbo": "2.8.0",
+    "turbo": "2.8.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.54.0"
   },
