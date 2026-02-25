@@ -809,9 +809,9 @@ export function BeautifulMentionsPlugin(props: BeautifulMentionsPluginProps) {
                     itemValue={option.value}
                     label={option.displayValue}
                     {...option.data}
-                    onClick={() => {
+                    onClick={(event: React.MouseEvent, customOption: MenuOption | null = null) => {
                       setHighlightedIndex(i);
-                      selectOptionAndCleanUp(option);
+                      selectOptionAndCleanUp(customOption ?? option);
                     }}
                     onMouseDown={(event) => {
                       event.preventDefault();
