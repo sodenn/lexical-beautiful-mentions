@@ -34,7 +34,7 @@ export function Menu({ loading, ...other }: BeautifulMentionsMenuProps) {
 export const MenuItem = forwardRef<
   HTMLLIElement,
   BeautifulMentionsMenuItemProps
->(({ selected, item, itemValue, ...props }, ref) => (
+>(({ selected, item, ...props }, ref) => (
   <li
     ref={ref}
     className={cn(
