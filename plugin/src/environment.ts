@@ -10,4 +10,4 @@ export const IS_IOS: boolean =
   !window.MSStream;
 
 export const IS_MOBILE =
-  CAN_USE_DOM && window.matchMedia("(pointer: coarse)").matches;
+  CAN_USE_DOM && typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches;
